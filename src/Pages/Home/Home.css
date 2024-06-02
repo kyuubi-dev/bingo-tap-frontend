@@ -2,7 +2,10 @@
 .main-button:active {
     transform: scale(0.95);
 }
-  
+.round-button:active, .round-button:focus {
+    outline: none;
+    box-shadow: none;
+}
 .round-button:active {
     transform: scale(0.95);
 }
