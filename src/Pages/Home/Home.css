@@ -1,4 +1,7 @@
 /* Home.css */
+* {
+    user-select: none;
+}
 .main-button:active {
     transform: scale(0.95);
 }
