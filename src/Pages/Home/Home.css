@@ -1,5 +1,9 @@
 /* Home.css */
 
+* {
+    -webkit-tap-highlight-color: transparent; /* Для WebKit (Safari, Chrome) */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Для остальных браузеров */
+}
 /* Общие стили для всех кнопок */
 .main-button,
 .round-button {
