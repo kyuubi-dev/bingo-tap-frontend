@@ -2,6 +2,12 @@
 * {
     user-select: none;
 }
+button:active {
+    background-color: transparent;
+    transform: none;
+    box-shadow: none;
+    outline: none;
+}
 .main-button:active {
     transform: scale(0.95);
 }
