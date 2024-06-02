@@ -1,30 +1,25 @@
 /* Home.css */
-
 * {
-    -webkit-tap-highlight-color: transparent; /* Для WebKit (Safari, Chrome) */
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Для остальных браузеров */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-/* Общие стили для всех кнопок */
 .main-button,
 .round-button {
     cursor: pointer;
-    outline: none; /* Убираем обводку фокуса */
+    outline: none;
 }
 
-/* Стили для кнопок в состоянии активности */
 .main-button:active,
 .round-button:active {
     transform: scale(0.95);
 }
 
-/* Стили для контейнера домашней страницы */
 .Home {
     position: relative;
     width: 100%;
     height: 100vh;
 }
 
-/* Фоновое изображение */
 .bg-image {
     position: fixed;
     top: 0;
@@ -36,7 +31,6 @@
     background-position: center;
 }
 
-/* Контент на домашней странице */
 .Home-content {
     position: absolute;
     top: 50%;
@@ -45,7 +39,6 @@
     text-align: center;
 }
 
-/* Отображение баланса */
 .balance-display {
     display: flex;
     align-items: center;
@@ -53,12 +46,10 @@
     margin-bottom: 10px;
 }
 
-/* Иконка монеты */
 .coin-icon {
     width: 100px;
 }
 
-/* Количество монет */
 .balance-amount {
     font-size: 42px;
     color: #BCF8FA;
@@ -75,7 +66,6 @@
       0 0 150px #222;
 }
 
-/* Стили для главной кнопки */
 .main-button {
     background: transparent;
     border: none;
@@ -83,33 +73,67 @@
     margin-bottom: 10px;
 }
 
-/* Стили для изображения в главной кнопке */
 .main-button img {
     width: 300px;
 }
 
-/* Стили для навигационных кнопок */
 .nav-btns {
     position: fixed;
-    bottom: 55px;
+    bottom: 35px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     z-index: 999;
 }
 
-/* Стили для круглой кнопки */
 .round-button {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border: 2px solid transparent;
     border-radius: 50%;
     background-color: transparent;
     transition: transform 0.2s ease, border-color 0.2s ease;
+    background-image: url('/public/btn-bg.png');
+    background-size: cover;
+    background-position: center;
+}
+.round-button:nth-child(3) {
+    background-image: url('/public/bg-tap-btn.png');
 }
 
-/* Стили для изображения в круглой кнопке */
+.energy-display {
+    position: relative;
+}
+  
+.energy-container {
+    width: 100%;
+    height: 5px;
+    border: 2px solid #FFFFFF;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.energy-bar {
+    height: 100%;
+    background-color: #15959F;
+    width: 0;
+    transition: width 0.2s ease;
+}
+  
 .round-button img {
     width: 100%;
     border-radius: 50%;
+}
+.energy-display {
+    color: #FFFFFF;
+    font-size: 16px;
+    text-shadow:
+    0 0 5px #BCF8FA,
+    0 0 10px #BCF8FA,
+    0 0 20px #395e5f,
+    0 0 40px #0ff,
+    0 0 80px #222,
+    0 0 90px #222,
+    0 0 100px #222,
+    0 0 150px #222;
 }
