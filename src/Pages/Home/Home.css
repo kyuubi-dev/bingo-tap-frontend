@@ -9,6 +9,13 @@ button:active {
     outline: none;
 }
 .main-button:active {
+    background-color: transparent; /* Змінює колір фону на прозорий */
+    transform: none; /* Скасовує будь-яку трансформацію, застосовану до кнопки */
+    box-shadow: none; /* Скасовує будь-яку тінь, яка може бути застосована до кнопки */
+    outline: none; /* Видаляє контур фокусу (якщо він є) */
+}
+
+.main-button:active {
     transform: scale(0.95);
 }
 .round-button:active, .round-button:focus {
