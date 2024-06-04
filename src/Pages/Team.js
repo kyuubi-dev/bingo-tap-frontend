@@ -26,6 +26,7 @@ function Team() {
         leagua="Gold"
         bonus="50 000"
         />
+        
       </div>
       </div>
     </div>
