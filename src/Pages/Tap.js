@@ -35,7 +35,7 @@ function Tap() {
       <div className="Tap-content">
         <div className="balance-display">
           <img src="/coin.png" alt="Coin" className="coin-icon " />
-          <span className="balance-amount">10 000</span>
+          <span className="balance-amount">{userBalance}</span>
         </div>
         <div className="tap-gold">
           <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank" />
