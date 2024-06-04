@@ -28,7 +28,7 @@ const Boost = () => {
   return(
     <h1 className='Boost'>
         <div className='bg-image' />
-        <header className="header">
+        <header className="team-header">
         <div className="balance-display-task">
           <img src="/coin.png" alt="Coin" className="coin-icon" />
           <span className="balance-amount">10 000</span>

@@ -36,14 +36,22 @@ function Tap() {
           <img src="/coin.png" alt="Coin" className="coin-icon" />
           <span className="balance-amount">{userBalance}</span>
         </div>
+        <div className="tap-gold">
+          <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank" />
+          <span className="gold-text">GOLD</span>
+          <button className='open-btn'>
+            <img src='./tasks/open.png' className='open-icon' alt="Open" />
+          </button>
+        </div>
         <button className="main-button" onClick={handleMainButtonClick}>
           <img src="/btns/robot.png" alt="Start" />
         </button>
-        <div className="energy-display">
-          {energy}/{maxEnergy}
-          <div className="energy-container">
-            <div className="energy-bar" style={{ width: energyBarWidth }}></div> {/* Полоса енергії */}
+        <div className="energy-display">  
+        <img src='./boost/power.png' className='power-img'/>
+         <div> {energy}/{maxEnergy}</div>
           </div>
+          <div className="energy-container">
+            <div className="energy-bar" style={{ width: energyBarWidth }}></div> 
         </div>
       </div>
      
