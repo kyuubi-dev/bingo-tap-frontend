@@ -1,0 +1,70 @@
+.Navigation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    bottom: 0;
+    height: 100%;
+    z-index: 1000;
+  }
+  
+  .bg-image {
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/public/bg.png');
+    background-size: 130%;
+    background-position: center;
+    z-index: -1;
+  }
+  
+  .nav-btns {
+    position: fixed;
+    bottom: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: space-around;
+    width: 90vw;
+    z-index: 999;
+  }
+  
+  .round-button {
+    width: 15vw;
+    height: 15vw;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    background-color: transparent;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    background-image: url('/public/btn-bg.png');
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .round-button:nth-child(3) {
+    background-image: url('/public/bg-tap-btn.png');
+  }
+  
+  @media (max-width: 768px) {
+    .round-button {
+      width: 18vw;
+      height: 18vw;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .round-button {
+      width: 20vw;
+      height: 20vw;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .round-button {
+      width: 8vw;
+      height: 8vw;
+    }
+  }
+  

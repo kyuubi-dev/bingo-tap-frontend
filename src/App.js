@@ -1,37 +1,26 @@
-// import logo from './logo.svg';
-// import './App.css';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-import React from 'react';
-import './App.css';
-import Home from './Pages/Home/Home';
-
+import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Tap from './Pages/Tap';
+import Team from './Pages/Team';
+import Navigation from './Pages/Navigation';
+import Task from './Pages/Task';
+import Boost from './Pages/Boost';
+import Stat from './Pages/Stat';
 function App() {
+  const [userBalance, setUserBalance] = useState(0);
+
   return (
     <div className="App">
-      <Home />
+      <BrowserRouter>
+        <Navigation />
+        <Routes>
+          <Route path="/" element={<Tap setUserBalance={setUserBalance} />} />
+          <Route path="/team" element={<Team />} />
+          <Route path="/task" element={<Task userBalance={userBalance} />} />
+          <Route path="/boost" element={<Boost />} />
+          <Route path='/stat' element={<Stat/>}/>
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

@@ -1,0 +1,54 @@
+  
+  .statistics-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .stat-text {
+    text-align: center;
+    padding: 30px;
+  }
+  .shared-balance{
+    display: flex;
+    align-items: center;
+    text-align: center;
+  }
+  .stat-title {
+    font-size: 6vw;
+    color: #ffe7be;
+    text-shadow:
+      0 0 5px #d7c00e,
+      0 0 10px hsl(182, 86%, 86%),
+      0 0 20px #f0f014,
+      0 0 40px rgb(227, 169, 68),
+      0 0 80px #222,
+      0 0 90px #222,
+      0 0 100px #222,
+      0 0 150px #222;
+  }
+  
+  .stat-value {
+    font-size: 32px;
+    color: #00e5ff;
+  }
+  .shared-balance-icon{
+    align-items: center;
+    width: 90px;
+    height: auto;
+  }
+  .team-header{
+    font-size: 8vw;
+  }
