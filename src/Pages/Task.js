@@ -1,5 +1,6 @@
 import './Task.css';
 import React, { useState } from 'react';
+import './TextStyle.css';
 
 const Task = ({ userBalance }) => {
   const [selectedTab, setSelectedTab] = useState('special');
@@ -84,10 +85,10 @@ const Task = ({ userBalance }) => {
 const TaskItem = ({ text, reward }) => (
   <div className="task-item">
     <img src='./tasks/task.png' alt="icon" className="task-icon" />
-    <div className="task-text">{text}</div>
+    <div className="task-text blue-style">{text}</div>
     <div className="task-reward">
       <img src='./coin.png' alt="coin" className="reward-icon" />
-      <span>{reward}</span>
+      <span className='gold-style'>{reward}</span>
     </div>
     <button className='open-btn'>
       <img src='./tasks/open.png' className='open-icon' alt="Open" />
@@ -98,10 +99,10 @@ const TaskItem = ({ text, reward }) => (
 const LeagueItem = ({ text, reward, image }) => (
   <div className="task-item">
     <img src={image} alt="icon" className="task-icon" />
-    <div className="task-text">{text}</div>
+    <div className="task-text blue-style">{text}</div>
     <div className="task-reward">
       <img src='./coin.png' alt="coin" className="reward-icon" />
-      <span>{reward}</span>
+      <span className='gold-style'>{reward}</span>
     </div>
     <button className='open-btn'>
       <img src='./tasks/open.png' className='open-icon' alt="Open" />
@@ -111,10 +112,10 @@ const LeagueItem = ({ text, reward, image }) => (
 const InviteFriendItem = ({ text, reward, image }) => (
     <div className="task-item">
       <img src={image} alt="icon" className="task-icon" />
-      <div className="task-text">{text}</div>
+      <div className="task-text blue-style">{text}</div>
       <div className="task-reward">
         <img src='./coin.png' alt="coin" className="reward-icon" />
-        <span>{reward}</span>
+        <span className='gold-style'>{reward}</span>
       </div>
     </div>
   );

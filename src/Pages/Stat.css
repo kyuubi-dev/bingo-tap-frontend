@@ -28,16 +28,7 @@
   }
   .stat-title {
     font-size: 6vw;
-    color: #ffe7be;
-    text-shadow:
-      0 0 5px #d7c00e,
-      0 0 10px hsl(182, 86%, 86%),
-      0 0 20px #f0f014,
-      0 0 40px rgb(227, 169, 68),
-      0 0 80px #222,
-      0 0 90px #222,
-      0 0 100px #222,
-      0 0 150px #222;
+    
   }
   
   .stat-value {

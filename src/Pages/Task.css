@@ -1,182 +1,171 @@
 * {
-    -webkit-tap-highlight-color: transparent;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    outline: none;
-  }
-  
-  body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    font-weight: 600;
-    background-color: #000;
-    color: #BCF8FA;
-  }
-  
-  .Task {
-    padding: 20px;
-    align-items: center;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .balance-display-task {
-    display: flex;
-    align-items: center;
-  }
-  
-  .coin-icon {
-    width: 50px;
-    height: auto;
-  }
-  
+  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  outline: none;
+}
+
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  font-weight: 600;
+  background-color: #000;
+  color: #BCF8FA;
+}
+
+.Task {
+  padding: 20px;
+  align-items: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.balance-display-task {
+  display: flex;
+  align-items: center;
+}
+
+.coin-icon {
+  width: 80px;
+  height: auto;
+}
+
+.balance-amount {
+  font-size: 3rem;
+  margin-left: 10px;
+  text-shadow: 0 0 10px #BCF8FA, 0 0 20px #0ff, 0 0 40px #222;
+}
+
+.gold {
+  display: flex;
+  align-items: center;
+  padding: 10 10 10 10;
+}
+
+.gold-text {
+  font-size: 1.5rem;
+  color: gold;
+  margin-right: -20px;
+}
+
+.open-btn {
+  background: transparent;
+  border: none;
+  width: 70px;
+  height: auto;
+}
+
+.open-icon {
+  width: 70px;
+  height: auto;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.tab {
+  font-size: 3vw;
+  margin: 0 10px;
+  padding: 10px 20px;
+  border: 2px solid #BCF8FA;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 10px #BCF8FA, 0 0 20px #0ff;
+}
+
+.tab.selected {
+  color: gold;
+  border-color: gold;
+}
+
+.tasks {
+  display: grid;
+  gap: 20px;
+}
+
+.task-item {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 70px auto auto 70px;
+  padding: 10px 20px;
+  border: 4px solid #BCF8FA;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 20px #0ff;
+  text-align: left;
+}
+
+.task-icon {
+  width: 70px;
+  height: auto;
+  grid-row: 1 / span 2;
+}
+
+.task-text {
+  font-size: 1.2rem;
+  margin-left: 20px;
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.task-reward {
+  display: flex;
+  align-items: center;
+  grid-row: 2;
+  grid-column: 2;
+}
+
+.reward-icon {
+  width: 40px;
+  height: auto;
+}
+
+.task-reward span {
+  font-size: 1.5rem;
+}
+
+.task-item .open-btn {
+  grid-column: 4;
+  grid-row: 1 / span 2;
+  background: transparent;
+  border: none;
+  width: 70px;
+  height: auto;
+}
+
+.task-item.open-icon {
+  width: 70px;
+  height: auto;
+}
+
+@media (max-width: 400px) {
   .balance-amount {
-    font-size: 3rem;
-    margin-left: 10px;
-    text-shadow: 0 0 10px #BCF8FA, 0 0 20px #0ff, 0 0 40px #222;
+    font-size: 2rem;
   }
-  
-  .gold {
-    display: flex;
-    align-items: center;
-    padding: 10 10 10 10;
-  }
-  
+
   .gold-text {
-    font-size: 1.5rem;
-    color: gold;
-    margin-right: -20px;
+    font-size: 1rem;
   }
-  
-  .open-btn {
-    background: transparent;
-    border: none;
-    width: 70px;
-    height: auto;
-  }
-  
+
   .open-icon {
-    width: 70px;
-    height: auto;
-     }
-  
-  .nav {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
+    width: 60px;
   }
-  
+
   .tab {
-    font-size: 3vw;
-    margin: 0 10px;
-    padding: 10px 20px;
-    border: 2px solid #BCF8FA;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    text-shadow: 0 0 10px #BCF8FA, 0 0 20px #0ff;
+    font-size: 2.5vw;
   }
-  
-  .tab.selected {
-    color: gold;
-    border-color: gold;
-  }
-  
-  .tasks {
-    display: grid;
-    gap: 20px;
-  }
-  
-  .task-item {
-    display: grid;
-    align-items: center;
-    grid-template-columns: 70px auto auto 70px;
-    padding: 10px 20px;
-    border: 4px solid #BCF8FA;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 20px #0ff;
-    text-align: left;
-  }
-  
-  .task-icon {
-    width: 70px;
-    height: auto;
-    grid-row: 1 / span 2;
-  }
-  
+
   .task-text {
-    font-size: 1.2rem;
-    margin-left: 20px;
-    grid-row: 1;
-    grid-column: 2;
+    font-size: 1rem;
   }
-  
-  .task-reward {
-    display: flex;
-    align-items: center;
-    grid-row: 2;
-    grid-column: 2;
-    color: #ffe7be;
-  text-shadow:
-    0 0 5px #d7c00e,
-    0 0 10px #BCF8FA,
-    0 0 20px #d6d61c,
-    0 0 40px rgb(214, 176, 69),
-    0 0 80px #222,
-    0 0 90px #222,
-    0 0 100px #222,
-    0 0 150px #222;
-  }
-  
-  .reward-icon {
-    width: 40px;
-    height: auto;
-  }
-  
+
   .task-reward span {
-    font-size: 1.5rem;
+    font-size: 1rem;
   }
-  
-  .task-item .open-btn {
-    grid-column: 4;
-    grid-row: 1 / span 2;
-    background: transparent;
-    border: none;
-    width: 70px;
-    height: auto;
-  }
-  
-  .task-item.open-icon {
-    width: 70px;
-    height: auto;
-  }
-  
-  @media (max-width: 400px) {
-    .balance-amount {
-      font-size: 2rem;
-    }
-  
-    .gold-text {
-      font-size: 1rem;
-    }
-  
-    .open-icon {
-      width: 60px;
-    }
-  
-    .tab {
-      font-size: 2.5vw;
-    }
-  
-    .task-text {
-      font-size: 1rem;
-    }
-  
-    .task-reward span {
-      font-size: 1rem;
-    }
-  }
-  
+}

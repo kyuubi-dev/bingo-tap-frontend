@@ -6,7 +6,7 @@ function Navigation() {
   const [navButtonActive, setNavButtonActive] = useState({
     team: false,
     task: false,
-    tap: false,
+    tap: true,
     boost: false,
     stat: false
   });
