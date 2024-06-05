@@ -185,10 +185,8 @@ body{
   align-items: center;
 }
 
-@media (max-width: 768px) {
-}
 
-@media (max-width: 480px) {
+@media (min-width: 320px) and (max-width:767px ) {
   .bonus{
     font-size: 8vw;
   }
@@ -197,7 +195,7 @@ body{
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) and (max-width:1023) {
   .referral-count {
     font-size: 6vw;
   }
