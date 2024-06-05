@@ -1,4 +1,10 @@
 /* Синій стиль */
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700&display=swap');
+
+body {
+  font-family: 'Big Shoulders Display', sans-serif;
+}
+ 
 .blue-style {
   color: #BCF8FA;
   text-shadow:
