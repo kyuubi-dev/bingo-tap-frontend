@@ -3,7 +3,7 @@
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-body{
+body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -12,7 +12,7 @@ body{
   width: 100%;
   height: 100vh;
   display: grid;
-  grid-auto-rows: 30px 20px 20px 120px;
+  grid-auto-rows: 20px 10px 120px;
   grid-column: auto;
   gap: 30px;
   text-align: center;
@@ -23,11 +23,12 @@ body{
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  grid-row: 2;
+  grid-row: 1;
+  margin-top: 30px;
 }
 
 .referral-count {
-  font-size: 12vw;
+  font-size: 24px;
 }
 
 .Referral {
@@ -36,27 +37,26 @@ body{
 }
 
 .ref-text {
-  font-size: 12vw;
+  font-size: 24px;
   padding-left: 10%;
- 
 }
 
 .referral-total {
-  font-size: 8vw;
-  grid-row: 3;
+  font-size: 16px;
+  grid-row: 2;
 }
 
 .Invite-link {
   margin-top: 30px;
   display: grid;
-  grid-row: 4;
+  grid-row: 3;
   grid-template-rows: 20px 20px;
   grid-template-columns: 1fr auto;
   gap: 20px;
   border-radius: 10px;
   border: 4px solid #BCF8FA;
   background: rgba(0, 0, 0, 0.5);
-  font-size: 6vw;
+  font-size: 12px;
   box-shadow: 0 0 20px #0ff;
   text-align: left;
   width: calc(100% - 40px); /* ширина вікна з відступами по 20px */
@@ -64,7 +64,7 @@ body{
 }
 
 .invite-text {
-  font-size: 5vw;
+  font-size: 10px;
   grid-row: 1;
   margin-top: 10px;
   grid-column: 1;
@@ -72,7 +72,7 @@ body{
 }
 
 .invite-url {
-  font-size: 4vw;
+  font-size: 8px;
   color: #15f7ff;
   text-decoration: none;
   grid-row: 2;
@@ -85,18 +85,19 @@ body{
   background: none;
   border: 2px solid #BCF8FA;
   border-radius: 10px;
-  font-size: 3.5vw;
+  font-size: 7px;
   grid-row: 1 / span 2;
   width: 75px;
   height: 20px;
   color: #BCF8FA;
   cursor: pointer;
   justify-self: end;
-  margin-right: 50px; /* Відсотковий відступ */
+  margin-right: 30px; /* Відсотковий відступ */
   grid-column: 2 / span 1;
   align-items: center;
-  margin-top: 20px;
-  padding-left: 10px; padding-right: 10px;
+  margin-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .teams {
@@ -107,11 +108,10 @@ body{
 .Team-section {
   display: grid;
   gap: 10px;
-  grid-row: 5;
 }
 
 .team-header {
-  font-size: 8vw;
+  font-size: 16px;
   margin-left: 20px;
   display: flex;
   align-items: center;
@@ -121,7 +121,7 @@ body{
   width: calc(100% - 40px);
   display: grid;
   grid-template-columns: auto auto auto;
-  grid-template-rows: 20px auto;
+  grid-template-rows: auto auto;
   align-items: center;
   gap: 10px;
   border: 4px solid #BCF8FA;
@@ -143,33 +143,33 @@ body{
   align-items: center; /* Додано */
   grid-column: 1;
   grid-row: 2;
+  margin-left: 10px;
 }
 
 .rank-img {
-  width: 50px;
   height: auto;
   grid-row: 2;
   grid-column: 2;
 }
 
 .name {
-  font-size: 6vw;
+  font-size: 12px;
   font-weight: bold;
-  margin-left: 10%;
-  margin-top: 10%;
+  margin-left: 5%;
+  margin-top: 5%;
   grid-column: 1;
   grid-row: 1;
 }
 
 .rank-text {
-  font-size: 6vw;
+  font-size: 12px;
   align-items: center;
   grid-column: 2;
   grid-row: 2;
 }
 
 .Point {
-  font-size: 6vw;
+  font-size: 12px;
   grid-row: 2;
   align-items: center;
   display: flex;
@@ -181,60 +181,98 @@ body{
   grid-column: 3;
   justify-self: end; /* Вирівняти по правому краю */
   margin-right: 15px;
-  font-size: 6vw;
+  font-size: 12px;
   align-items: center;
 }
 
-
-@media (min-width: 320px) and (max-width:767px ) {
-  .bonus{
-    font-size: 8vw;
+@media (min-width: 320px) and (max-width: 767px) {
+  .referral-count {
+    font-size: 30px;
   }
-  .name{
-    font-size: 8vw;
+  .ref-text {
+    font-size: 30px;
+  }
+  .referral-total {
+    font-size: 20px;
+  }
+  .Invite-link {
+    font-size: 12px;
+  }
+  .invite-text {
+    font-size: 25px;
+  }
+  .invite-url {
+    font-size: 15px;
+  }
+  .copy-button {
+    font-size: 18px;
+    width: 70px;
+    height: 25px;
+  }
+  .team-header {
+    font-size: 16px;
+  }
+  .name {
+    font-size: 28px;
+  }
+  .rank-text {
+    font-size: 30px;
+  }
+  .Rank img{
+    width: 30%;
+  }
+  .Point {
+    font-size: 30px;
+  }
+  .bonus {
+    font-size: 30px;
+  }
+  
+  .coin-icon{
+    width: 30% !important;
   }
 }
 
-@media (min-width: 768px) and (max-width:1023) {
+@media (min-width: 768px) and (max-width: 1023px) {
   .referral-count {
-    font-size: 6vw;
+    font-size: 48px;
   }
   .ref-text {
-    font-size: 6vw;
+    font-size: 48px;
   }
   .referral-total {
-    font-size: 4vw;
+    font-size: 32px;
   }
   .Invite-link {
-    font-size: 3vw;
+    font-size: 24px;
   }
   .invite-text {
-    font-size: 2.5vw;
+    font-size: 20px;
   }
   .invite-url {
-    font-size: 2vw;
+    font-size: 16px;
   }
   .copy-button {
-    font-size: 1.75vw;
+    font-size: 14px;
     width: 110px;
     height: 40px;
   }
   .team-header {
-    font-size: 2vw;
+    font-size: 32px;
   }
   .name {
-    font-size: 3vw;
+    font-size: 24px;
   }
   .rank-text {
-    font-size: 3vw;
+    font-size: 36px !important;
   }
   .Point {
-    font-size: 2vw;
+    font-size: 16px;
   }
   .bonus {
-    font-size: 3vw;
+    font-size: 24px;
   }
-  .bg-image{
+  .bg-image {
     width: 100%;
     height: auto;
   }

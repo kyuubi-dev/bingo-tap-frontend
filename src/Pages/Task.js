@@ -45,11 +45,11 @@ const Task = ({ userBalance }) => {
       <header className="header">
         <div className="balance-display-task">
           <img src="/coin.png" alt="Coin" className="coin-icon" />
-          <span className="balance-amount">{userBalance}</span>
+          <span className="balance-amount blue-style">{userBalance}</span>
         </div>
         <div className="gold">
           <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank" />
-          <span className="gold-text">GOLD</span>
+          <span className="gold-style">GOLD</span>
           <button className='open-btn'>
             <img src='./tasks/open.png' className='open-icon' alt="Open" />
           </button>
