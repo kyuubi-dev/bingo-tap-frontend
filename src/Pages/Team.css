@@ -121,7 +121,7 @@ body{
   width: calc(100% - 40px);
   display: grid;
   grid-template-columns: auto auto auto;
-  grid-template-rows: 50px auto;
+  grid-template-rows: 20px auto;
   align-items: center;
   gap: 10px;
   border: 4px solid #BCF8FA;
@@ -155,10 +155,10 @@ body{
 .name {
   font-size: 6vw;
   font-weight: bold;
-  margin-left: 5%;
+  margin-left: 10%;
+  margin-top: 10%;
   grid-column: 1;
   grid-row: 1;
-  
 }
 
 .rank-text {
@@ -189,6 +189,12 @@ body{
 }
 
 @media (max-width: 480px) {
+  .bonus{
+    font-size: 8vw;
+  }
+  .name{
+    font-size: 8vw;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -229,5 +235,9 @@ body{
   }
   .bonus {
     font-size: 3vw;
+  }
+  .bg-image{
+    width: 100%;
+    height: auto;
   }
 }

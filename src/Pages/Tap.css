@@ -103,12 +103,14 @@
 }
 
 @media (max-width: 768px) {
-    .coin-icon {
+    .balance-display img {
         width: 50vw; /* Adjusted for smaller screens */
+        margin-left: -40px;
     }
 
     .balance-amount {
         font-size: 50vw; /* Adjusted for smaller screens */
+        padding-left: -10px;
     }
 
     .gold-text{
@@ -130,6 +132,7 @@
     }
 
     .balance-amount  {
+        margin-left: -20px !important;
         font-size: 15vw !important; /* Adjusted for very small screens */
     }
 

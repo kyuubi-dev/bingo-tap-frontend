@@ -1,48 +1,53 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import './Tap.css';
 
 function Tap() {
   const [userBalance, setUserBalance] = useState(0); 
   const [energy, setEnergy] = useState(1500); 
   const maxEnergy = 1500;
+  const lastTouchTimeRef = useRef(0);
 
-  const handleMainButtonClick = useCallback((event) => {
-    // Single click handling
-    if (event.type === 'click') {
-      if (energy >= 1) {
-        setEnergy((prevEnergy) => prevEnergy - 1);
-        setUserBalance((prevBalance) => prevBalance + 1);
+  const handleClick = (event) => {
+    if (energy >= 1) {
+      setEnergy((prevEnergy) => prevEnergy - 1);
+      setUserBalance((prevBalance) => prevBalance + 1);
 
-        const { clientX, clientY } = event;
-        const plusOne = document.createElement('span');
-        plusOne.className = 'plus-one blue-style';
-        plusOne.textContent = '+1';
-        plusOne.style.left = `${clientX}px`;
-        plusOne.style.top = `${clientY}px`;
-        document.body.appendChild(plusOne);
-        requestAnimationFrame(() => {
-          plusOne.style.transform = 'translate(-50%, -55%)';
-          plusOne.style.opacity = '0';
-        });
-        setTimeout(() => {
-          plusOne.remove();
-        }, 2500);
-      }
-      return;
+      const { clientX, clientY } = event;
+      const plusOne = document.createElement('span');
+      plusOne.className = 'plus-one blue-style';
+      plusOne.textContent = '+1';
+      plusOne.style.left = `${clientX}px`;
+      plusOne.style.top = `${clientY}px`;
+      document.body.appendChild(plusOne);
+      requestAnimationFrame(() => {
+        plusOne.style.transform = 'translate(-50%, -55%)';
+        plusOne.style.opacity = '0';
+      });
+      setTimeout(() => {
+        plusOne.remove();
+      }, 2500);
     }
+  };
+
+  const handleTouch = (event) => {
+    const currentTime = new Date().getTime();
+    if (currentTime - lastTouchTimeRef.current < 500) {
+      return; // Ignore touches that occur within 500ms of the last touch
+    }
+    lastTouchTimeRef.current = currentTime;
 
     const touches = event.touches;
-    const numTouches = Math.min(touches.length, 4); // Limit to 4 touches
+    const numTouches = Math.min(touches.length, 3); // Limit to 3 touches
 
     if (energy >= numTouches) {
       setEnergy((prevEnergy) => prevEnergy - numTouches);
       setUserBalance((prevBalance) => prevBalance + numTouches);
 
-      Array.from(touches).slice(0, 4).forEach((touch) => { // Handle up to 4 touches
+      Array.from(touches).slice(0, numTouches).forEach((touch) => { // Handle up to 3 touches
         const { clientX, clientY } = touch;
         const plusOne = document.createElement('span');
         plusOne.className = 'plus-one blue-style';
-        plusOne.textContent = '+1';
+        plusOne.textContent = `+${numTouches}`;
         plusOne.style.left = `${clientX}px`;
         plusOne.style.top = `${clientY}px`;
         document.body.appendChild(plusOne);
@@ -55,7 +60,7 @@ function Tap() {
         }, 2500);
       });
     }
-  }, [energy]);
+  };
 
   const energyBarWidth = (energy / maxEnergy) * 100 + '%';
 
@@ -76,8 +81,8 @@ function Tap() {
         </div>
         <button
           className="main-button"
-          onClick={handleMainButtonClick}
-          onTouchStart={handleMainButtonClick}
+          onClick={handleClick}
+          onTouchStart={handleTouch}
         >
           <img src="/btns/robot.png" alt="Start" className='robot-img'/>
         </button>

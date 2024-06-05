@@ -11,7 +11,7 @@ function Team() {
         <div  className='ref-text blue-style'> REFERRALS</div>
         </div>
       </div>
-      <div className="referral-total">+100 000</div>
+      <div className="referral-total blue-style">+100 000</div>
       <div className="Invite-link">
             <div className="invite-text  blue-style">MY INVITE LINK:</div>
             <a href="https://t.me/bng_bot?start=749626634" className="invite-url">https://t.me/bng_bot?start=749626634</a>
