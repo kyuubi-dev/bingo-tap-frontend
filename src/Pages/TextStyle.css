@@ -13,7 +13,7 @@
 .default-style {
   color: #15f7ff;
   font-family: 'Big Shoulders Display', sans-serif;
-  font-weight: 400; /* Regular */
+  font-weight: 400; 
 }
 
 /* Золотий стиль */
@@ -29,7 +29,7 @@
     0 0 40px #222,
     0 0 60px #222;
     font-family: 'Big Shoulders Display', sans-serif;
-    font-weight: 400; /* Regular */
+    font-weight: 400; 
 }
 
 .plus-one {

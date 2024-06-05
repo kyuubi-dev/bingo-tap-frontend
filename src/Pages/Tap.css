@@ -101,11 +101,15 @@
     width: 100%;
     border-radius: 50%;
 }
-
+@media (min-width: 320px) and (max-width: 767px) {
+    .rank-img{
+        width: 30%;
+      }
+}
 @media (max-width: 768px) {
     .balance-display img {
         width: 50vw; /* Adjusted for smaller screens */
-        margin-left: -40px;
+        margin-left: -30px;
     }
 
     .balance-amount {
