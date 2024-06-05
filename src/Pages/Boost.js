@@ -1,6 +1,6 @@
 import './Boost.css';
 import React from 'react';
-
+import './TextStyle.css';
 
 const Boost = () => {
     const DailyBoostItem = ({ text, reward, image}) => (
@@ -27,11 +27,10 @@ const Boost = () => {
       );
   return(
     <h1 className='Boost'>
-        <div className='bg-image' />
-        <header className="team-header">
+        <header className="header">
         <div className="balance-display-task">
           <img src="/coin.png" alt="Coin" className="coin-icon" />
-          <span className="balance-amount">10 000</span>
+          <span className="balance-amount blue-style">10 000</span>
         </div>
        
       </header>

@@ -59,7 +59,6 @@ function Tap() {
 
   return (
     <div className="Tap">
-      <div className='bg-image'/>
       <div className="Tap-content">
         <div className="balance-display">
           <img src="/coin.png" alt="Coin" className="coin-icon " />
