@@ -1,11 +1,10 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import './Tap.css';
 
 function Tap() {
   const [userBalance, setUserBalance] = useState(0); 
   const [energy, setEnergy] = useState(1500); 
   const maxEnergy = 1500;
-  const lastTouchTimeRef = useRef(0);
 
   const handleClick = (event) => {
     if (energy >= 1) {
@@ -30,16 +29,10 @@ function Tap() {
   };
 
   const handleTouch = (event) => {
-    const currentTime = new Date().getTime();
-    if (currentTime - lastTouchTimeRef.current < 500) {
-      return; // Ignore touches that occur within 500ms of the last touch
-    }
-    lastTouchTimeRef.current = currentTime;
-
     const touches = event.touches;
     const numTouches = Math.min(touches.length, 3); // Limit to 3 touches
 
-    if (energy >= numTouches) {
+    if (numTouches > 1 && energy >= numTouches) {
       setEnergy((prevEnergy) => prevEnergy - numTouches);
       setUserBalance((prevBalance) => prevBalance + numTouches);
 
