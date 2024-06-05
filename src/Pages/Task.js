@@ -88,7 +88,7 @@ const TaskItem = ({ text, reward }) => (
     <div className="task-text blue-style">{text}</div>
     <div className="task-reward">
       <img src='./coin.png' alt="coin" className="reward-icon" />
-      <span className='gold-style'>{reward}</span>
+      <span className='rew-text gold-style'>{reward}</span>
     </div>
     <button className='open-btn'>
       <img src='./tasks/open.png' className='open-icon' alt="Open" />

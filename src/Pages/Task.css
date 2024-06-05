@@ -5,22 +5,22 @@
 }
 
 body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  font-weight: 600;
+  font-family: 'Big Shoulders Display', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #000;
   color: #BCF8FA;
 }
 
-.Task {
-  padding: 20px;
-  align-items: center;
+.Task{
+  text-align: center;
+  position: relative;
 }
-
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
 }
 
 .balance-display-task {
@@ -29,7 +29,6 @@ body {
 }
 
 .coin-icon {
-  width: 60px;
   height: auto;
   
 }
@@ -43,24 +42,16 @@ body {
 .gold {
   display: flex;
   align-items: center;
-  padding: 10 10 10 10;
-}
-
-.gold-text {
-  font-size: 1.5rem;
-  color: gold;
-  margin-right: -20px;
 }
 
 .open-btn {
   background: transparent;
   border: none;
-  width: 70px;
   height: auto;
+  margin-left: -15px;
 }
 
 .open-icon {
-  width: 70px;
   height: auto;
 }
 
@@ -88,12 +79,13 @@ body {
 .tasks {
   display: grid;
   gap: 20px;
+  height: auto;
 }
 
 .task-item {
   display: grid;
   align-items: center;
-  grid-template-columns: 70px auto auto 70px;
+  grid-template-columns: 70px auto auto ;
   padding: 10px 20px;
   border: 4px solid #BCF8FA;
   border-radius: 10px;
@@ -109,7 +101,7 @@ body {
 }
 
 .task-text {
-  font-size: 1.2rem;
+  
   margin-left: 20px;
   grid-row: 1;
   grid-column: 2;
@@ -145,28 +137,45 @@ body {
   height: auto;
 }
 
-@media (max-width: 400px) {
+@media (min-width: 320px) and (max-width: 767px) {
   .balance-amount {
     font-size: 2rem;
   }
 
-  .gold-text {
-    font-size: 1rem;
+  .gold span {
+    font-size: 20px;
   }
 
-  .open-icon {
-    width: 60px;
+  .tasks{
+
+    margin: 20px;
   }
 
+  .gold img{
+    width: 40px;
+  }
+.balance-display-task img{
+  width: 80px !important  ;
+}
+
+.balance-display-task span{
+  font-size: 50px !important  ;
+}
+.open-btn{
+  width: 30px;
+}
+.open-btn img{
+  width: 50px;
+}
   .tab {
     font-size: 2.5vw;
   }
 
   .task-text {
-    font-size: 1rem;
+    font-size: 24px;
   }
 
   .task-reward span {
-    font-size: 1rem;
+    font-size: 26px;
   }
 }
