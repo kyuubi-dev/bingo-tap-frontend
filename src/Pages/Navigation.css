@@ -10,12 +10,10 @@
   
   .bg-image {
     position:absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     background-image: url('/public/bg.png');
-    background-size: 130%;
+    background-size: 10%;
     background-position: center;
     z-index: -1;
   }
@@ -52,12 +50,22 @@
       width: 18vw;
       height: 18vw;
     }
+    .bg-image {
+      background-size: 130% !important;
+      height: 100%; 
+    }
   }
   
   @media (max-width: 480px) {
     .round-button {
       width: 20vw;
       height: 20vw;
+    }
+    .bg-image {
+      background-size: 130%; 
+      height: 100%;
+      top: -25px;
+      bottom: 50px;
     }
   }
   
