@@ -1,9 +1,7 @@
 * {
     -webkit-tap-highlight-color: transparent;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-body{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
 }
 .main-button,
 .round-button {
@@ -17,7 +15,6 @@ body{
 }
 
 .Tap {
-    position: relative;
     width: 100%;
     height: 100vh;
 }
@@ -35,49 +32,54 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 2vh;
-}
-
-.coin-icon {
-    width: 10vw;
+    padding-top: 25px;
 }
 
 .balance-amount {
-    font-size: 10vw;
     display: flex;
     align-items: center;
 }
 
-.tap-gold{
+.tap-gold {
     display: flex;
     align-items: center;
-    margin-left: 60px;
+    margin-left:100px;
+    
 }
-
+.gold-text{
+    font-size: 8vw !important;
+}
+.robot-img {
+    width: 80vw; /* Adjusted for larger size */
+    height: auto; /* Automatic height */
+}
 .main-button {
-    background: transparent; /* Змінив кольор на прозорий */
+    background: transparent; /* Transparent color */
     border: none;
     transition: transform 0.2s ease;
     margin-bottom: 2vh;
-    overflow: hidden; /* Додано для забезпечення коректного позиціонування тексту */
+    overflow: hidden; /* Ensures correct positioning of text */
+    position: relative; /* For absolute positioning */
 }
 
 .main-button img {
-    width: 70vw;
+    width: 100%; /* Completely fills the parent container */
     height: auto;
 }
 
 .energy-display {
+    margin-top: -50px;
     position: relative;
     align-items: center;
     display: flex;
+    margin-left: 60px;
     font-size: 4vw;
 }
-.power-img{
+.power-img {
     width: 80px;
     height: auto;
-    margin-right: -20px;  
-    margin-left: 20px;  
+    margin-right: -20px;
+    margin-left: 20px;
 }
 .energy-container {
     width: 100%;
@@ -85,6 +87,7 @@ body{
     border: 2px solid #FFFFFF;
     border-radius: 5px;
     overflow: hidden;
+    margin-top: -20px;
 }
 
 .energy-bar {
@@ -101,15 +104,19 @@ body{
 
 @media (max-width: 768px) {
     .coin-icon {
-        width: 12vw;
+        width: 50vw; /* Adjusted for smaller screens */
     }
 
     .balance-amount {
+        font-size: 50vw; /* Adjusted for smaller screens */
+    }
+
+    .gold-text{
         font-size: 7vw;
     }
 
     .main-button img {
-        width: 45vw;
+        width: 60vw; /* Adjusted for smaller screens */
     }
 
     .energy-display {
@@ -118,71 +125,71 @@ body{
 }
 
 @media (max-width: 480px) {
-    .coin-icon {
-        width: 15vw;
+    .balance-display img {
+        width: 30vw;
     }
 
-    .balance-amount {
-        font-size: 8vw;
+    .balance-amount  {
+        font-size: 15vw !important; /* Adjusted for very small screens */
     }
 
     .main-button img {
-        width: 60vw;
+        width: 80vw; /* Adjusted for very small screens */
     }
 
     .energy-display {
         font-size: 6vw;
     }
 }
-@media (min-width: 1024px) {
-    .coin-icon {
-        width: 8vw;
+@media (height: 800) {
+    .balance-display img {
+        width: 30vw;
     }
 
-    .balance-amount {
-        font-size: 7vw;
+    .balance-amount  {
+        font-size: 15vw !important; /* Adjusted for very small screens */
     }
 
     .main-button img {
-        width: 18vw;
-        
+        width: 80vw !important; /* Adjusted for very small screens */
+    }
+
+    .energy-display {
+        font-size: 6vw;
+    }
+}
+
+@media (min-width: 1024px) {
+    .coin-icon {
+        width: 20vw; /* Adjusted for larger screens */
+    }
+
+    .gold-text{
+        font-size: 5vw !;
+    }
+
+    .balance-amount {
+        font-size: 25vw; /* Adjusted for larger screens */
+    }
+
+    .main-button img {
+        width: 36vw; /* Adjusted for larger screens */
     }
 
     .energy-display {
         font-size: 2vw;
         margin-bottom: 10vw;
     }
-    
 }
+
 @keyframes robot-animation {
     0% {
-      transform: scale(1);
+        transform: scale(1);
     }
     50% {
-      transform: scale(1.2);
+        transform: scale(1.2);
     }
     100% {
-      transform: scale(1);
-    }
-  }
-  .plus-one {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #fff;
-    font-size: 2rem;
-    opacity: 0;
-    animation: fadeInOut 1s linear forwards;
-}
-  @keyframes fadeInOut {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
+        transform: scale(1);
     }
 }
