@@ -14,8 +14,8 @@ body {
 .Team {
   position: relative;
   width: 100%;
-  height: calc(100vh - 14vh); /* Limit height from bottom by 15vh */
-  max-height: calc(100vh - 14vh) ; /* Ensure it doesn't exceed this limit */
+  height: calc(100vh - 16vh); /* Limit height from bottom by 15vh */
+  max-height: calc(100vh - 16vh) ; /* Ensure it doesn't exceed this limit */
   display: grid;
   grid-auto-rows:48px 10px 120px;
   grid-column: auto;
@@ -26,7 +26,7 @@ body {
 .Team::after {
   content: '';
   position: fixed;
-  bottom: 12vh; /* Розташування на 15vh від нижньої частини екрана */
+  bottom: 14vh; /* Розташування на 15vh від нижньої частини екрана */
   left: 0;
   width: 100%;
   height: 8vh; /* Висота розмиття */

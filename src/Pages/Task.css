@@ -15,15 +15,15 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 14vh); /* Limit height from bottom by 15vh */
-  max-height: calc(100vh - 164h) ;
+  height: calc(100vh - 16vh); /* Limit height from bottom by 15vh */
+  max-height: calc(100vh - 16vh) ;
   overflow-y: auto;
 }
 
 .Task::after {
   content: '';
   position: fixed;
-  bottom: 12vh; /* Розташування на 15vh від нижньої частини екрана */
+  bottom: 14vh; /* Розташування на 15vh від нижньої частини екрана */
   left: 0;
   width: 100%;
   height: 8vh; /* Висота розмиття */
@@ -78,7 +78,6 @@ body {
 .nav {
   display: flex;
   justify-content: center;
-  font-size: 990px;
 }
 
 .tab {
@@ -104,7 +103,7 @@ body {
 .task-item {
   display: grid;
   align-items: center;
-  grid-template-columns: auto auto auto ;
+  grid-template-columns: 20vw 45vw auto ;
   padding: 10px 20px;
   border: 4px solid #BCF8FA;
   border-radius: 10px;
@@ -133,7 +132,7 @@ body {
 }
 
 .reward-icon {
-  width: 40px;
+  width: 10vw;
   height: auto;
 }
 
@@ -143,28 +142,27 @@ body {
   grid-row: 1 / span 2;
   background: transparent;
   border: none;
-  width: 70px;
+  width: 20vw;
   height: auto;
 }
 
 .task-item.open-icon {
-  width: 70px;
+  width: 100%;
   height: auto;
 }
 
-@media (min-width: 320px) and (max-width: 767px) {
   .gold span {
     font-size: 20px;
   }
   .task-icon{
-    width: 50%;
+    width: 100%;
   }
   .tasks{
     margin: 5%;
   }
 
   .gold img{
-    width: 40px;
+    width: 10%;
   }
 .balance-display-task img{
   width: 80px !important  ;
@@ -174,20 +172,19 @@ body {
   font-size: 14vw !important;
 }
 .open-btn{
-  width: 30px;
+  width: 20%;
 }
 .open-btn img{
-  width: 60px;
+  width: 80%;
 }
   .tab {
-    font-size: 20px;
+    font-size: 6vw;
   }
 
   .task-text {
-    font-size: 18px ;
+    font-size: 6vw ;
   }
 
   .task-reward span {
-    font-size: 18px;
+    font-size: 6vw;
   }
-}

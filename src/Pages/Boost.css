@@ -14,8 +14,8 @@ body {
 .Boost {
     position: relative;
     width: 100%;
-    height: calc(100vh - 16vh); /* Обмеження висоти на 14vh знизу */
-    max-height: calc(100vh - 16vh); /* Переконатися, що не перевищує цього ліміту */
+    height: calc(100vh - 18vh); /* Обмеження висоти на 14vh знизу */
+    max-height: calc(100vh - 18vh); /* Переконатися, що не перевищує цього ліміту */
     display: grid;
     grid-auto-rows: 48px 30px 10%;
     gap: 30px;
@@ -26,7 +26,7 @@ body {
 .Boost::after {
     content: '';
     position: fixed;
-    bottom: 12vh; /* Розташування на 12vh від нижньої частини екрана */
+    bottom: 14vh; /* Розташування на 12vh від нижньої частини екрана */
     left: 0;
     width: 100%;
     height: 8vh; /* Висота розмиття */
@@ -137,8 +137,7 @@ body {
         font-size: 4vw;
     }
     .d-boost-text{
-        font-size: 4vw;
-        
+        font-size: 6vw; 
     }
     .dayli-boost-text {
         font-size: 8vw;
@@ -163,31 +162,3 @@ body {
     .price-icon {
         width: 30%;
     }
-
-
-/* Адаптивні стилі для екрану від 768px до 1023px */
-@media screen and (min-width: 768px) and (max-width: 1023px) {
-    .boost-header {
-        font-size: 48px;
-    }
-
-    .daily-boost-h {
-        font-size: 40px;
-    }
-
-    .dayli-boost-text {
-        font-size: 48px;
-    }
-
-    .boost-text {
-        font-size: 24px;
-    }
-
-    .boost-price {
-        font-size: 32px;
-    }
-
-    .boost-level {
-        font-size: 24px;
-    }
-}
