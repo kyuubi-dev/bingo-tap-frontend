@@ -11,7 +11,7 @@
   
   .nav-btns {
     position: fixed;
-    bottom: 2vh;
+    bottom: 4vh;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
