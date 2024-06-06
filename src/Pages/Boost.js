@@ -1,12 +1,12 @@
 import './Boost.css';
 import React from 'react';
-
+import './TextStyle.css';
 
 const Boost = () => {
     const DailyBoostItem = ({ text, reward, image}) => (
         <div className="daily-boost-item">
           <img src={image} alt="icon" className="boost-icon" />
-          <div className="task-text blue-style" >{text}</div>
+          <div className="d-boost-text blue-style" >{text}</div>
           <div className="daily-boost-h">
             <span className='gold-style'>{reward}/3</span>
           </div>
@@ -27,11 +27,10 @@ const Boost = () => {
       );
   return(
     <h1 className='Boost'>
-        <div className='bg-image' />
-        <header className="team-header">
+        <header className="header">
         <div className="balance-display-task">
           <img src="/coin.png" alt="Coin" className="coin-icon" />
-          <span className="balance-amount">10 000</span>
+          <span className="balance-amount blue-style">10 000</span>
         </div>
        
       </header>

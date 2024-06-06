@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Tap from './Pages/Tap';
+import BgImage from './Pages/BgImage';
 import Team from './Pages/Team';
 import Navigation from './Pages/Navigation';
 import Task from './Pages/Task';
@@ -11,6 +12,7 @@ function App() {
 
   return (
     <div className="App">
+      <BgImage/>
       <BrowserRouter>
         <Navigation />
         <Routes>

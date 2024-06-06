@@ -1,6 +1,49 @@
-.boost-header {
-    font-size: 6vw;
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700&display=swap');
+
+body {
+    font-family: 'Big Shoulders Display', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #000;
+    color: #BCF8FA;
 }
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.Boost {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 16vh); /* Обмеження висоти на 14vh знизу */
+    max-height: calc(100vh - 16vh); /* Переконатися, що не перевищує цього ліміту */
+    display: grid;
+    grid-auto-rows: 48px 30px 10%;
+    gap: 30px;
+    text-align: center;
+    overflow-y: auto; /* Дозволити скролінг при переповненні контенту */
+}
+
+.Boost::after {
+    content: '';
+    position: fixed;
+    bottom: 12vh; /* Розташування на 12vh від нижньої частини екрана */
+    left: 0;
+    width: 100%;
+    height: 8vh; /* Висота розмиття */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+    pointer-events: none; /* Забезпечити, щоб елемент не впливав на взаємодію з іншими елементами */
+}
+
+.Boost::before {
+    content: '';
+    position: fixed;
+    bottom: 10vh; /* Розташування на 2vh вище, ніж нижнє розмиття */
+    left: 0;
+    width: 100%;
+    height: 4vh; /* Висота розмиття */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+    pointer-events: none; /* Забезпечити, щоб елемент не впливав на взаємодію з іншими елементами */
+}   
 
 .daily-boosts {
     display: flex;
@@ -20,21 +63,20 @@
     padding-right: 10px;
     margin: 10px 5px 10px 5px;
     text-align: center;
+    height: auto;
+    width: auto;
 }
 
 .boost-icon {
     width: 50px;
     height: auto;
-    margin-right: -30px;
-    margin-right: 5;
     grid-row: 1 / span 2;
     grid-column: 1;
 }
 
 .daily-boost-h {
     padding-left: 10px;
-    font-size: 5vw;
-    }
+}
 
 .dayli-boost-text {
     font-size: 6vw;
@@ -43,13 +85,14 @@
     margin: 10px;
     display: flex;
     align-items: center;
-    }
+}
 
 .boost-item {
     display: grid;
     width: 50%;
     align-items: center;
-    grid-template-columns: 40px 80px auto;
+    grid-column: 1;
+    grid-template-columns: auto auto     auto;
     grid-template-rows: 1fr auto;
     border: 4px solid #BCF8FA;
     border-radius: 10px;
@@ -59,12 +102,14 @@
     padding: 2px;
     margin: 5px;
 }
-
+.boost-item .boost-icon{
+    width: 80%;
+}
 .boost-text {
     font-size: 3vw;
     grid-column: 2;
     grid-row: 1 / span 2;
-    }
+}
 
 .boost-price {
     align-items: center;
@@ -72,8 +117,7 @@
     display: flex;
     grid-column: 3;
     grid-row: 1;
-    font-size: 4vw;
-   }
+}
 
 .boost-level {
     grid-column: 3;
@@ -81,35 +125,69 @@
     align-items: center;
     text-align: center;
     font-size: 4vw;
-    }
+}
 
 .price-icon {
     width: 30px;
     height: auto;
 }
 
-@media screen and (min-width: 1024px) {
-    .boost-header {
-        font-size: 48px; /* Adjust font size as needed */
-    }
 
     .daily-boost-h {
-        font-size: 40px; /* Adjust font size as needed */
+        font-size: 4vw;
     }
-
+    .d-boost-text{
+        font-size: 4vw;
+        
+    }
     .dayli-boost-text {
-        font-size: 48px; /* Adjust font size as needed */
+        font-size: 8vw;
     }
 
     .boost-text {
-        font-size: 24px; /* Adjust font size as needed */
+        font-size: 4vw;
     }
 
     .boost-price {
-        font-size: 32px; /* Adjust font size as needed */
+        font-size: 5vw;
     }
 
     .boost-level {
-        font-size: 24px; /* Adjust font size as needed */
+        font-size: 4vw;
+    }
+
+    .boost-icon {
+        width: 30%;
+    }
+
+    .price-icon {
+        width: 30%;
+    }
+
+
+/* Адаптивні стилі для екрану від 768px до 1023px */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .boost-header {
+        font-size: 48px;
+    }
+
+    .daily-boost-h {
+        font-size: 40px;
+    }
+
+    .dayli-boost-text {
+        font-size: 48px;
+    }
+
+    .boost-text {
+        font-size: 24px;
+    }
+
+    .boost-price {
+        font-size: 32px;
+    }
+
+    .boost-level {
+        font-size: 24px;
     }
 }
