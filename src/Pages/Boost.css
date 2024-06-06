@@ -14,8 +14,8 @@ body {
 .Boost {
     position: relative;
     width: 100%;
-    height: calc(100vh - 18vh); /* Обмеження висоти на 14vh знизу */
-    max-height: calc(100vh - 18vh); /* Переконатися, що не перевищує цього ліміту */
+    height: calc(100vh - 22vh); /* Обмеження висоти на 14vh знизу */
+    max-height: calc(100vh - 22vh); /* Переконатися, що не перевищує цього ліміту */
     display: grid;
     grid-auto-rows: 48px 30px 10%;
     gap: 30px;
@@ -26,7 +26,7 @@ body {
 .Boost::after {
     content: '';
     position: fixed;
-    bottom: 14vh; /* Розташування на 12vh від нижньої частини екрана */
+    bottom: 18vh; /* Розташування на 12vh від нижньої частини екрана */
     left: 0;
     width: 100%;
     height: 8vh; /* Висота розмиття */
@@ -37,7 +37,7 @@ body {
 .Boost::before {
     content: '';
     position: fixed;
-    bottom: 10vh; /* Розташування на 2vh вище, ніж нижнє розмиття */
+    bottom: 14vh; /* Розташування на 2vh вище, ніж нижнє розмиття */
     left: 0;
     width: 100%;
     height: 4vh; /* Висота розмиття */

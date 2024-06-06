@@ -15,15 +15,15 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 16vh); /* Limit height from bottom by 15vh */
-  max-height: calc(100vh - 16vh) ;
+  height: calc(100vh - 18vh); /* Limit height from bottom by 15vh */
+  max-height: calc(100vh - 18vh) ;
   overflow-y: auto;
 }
 
 .Task::after {
   content: '';
   position: fixed;
-  bottom: 14vh; /* Розташування на 15vh від нижньої частини екрана */
+  bottom: 16vh; /* Розташування на 15vh від нижньої частини екрана */
   left: 0;
   width: 100%;
   height: 8vh; /* Висота розмиття */
@@ -33,7 +33,7 @@ body {
 .Task::before {
   content: '';
   position: fixed;
-  bottom: 10vh; /* Розташування на 2vh вище, ніж нижнє розмиття */
+  bottom: 12vh; /* Розташування на 2vh вище, ніж нижнє розмиття */
   left: 0;
   width: 100%;
   height: 4vh; /* Висота розмиття */

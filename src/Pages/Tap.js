@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import './Tap.css';
 
 function Tap() {
@@ -10,49 +10,58 @@ function Tap() {
     if (energy >= 1) {
       setEnergy((prevEnergy) => prevEnergy - 1);
       setUserBalance((prevBalance) => prevBalance + 1);
+      
+      // Adding vibration
+      if (navigator.vibrate) {
+        navigator.vibrate(50); // Vibrate for 50ms
+      }
 
       const { clientX, clientY } = event;
-      const plusOne = document.createElement('span');
-      plusOne.className = 'plus-one blue-style';
-      plusOne.textContent = '+1';
-      plusOne.style.left = `${clientX}px`;
-      plusOne.style.top = `${clientY}px`;
-      document.body.appendChild(plusOne);
-      requestAnimationFrame(() => {
-        plusOne.style.transform = 'translate(-50%, -55%)';
-        plusOne.style.opacity = '0';
-      });
-      setTimeout(() => {
-        plusOne.remove();
-      }, 2500);
+      animatePlusOne(clientX, clientY, '+1');
     }
   };
 
   const handleTouch = (event) => {
     const touches = event.touches;
-    const numTouches = Math.min(touches.length, 3); // Limit to 3 touches
+    const numTouches = Math.min(touches.length, 4); // Limit to 4 touches
 
     if (numTouches > 1 && energy >= numTouches) {
       setEnergy((prevEnergy) => prevEnergy - numTouches);
       setUserBalance((prevBalance) => prevBalance + numTouches);
 
-      Array.from(touches).slice(0, numTouches).forEach((touch) => { // Handle up to 3 touches
+      // Adding vibration
+      if (navigator.vibrate) {
+        navigator.vibrate(50); // Vibrate for 50ms
+      }
+
+      Array.from(touches).slice(0, numTouches).forEach((touch) => {
         const { clientX, clientY } = touch;
-        const plusOne = document.createElement('span');
-        plusOne.className = 'plus-one blue-style';
-        plusOne.textContent = `+${numTouches}`;
-        plusOne.style.left = `${clientX}px`;
-        plusOne.style.top = `${clientY}px`;
-        document.body.appendChild(plusOne);
-        requestAnimationFrame(() => {
-          plusOne.style.transform = 'translate(-50%, -55%)';
-          plusOne.style.opacity = '0';
-        });
-        setTimeout(() => {
-          plusOne.remove();
-        }, 2500);
+        animatePlusOne(clientX, clientY, `+${numTouches}`);
       });
     }
+  };
+
+  const animatePlusOne = (startX, startY, text) => {
+    const coinElement = document.querySelector('.balance-display img');
+    const coinRect = coinElement.getBoundingClientRect();
+    const endX = coinRect.left + coinRect.width / 2;
+    const endY = coinRect.top + coinRect.height / 2;
+
+    const plusOne = document.createElement('span');
+    plusOne.className = 'plus-one blue-style';
+    plusOne.textContent = text;
+    plusOne.style.left = `${startX}px`;
+    plusOne.style.top = `${startY}px`;
+    document.body.appendChild(plusOne);
+
+    requestAnimationFrame(() => {
+      plusOne.style.transform = `translate(${endX - startX}px, ${endY - startY}px)`;
+      plusOne.style.opacity = '0';
+    });
+
+    setTimeout(() => {
+      plusOne.remove();
+    }, 2000);
   };
 
   const energyBarWidth = (energy / maxEnergy) * 100 + '%';
@@ -76,7 +85,7 @@ function Tap() {
           onClick={handleClick}
           onTouchStart={handleTouch}
         >
-          <img src="/btns/robot.png" alt="Start" className='robot-img'/>
+          <img src="/btns/robotv2.png" alt="Start" className='robot-img'/>
         </button>
         <div className="energy-display">  
           <img src='./boost/power.png' className='power-img'/>
