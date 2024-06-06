@@ -9,13 +9,16 @@ import Boost from './Pages/Boost';
 import Stat from './Pages/Stat';
 function App() {
   const [userBalance, setUserBalance] = useState(0);
-
+  document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+});
   return (
     <div className="App">
       <BgImage/>
       <BrowserRouter>
         <Navigation />
         <Routes>
+          
           <Route path="/" element={<Tap setUserBalance={setUserBalance} />} />
           <Route path="/team" element={<Team />} />
           <Route path="/task" element={<Task userBalance={userBalance} />} />

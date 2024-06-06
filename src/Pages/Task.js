@@ -32,6 +32,9 @@ const Task = ({ userBalance }) => {
             <InviteFriendItem text="INVITE 3 FRIENDS" reward="50 000" image='./tasks/people1.png' />
             <InviteFriendItem text="INVITE 10 FRIENDS" reward="100 000" image='./tasks/people2.png'/>
             <InviteFriendItem text="INVITE 25 FRIENDS" reward="500 000" image='./tasks/people3.png'/>
+            <InviteFriendItem text="INVITE 100 FRIENDS" reward="1 000 000" image='./tasks/people3.png' />
+            <InviteFriendItem text="INVITE 1000 FRIENDS" reward="5 000 000" image='./tasks/people3.png'/>
+            <InviteFriendItem text="INVITE 10 000 FRIENDS" reward="10 000 000" image='./tasks/people3.png'/>
           </div>
         );
       default:

@@ -9,40 +9,43 @@ body {
   font-family: 'Big Shoulders Display', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #000;
   color: #BCF8FA;
-  }
+}
 
 .Team {
   position: relative;
   width: 100%;
-  height: calc(100vh - 16vh); /* Limit height from bottom by 15vh */
-  max-height: calc(100vh - 16vh) ; /* Ensure it doesn't exceed this limit */
+  height: calc(100vh - 18vh);
+  max-height: calc(100vh - 18vh);
   display: grid;
-  grid-auto-rows:48px 10px 120px;
+  grid-auto-rows: 48px 10px 120px;
   grid-column: auto;
   gap: 30px;
   text-align: center;
   overflow-y: auto;
 }
+
 .Team::after {
   content: '';
   position: fixed;
-  bottom: 14vh; /* Розташування на 15vh від нижньої частини екрана */
+  bottom: 16vh;
   left: 0;
   width: 100%;
-  height: 8vh; /* Висота розмиття */
+  height: 8vh;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
-  pointer-events: none; /* Забезпечити, щоб елемент не впливав на взаємодію з іншими елементами */
+  pointer-events: none;
 }
+
 .Team::before {
   content: '';
   position: fixed;
-  bottom: 10vh; /* Розташування на 2vh вище, ніж нижнє розмиття */
+  bottom: 12vh;
   left: 0;
   width: 100%;
-  height: 4vh; /* Висота розмиття */
+  height: 4vh;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
-  pointer-events: none; /* Забезпечити, щоб елемент не впливав на взаємодію з іншими елементами */
+  pointer-events: none;
 }
+
 .Header {
   display: flex;
   flex-direction: column;
@@ -50,8 +53,8 @@ body {
   justify-content: center;
   grid-row: 1;
   margin-top: 50px;
+  font-size: 15vw; /* Використання vw для тексту */
 }
-
 
 .Referral {
   align-items: center;
@@ -61,11 +64,12 @@ body {
 .ref-text {
   padding-left: 10%;
   display: flex;
+  font-size: 15vw; /* Використання vw для тексту */
 }
 
 .referral-total {
-
   grid-row: 2;
+  font-size: 10vw; /* Використання vw для тексту */
 }
 
 .Invite-link {
@@ -73,20 +77,19 @@ body {
   display: grid;
   grid-row: 3;
   grid-template-rows: 20px 20px;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto auto;
   gap: 20px;
   border-radius: 10px;
   border: 4px solid #BCF8FA;
   background: rgba(0, 0, 0, 0.5);
-  font-size: 12px;
   box-shadow: 0 0 20px #0ff;
   text-align: left;
-  width: calc(100% - 40px); /* ширина вікна з відступами по 20px */
-  margin-left: 20px; /* відступи по 20px від кожного краю */
+  width: calc(100% - 40px);
+  margin-left: 20px;
 }
 
 .invite-text {
-  font-size: 10px;
+  font-size: 6vw; /* Використання vw для тексту */
   grid-row: 1;
   margin-top: 10px;
   grid-column: 1;
@@ -94,7 +97,7 @@ body {
 }
 
 .invite-url {
-  font-size: 8px;
+  font-size: 5vw; /* Використання vw для тексту */
   color: #15f7ff;
   text-decoration: none;
   grid-row: 2;
@@ -102,19 +105,22 @@ body {
   grid-column: 1 / span 2;
   margin-left: 10px;
 }
-
+.coin-icon{
+  width: 30% !important;
+  height: auto;
+}
 .copy-button {
   background: none;
   border: 2px solid #BCF8FA;
   border-radius: 10px;
-  font-size: 7px;
+  font-size: 5vw; /* Використання vw для тексту */
   grid-row: 1 / span 2;
-  width: 75px;
-  height: 20px;
+  width: 40%;
+  height: 50%;
   color: #BCF8FA;
   cursor: pointer;
   justify-self: end;
-  margin-right: 30px; /* Відсотковий відступ */
+  margin-right: 5%;
   grid-column: 2 / span 1;
   align-items: center;
   margin-top: 10px;
@@ -135,6 +141,7 @@ body {
 .team-header {
   margin-left: 20px;
   display: flex;
+  font-size: 2.5vw; /* Використання vw для тексту */
 }
 
 .team-member {
@@ -156,24 +163,26 @@ body {
 .stat-inf {
   grid-row: 2;
   display: flex;
+  font-size: 1.5vw; /* Використання vw для тексту */
 }
 
 .Rank {
-  display: flex; /* Додано */
-  align-items: center; /* Додано */
+  display: flex;
+  align-items: center;
   grid-column: 1;
   grid-row: 2;
   margin-left: 10px;
 }
 
 .rank-img {
+  width: 30%; /* Використання відсотків для розміру зображень */
   height: auto;
   grid-row: 2;
   grid-column: 2;
 }
 
 .name {
-  font-size: 12px;
+  font-size: 6vw; /* Використання vw для тексту */
   font-weight: bold;
   margin-left: 5%;
   margin-top: 5%;
@@ -182,14 +191,14 @@ body {
 }
 
 .rank-text {
-  font-size: 12px;
+  font-size: 6vw; /* Використання vw для тексту */
   align-items: center;
   grid-column: 2;
   grid-row: 2;
 }
 
 .Point {
-  font-size: 12px;
+  font-size: 6vw; /* Використання vw для тексту */
   grid-row: 2;
   align-items: center;
   display: flex;
@@ -197,101 +206,10 @@ body {
 }
 
 .bonus {
-  grid-row: 1 / span 2; /* Об'єднав рядки та вказав спан */
+  grid-row: 1 / span 2;
   grid-column: 3;
-  justify-self: end; /* Вирівняти по правому краю */
+  justify-self: end;
   margin-right: 15px;
-  font-size: 12px;
+  font-size: 8vw; /* Використання vw для тексту */
   align-items: center;
-}
-
-@media (min-width: 320px) and (max-width: 767px) {
-  .Header{
-    font-size: 50px;
-  }
-  .referral-total {
-    font-size: 30px;
-  }
-  .Invite-link {
-    font-size: 12px;
-  }
-  .invite-text {
-    font-size: 25px;
-  }
-  .invite-url {
-    font-size: 20px;
-    display: flex;
-  }
-  .copy-button {
-    font-size: 18px;
-    width: 70px;
-    height: 25px;
-  }
-  .team-header {
-    font-size: 16px;
-  }
-  .name {
-    font-size: 28px;
-  }
-  .rank-text {
-    font-size: 30px;
-  }
-  .Rank img{
-    width: 30%;
-  }
-  .Point {
-    font-size: 30px;
-  }
-  .bonus {
-    font-size: 30px;
-  }
-  
-  .coin-icon{
-    width: 30% !important;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .referral-count {
-    font-size: 48px;
-  }
-  .ref-text {
-    font-size: 48px;
-  }
-  .referral-total {
-    font-size: 32px;
-  }
-  .Invite-link {
-    font-size: 24px;
-  }
-  .invite-text {
-    font-size: 20px;
-  }
-  .invite-url {
-    font-size: 16px;
-  }
-  .copy-button {
-    font-size: 14px;
-    width: 110px;
-    height: 40px;
-  }
-  .team-header {
-    font-size: 32px;
-  }
-  .name {
-    font-size: 24px;
-  }
-  .rank-text {
-    font-size: 36px !important;
-  }
-  .Point {
-    font-size: 16px;
-  }
-  .bonus {
-    font-size: 24px;
-  }
-  .bg-image {
-    width: 100%;
-    height: auto;
-  }
 }
