@@ -26,6 +26,18 @@ function Team() {
         leagua="Gold"
         bonus="50 000"
         />
+         <TeamItem 
+        name="George Vladi"
+        balance="10 000"
+        leagua="Gold"
+        bonus="50 000"
+        />
+         <TeamItem 
+        name="George Vladi"
+        balance="10 000"
+        leagua="Gold"
+        bonus="50 000"
+        />
       </div>
       </div>
     </div>

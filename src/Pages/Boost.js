@@ -6,7 +6,7 @@ const Boost = () => {
     const DailyBoostItem = ({ text, reward, image}) => (
         <div className="daily-boost-item">
           <img src={image} alt="icon" className="boost-icon" />
-          <div className="task-text blue-style" >{text}</div>
+          <div className="d-boost-text blue-style" >{text}</div>
           <div className="daily-boost-h">
             <span className='gold-style'>{reward}/3</span>
           </div>

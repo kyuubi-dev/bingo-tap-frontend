@@ -6,11 +6,12 @@
     bottom: 0;
     height: 100%;
     z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
   }
   
   .nav-btns {
     position: fixed;
-    bottom: 5vh;
+    bottom: 2vh;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
