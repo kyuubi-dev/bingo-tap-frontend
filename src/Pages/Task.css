@@ -62,6 +62,7 @@ body {
 .gold {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .open-btn {
