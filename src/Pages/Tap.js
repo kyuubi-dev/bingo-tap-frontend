@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Tap.css';
+import BgImage from './BgImage'; // Import the BgImage component
 
 function Tap() {
   const [userBalance, setUserBalance] = useState(0); 
   const [energy, setEnergy] = useState(1500); 
   const maxEnergy = 1500;
+
+  useEffect(() => {
+    // Prevent touch scrolling
+    const preventDefault = (e) => e.preventDefault();
+    document.addEventListener('touchmove', preventDefault, { passive: false });
+
+    // Clean up the event listener on component unmount
+    return () => {
+      document.removeEventListener('touchmove', preventDefault);
+    };
+  }, []);
 
   const handleClick = (event) => {
     if (energy >= 1) {
@@ -13,7 +25,7 @@ function Tap() {
       
       // Adding vibration
       if (navigator.vibrate) {
-        navigator.vibrate(50); // Vibrate for 50ms
+        navigator.vibrate(10); // Vibrate for 10ms
       }
 
       const { clientX, clientY } = event;
@@ -23,20 +35,20 @@ function Tap() {
 
   const handleTouch = (event) => {
     const touches = event.touches;
-    const numTouches = Math.min(touches.length, 4); // Limit to 4 touches
+    const numTouches = touches.length;
 
-    if (numTouches > 1 && energy >= numTouches) {
+    if (energy >= numTouches) {
       setEnergy((prevEnergy) => prevEnergy - numTouches);
       setUserBalance((prevBalance) => prevBalance + numTouches);
 
       // Adding vibration
       if (navigator.vibrate) {
-        navigator.vibrate(50); // Vibrate for 50ms
+        navigator.vibrate(10); // Vibrate for 10ms
       }
 
-      Array.from(touches).slice(0, numTouches).forEach((touch) => {
+      Array.from(touches).forEach((touch) => {
         const { clientX, clientY } = touch;
-        animatePlusOne(clientX, clientY, `+${numTouches}`);
+        animatePlusOne(clientX, clientY, '+1');
       });
     }
   };
@@ -69,6 +81,10 @@ function Tap() {
   return (
     <div className="Tap">
       <div className="Tap-content">
+      <div className='lightnings'>
+        <img src='/16.png' className='lightning right' alt="Lightning Right" />
+        <img src='/17.png' className='lightning left' alt="Lightning Left" />
+      </div>
         <div className="balance-display">
           <img src="/coin.png" alt="Coin" className="coin-icon " />
           <span className="balance-amount blue-style">{userBalance}</span>
