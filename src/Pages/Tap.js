@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Tap.css';
 import BgImage from './BgImage'; // Import the BgImage component
 
 function Tap() {
-  const [userBalance, setUserBalance] = useState(0); 
-  const [energy, setEnergy] = useState(1500); 
+  const [userBalance, setUserBalance] = useState(0);
+  const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
+  const lastTouchTimeRef = useRef(0);
 
   useEffect(() => {
     // Prevent touch scrolling
@@ -18,23 +19,27 @@ function Tap() {
     };
   }, []);
 
-  const handleTouch = (event) => {
-    event.preventDefault(); // Prevent default behavior for touch and click
+  const handleTouchStart = (event) => {
+    const currentTime = Date.now();
+    const timeSinceLastTouch = currentTime - lastTouchTimeRef.current;
 
-    const isTouchEvent = event.type === 'touchstart';
-    const touches = isTouchEvent ? event.touches : [{ clientX: event.clientX, clientY: event.clientY }];
-    const numTouches = touches.length;
+    // Update last touch time
+    lastTouchTimeRef.current = currentTime;
 
-    if (energy >= numTouches) {
-      setEnergy((prevEnergy) => prevEnergy - numTouches);
-      setUserBalance((prevBalance) => prevBalance + numTouches);
+    // Debounce touches to avoid multiple counts
+    if (timeSinceLastTouch < 50) return; // 50ms debounce time
+
+    // Check if we have enough energy
+    if (energy > 0) {
+      setEnergy((prevEnergy) => prevEnergy - 1);
+      setUserBalance((prevBalance) => prevBalance + 1);
 
       // Adding vibration
       if (navigator.vibrate) {
-        navigator.vibrate(30); // Vibrate for 30ms
+        navigator.vibrate(10); // Vibrate for 10ms
       }
 
-      Array.from(touches).forEach((touch) => {
+      Array.from(event.touches).forEach((touch) => {
         const { clientX, clientY } = touch;
         animatePlusOne(clientX, clientY, '+1');
       });
@@ -86,17 +91,16 @@ function Tap() {
         </div>
         <button
           className="main-button"
-          onTouchStart={handleTouch}
-          onMouseDown={handleTouch}
+          onTouchStart={handleTouchStart}
         >
           <img src="/btns/robotv2.png" alt="Start" className='robot-img'/>
         </button>
-        <div className="energy-display">  
+        <div className="energy-display">
           <img src='./boost/power.png' className='power-img'/>
           <div className='blue-style'> {energy}/{maxEnergy}</div>
         </div>
         <div className="energy-container">
-          <div className="energy-bar" style={{ width: energyBarWidth }}></div> 
+          <div className="energy-bar" style={{ width: energyBarWidth }}></div>
         </div>
       </div>
     </div>
