@@ -39,7 +39,7 @@ const Boost = () => {
             <DailyBoostItem text="TAPING GURU" reward="3" image='/boost/fire.b.png' />
             <DailyBoostItem text="FULL TANK" reward="3"image="/boost/power.png" />
           </div>
-          <div className="dayli-boost-text gold-style">BOOSTERS:</div>
+          <div className="boosters-text gold-style">BOOSTERS:</div>
           <div className="boosts">
             <BoostItem text="MULTITAP" price="50 000" image='/boost/dow.png' level="1"/>
             <BoostItem text="ENERGY LIMIT" price="50 000" image="/boost/fire.p.png" level="1"/>

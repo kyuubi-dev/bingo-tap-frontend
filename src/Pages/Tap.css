@@ -1,200 +1,254 @@
-* {
+
+  .body {
+    background-color: black;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  html, body {
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    overflow-y: hidden; /* Prevent vertical scrolling */
+  }
+  body {
+    position: fixed; /* Prevent scrolling on mobile devices */
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Tap.css */
+  * {
     -webkit-tap-highlight-color: transparent;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    
-}
-.main-button,
-.round-button {
+  }
+  
+  .main-button,
+  .round-button {
     cursor: pointer;
     outline: none;
-}
-
-.main-button:active,
-.round-button:active {
+  }
+  
+  .main-button:active,
+  .round-button:active {
     transform: scale(0.95);
-}
-
-.Tap {
+  }
+  
+  .Tap {
     width: 100%;
     height: 100vh;
-}
-
-.Tap-content {
+  }
+  
+  .Tap-content {
     position: absolute;
     align-items: center;
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-}
-
-.balance-display {
+    z-index: 3; /* Ensure it is above the background but below the lightnings */
+  }
+  
+  .balance-display {
     display: flex;
     align-items: center;
     justify-content: center;
     padding-top: 25px;
-}
-
-.balance-amount {
+  }
+  
+  .balance-amount {
     display: flex;
     align-items: center;
-}
-
-.tap-gold {
+  }
+  
+  .tap-gold {
     display: flex;
     align-items: center;
-    margin-left:100px;
-    
-}
-.gold-text{
+    margin-left: 100px;
+  }
+  
+  .gold-text {
     font-size: 8vw !important;
-}
-.robot-img {
+  }
+  
+  .robot-img {
     width: 80vw; /* Adjusted for larger size */
     height: auto; /* Automatic height */
-}
-.main-button {
+  }
+  
+  .main-button {
     background: transparent; /* Transparent color */
     border: none;
     transition: transform 0.2s ease;
-    margin-bottom: 2vh;
+    margin-bottom: 5vh;
     overflow: hidden; /* Ensures correct positioning of text */
     position: relative; /* For absolute positioning */
-}
-
-.main-button img {
+  }
+  
+  .main-button img {
     width: 100%; /* Completely fills the parent container */
     height: auto;
-}
-
-.energy-display {
+  }
+  
+  .energy-display {
     margin-top: -50px;
     position: relative;
     align-items: center;
     display: flex;
     margin-left: 60px;
     font-size: 4vw;
-}
-.power-img {
+  }
+  
+  .power-img {
     width: 80px;
     height: auto;
     margin-right: -20px;
     margin-left: 20px;
-}
-.energy-container {
+  }
+  
+  .energy-container {
     width: 100%;
     height: 1vh;
     border: 2px solid #FFFFFF;
     border-radius: 5px;
     overflow: hidden;
     margin-top: -20px;
-}
-
-.energy-bar {
+  }
+  
+  .energy-bar {
     height: 100%;
     background-color: #15959F;
     width: 0;
     transition: width 0.2s ease;
-}
-
-.round-button img {
+  }
+  
+  .round-button img {
     width: 100%;
     border-radius: 50%;
-}
-    .rank-img{
-        width: 30%;
-      }
-@media (max-width: 768px) {
+  }
+  
+  .rank-img {
+    width: 30%;
+  }
+  
+  @media (max-width: 768px) {
     .balance-display img {
-        width: 50vw; /* Adjusted for smaller screens */
-        margin-left: -30px;
+      width: 50vw; /* Adjusted for smaller screens */
+      margin-left: -30px;
     }
-
+  
     .balance-amount {
-        font-size: 50vw; /* Adjusted for smaller screens */
-        padding-left: -10px;
+      font-size: 50vw; /* Adjusted for smaller screens */
+      padding-left: -10px;
     }
-
-    .gold-text{
-        font-size: 7vw;
+  
+    .gold-text {
+      font-size: 7vw;
     }
-
+  
     .main-button img {
-        width: 60vw; /* Adjusted for smaller screens */
+      width: 60vw; /* Adjusted for smaller screens */
     }
-
+  
     .energy-display {
-        font-size: 5vw;
+      font-size: 5vw;
     }
-}
-
-@media (max-width: 480px) {
+  }
+  
+  @media (max-width: 480px) {
     .balance-display img {
-        width: 30vw;
+      width: 30vw;
     }
-
-    .balance-amount  {
-        margin-left: -20px !important;
-        font-size: 15vw !important; /* Adjusted for very small screens */
+  
+    .balance-amount {
+      margin-left: -20px !important;
+      font-size: 15vw !important; /* Adjusted for very small screens */
     }
-
+  
     .main-button img {
-        width: 80vw; /* Adjusted for very small screens */
+      width: 80vw; /* Adjusted for very small screens */
     }
-
+  
     .energy-display {
-        font-size: 6vw;
+      font-size: 6vw;
     }
-}
-@media (height: 800) {
+  }
+  
+  @media (height: 800px) {
     .balance-display img {
-        width: 30vw;
+      width: 30vw;
     }
-
-    .balance-amount  {
-        font-size: 15vw !important; /* Adjusted for very small screens */
+  
+    .balance-amount {
+      font-size: 15vw !important; /* Adjusted for very small screens */
     }
-
+  
     .main-button img {
-        width: 80vw !important; /* Adjusted for very small screens */
+      width: 80vw !important; /* Adjusted for very small screens */
     }
-
+  
     .energy-display {
-        font-size: 6vw;
+      font-size: 6vw;
     }
-}
-
-@media (min-width: 1024px) {
+  }
+  
+  @media (min-width: 1024px) {
     .coin-icon {
-        width: 20vw; /* Adjusted for larger screens */
+      width: 20vw; /* Adjusted for larger screens */
     }
-
-    .gold-text{
-        font-size: 5vw !;
+  
+    .gold-text {
+      font-size: 5vw !important;
     }
-
+  
     .balance-amount {
-        font-size: 25vw; /* Adjusted for larger screens */
+      font-size: 25vw; /* Adjusted for larger screens */
     }
-
+  
     .main-button img {
-        width: 36vw; /* Adjusted for larger screens */
+      width: 36vw; /* Adjusted for larger screens */
     }
-
+  
     .energy-display {
-        font-size: 2vw;
-        margin-bottom: 10vw;
+      font-size: 2vw;
+      margin-bottom: 10vw;
     }
-}
-
-@keyframes robot-animation {
+  }
+  
+  @keyframes robot-animation {
     0% {
-        transform: scale(1);
+      transform: scale(1);
     }
     50% {
-        transform: scale(1.2);
+      transform: scale(1.2);
     }
     100% {
-        transform: scale(1);
+      transform: scale(1);
     }
-}
+  }
+  
+  /* Lightning styles */
+  .lightnings {
+    position: absolute;
+    top: 50%;
+    left: -85%;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Ensure it doesn't block clicks */
+    z-index: 4; /* Ensure it is above other elements, including the robot */
+  }
+  
+  .lightning {
+    position: absolute;
+    width: 140%;
+    top: 0%;
+    left: 130%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Ensure it doesn't block clicks */
+  }
+  
+  .lightning.right {
+    right: 0;
+  }
+  
+  .lightning.left {
+    left: 0;
+  }
+  
