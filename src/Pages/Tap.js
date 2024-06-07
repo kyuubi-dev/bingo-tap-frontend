@@ -18,23 +18,11 @@ function Tap() {
     };
   }, []);
 
-  const handleClick = (event) => {
-    if (energy >= 1) {
-      setEnergy((prevEnergy) => prevEnergy - 1);
-      setUserBalance((prevBalance) => prevBalance + 1);
-      
-      // Adding vibration
-      if (navigator.vibrate) {
-        navigator.vibrate(10); // Vibrate for 10ms
-      }
-
-      const { clientX, clientY } = event;
-      animatePlusOne(clientX, clientY, '+1');
-    }
-  };
-
   const handleTouch = (event) => {
-    const touches = event.touches;
+    event.preventDefault(); // Prevent default behavior for touch and click
+
+    const isTouchEvent = event.type === 'touchstart';
+    const touches = isTouchEvent ? event.touches : [{ clientX: event.clientX, clientY: event.clientY }];
     const numTouches = touches.length;
 
     if (energy >= numTouches) {
@@ -43,7 +31,7 @@ function Tap() {
 
       // Adding vibration
       if (navigator.vibrate) {
-        navigator.vibrate(10); // Vibrate for 10ms
+        navigator.vibrate(30); // Vibrate for 30ms
       }
 
       Array.from(touches).forEach((touch) => {
@@ -81,10 +69,10 @@ function Tap() {
   return (
     <div className="Tap">
       <div className="Tap-content">
-      <div className='lightnings'>
-        <img src='/16.png' className='lightning right' alt="Lightning Right" />
-        <img src='/17.png' className='lightning left' alt="Lightning Left" />
-      </div>
+        <div className='lightnings'>
+          <img src='/16.png' className='lightning right' alt="Lightning Right" />
+          <img src='/17.png' className='lightning left' alt="Lightning Left" />
+        </div>
         <div className="balance-display">
           <img src="/coin.png" alt="Coin" className="coin-icon " />
           <span className="balance-amount blue-style">{userBalance}</span>
@@ -98,8 +86,8 @@ function Tap() {
         </div>
         <button
           className="main-button"
-          onClick={handleClick}
           onTouchStart={handleTouch}
+          onMouseDown={handleTouch}
         >
           <img src="/btns/robotv2.png" alt="Start" className='robot-img'/>
         </button>
