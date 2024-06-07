@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import './Tap.css';
 import BgImage from './BgImage'; // Import the BgImage component
 
@@ -6,40 +6,53 @@ function Tap() {
   const [userBalance, setUserBalance] = useState(0);
   const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
-  const lastTouchTimeRef = useRef(0);
+  const lastTapTimeRef = useRef(0); // Track last tap time
 
-  useEffect(() => {
-    // Prevent touch scrolling
-    const preventDefault = (e) => e.preventDefault();
-    document.addEventListener('touchmove', preventDefault, { passive: false });
+  const MIN_TIME_BETWEEN_TAPS = 50; // 50ms debounce time to avoid multiple counts
 
-    // Clean up the event listener on component unmount
-    return () => {
-      document.removeEventListener('touchmove', preventDefault);
-    };
-  }, []);
-
-  const handleTouchStart = (event) => {
+  const handleClick = (event) => {
     const currentTime = Date.now();
-    const timeSinceLastTouch = currentTime - lastTouchTimeRef.current;
+    const timeSinceLastTap = currentTime - lastTapTimeRef.current;
 
-    // Update last touch time
-    lastTouchTimeRef.current = currentTime;
+    if (timeSinceLastTap < MIN_TIME_BETWEEN_TAPS) return; // Skip if last tap was too recent
 
-    // Debounce touches to avoid multiple counts
-    if (timeSinceLastTouch < 50) return; // 50ms debounce time
+    // Update last tap time
+    lastTapTimeRef.current = currentTime;
 
-    // Check if we have enough energy
-    if (energy > 0) {
+    if (energy >= 1) {
       setEnergy((prevEnergy) => prevEnergy - 1);
       setUserBalance((prevBalance) => prevBalance + 1);
 
       // Adding vibration
       if (navigator.vibrate) {
-        navigator.vibrate(10); // Vibrate for 10ms
+        navigator.vibrate(50); // Vibrate for 10ms
       }
 
-      Array.from(event.touches).forEach((touch) => {
+      const { clientX, clientY } = event;
+      animatePlusOne(clientX, clientY, '+1');
+    }
+  };
+
+  const handleTouch = (event) => {
+    const currentTime = Date.now();
+    const timeSinceLastTap = currentTime - lastTapTimeRef.current;
+
+    if (timeSinceLastTap < MIN_TIME_BETWEEN_TAPS) return; // Skip if last tap was too recent
+
+    // Update last tap time
+    lastTapTimeRef.current = currentTime;
+
+    const touches = event.touches;
+    if (energy >= touches.length) {
+      setEnergy((prevEnergy) => prevEnergy - touches.length);
+      setUserBalance((prevBalance) => prevBalance + touches.length);
+
+      // Adding vibration
+      if (navigator.vibrate) {
+        navigator.vibrate(50); // Vibrate for 10ms
+      }
+
+      Array.from(touches).forEach((touch) => {
         const { clientX, clientY } = touch;
         animatePlusOne(clientX, clientY, '+1');
       });
@@ -91,7 +104,8 @@ function Tap() {
         </div>
         <button
           className="main-button"
-          onTouchStart={handleTouchStart}
+          onClick={handleClick}
+          onTouchStart={handleTouch}
         >
           <img src="/btns/robotv2.png" alt="Start" className='robot-img'/>
         </button>
