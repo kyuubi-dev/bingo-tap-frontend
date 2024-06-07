@@ -56,6 +56,12 @@ function Tap() {
         const { clientX, clientY } = touch;
         animatePlusOne(clientX, clientY, '+1');
       });
+      const robotImg = document.querySelector('.robot-img');
+      robotImg.classList.add('dramatic-shake');
+      setTimeout(() => {
+        robotImg.classList.remove('dramatic-shake');
+      }, 500); // Remove the class after 100ms
+
     }
   };
 
@@ -79,7 +85,7 @@ function Tap() {
 
     setTimeout(() => {
       plusOne.remove();
-    }, 2000);
+    }, 1000);
   };
 
   const energyBarWidth = (energy / maxEnergy) * 100 + '%';
