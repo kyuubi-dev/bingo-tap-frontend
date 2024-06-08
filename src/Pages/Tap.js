@@ -35,7 +35,7 @@ function Tap() {
 
       // Adding vibration
       if (navigator.vibrate) {
-        navigator.vibrate(10); // Vibrate for 10ms
+        navigator.vibrate(50); // Vibrate for 10ms
       }
 
       const { clientX, clientY } = event.touches ? event.touches[0] : event;
@@ -43,10 +43,10 @@ function Tap() {
 
       // Add shake animation
       const robotImg = document.querySelector('.robot-img');
-      robotImg.classList.add('subtle-shake');
+      robotImg.classList.add('dramatic-shake');
       setTimeout(() => {
-        robotImg.classList.remove('subtle-shake');
-      }, 300); // Remove the class after 300ms
+        robotImg.classList.remove('dramatic-shake');
+      }, 500); // Remove the class after 300ms
     }
   };
 
