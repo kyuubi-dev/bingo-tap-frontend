@@ -34,7 +34,6 @@ function Team() {
                 <a href="https://t.me/bng_bot?start=749626634" className="invite-url">https://t.me/bng_bot?start=749626634</a>
                 <button className="copy-button blue-style" onClick={handleCopyClick}>COPY</button>
             </div>
-            {copySuccess && <div className="copy-message blue-style">{copySuccess}</div>}
             <div className="Team-section">
                 <div className="team-header blue-style">MY TEAM:</div>
                 <div className='teams'>
