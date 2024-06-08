@@ -54,7 +54,7 @@ const Task = ({ userBalance }) => {
           <img src="/coin.png" alt="Coin" className="coin-icon" />
           <span className=" blue-style">{userBalance}</span>
         </div>
-        <div className="gold" click={handleGoldButtonClick}>
+        <div className="gold" onClick={handleGoldButtonClick}>
           <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank" />
           <span className="gold-style">GOLD</span>
           <button className='open-btn'>

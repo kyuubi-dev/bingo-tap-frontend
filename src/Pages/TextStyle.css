@@ -7,11 +7,7 @@ body {
  
 .blue-style {
   color: #BCF8FA;
-  text-shadow:
-    0 0 2px #BCF8FA,
-    0 0 4px #BCF8FA,
-    0 0 8px #395e5f,
-    0 0 16px #0ff;
+
   font-family: 'Big Shoulders Display';
   font-weight: 400; /* Regular */
 }
@@ -25,15 +21,7 @@ body {
 /* Золотий стиль */
 .gold-style {
   color: #ffe7be;
-  text-shadow:
-    0 0 2px #d7c00e,
-    0 0 4px #BCF8FA,
-    0 0 8px #d6d61c,
-    0 0 16px rgb(214, 176, 69),
-    0 0 32px #222,
-    0 0 36px #222,
-    0 0 40px #222,
-    0 0 60px #222;
+
   font-family: 'Big Shoulders Display', sans-serif;
   font-weight: 400; 
 }
@@ -44,10 +32,28 @@ body {
   font-weight: bold;
   color: #15f7ff;
   z-index: 1000;
-  transition: transform 1s, opacity 2s;
+  transition: transform 1s, opacity 1s;
 }
 
 .blue-style {
   color: #15f7ff;
 }
 
+@keyframes dramatic-shake {
+  0% { transform: translate3d(0px, 0px, 0px) rotate3d(1, 1, 1, 0deg); }
+  10% { transform: translate3d(-3px, 2px, -3px) rotate3d(1, 0, 1, -3deg); }
+  20% { transform: translate3d(3px, -2px, 3px) rotate3d(1, 1, 1, 3deg); }
+  30% { transform: translate3d(-3px, 2px, -2px) rotate3d(1, 0, 1, -2deg); }
+  40% { transform: translate3d(3px, -1px, 2px) rotate3d(1, 1, 1, 2deg); }
+  50% { transform: translate3d(-3px, 1px, -1px) rotate3d(1, 0, 1, -1deg); }
+  60% { transform: translate3d(3px, -2px, 1px) rotate3d(1, 1, 1, 1deg); }
+  70% { transform: translate3d(-3px, 2px, -2px) rotate3d(1, 0, 1, -2deg); }
+  80% { transform: translate3d(3px, -1px, 2px) rotate3d(1, 1, 1, 2deg); }
+  90% { transform: translate3d(-3px, 1px, -1px) rotate3d(1, 0, 1, -1deg); }
+  100% { transform: translate3d(0px, 0px, 0px) rotate3d(1, 1, 1, 0deg); }
+}
+
+.dramatic-shake {
+  animation: dramatic-shake 0.5s;
+  animation-timing-function: ease-in-out;
+}
