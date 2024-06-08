@@ -34,13 +34,9 @@ function Tap() {
       setUserBalance((prevBalance) => prevBalance + 1);
 
       // Вібрація для підтримуваних браузерів
-      if ('vibrate' in navigator) {
-        navigator.vibrate(50);
-      } else if ('webkitVibrate' in navigator) {
-        navigator.webkitVibrate(50);
-      }
+
       // Імітація вібрації для iOS
-      else if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+      if ('vibrate' in navigator) {
         const audio = new Audio(silentmp3);
         audio.play();
       }
