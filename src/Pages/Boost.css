@@ -17,7 +17,7 @@ body {
     height: calc(100vh - 22vh); /* Обмеження висоти на 14vh знизу */
     max-height: calc(100vh - 22vh); /* Переконатися, що не перевищує цього ліміту */
     display: grid;
-    grid-auto-rows: 10% 5% 10%;
+    grid-auto-rows: 10% 6% 10% 5%;
     gap: 3%;
     text-align: center;
     overflow-y: auto; /* Дозволити скролінг при переповненні контенту */
@@ -64,7 +64,7 @@ body {
     padding-right: 10px;
     margin: 10px 5px 10px 5px;
     text-align: center;
-    height: auto;
+    height: 60%;
     width: auto;
 }
 
@@ -81,9 +81,7 @@ body {
 
 .boosters-text{
     display: flex;
-    font-size: 9vw;
-    padding-bottom: 10px;
-    align-items: center;
+    font-size: 7vw;
     padding-left: 10px;
 }
 .dayli-boost-text {
@@ -142,13 +140,13 @@ body {
 
 
     .daily-boost-h {
-        font-size: 4vw;
+        font-size: 5vw;
     }
     .d-boost-text{
         font-size: 6vw; 
     }
     .dayli-boost-text {
-        font-size: 8vw;
+        font-size: 7vw;
     }
 
     .boost-text {

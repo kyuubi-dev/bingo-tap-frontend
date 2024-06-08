@@ -41,7 +41,7 @@ const Boost = () => {
           </div>
           <div className="boosters-text gold-style">BOOSTERS:</div>
           <div className="boosts">
-            <BoostItem text="MULTITAP" price="50 000" image='/boost/dow.png' level="1"/>
+            <BoostItem text="MULTITAP" price="50 000" image='/boost/dow.png' level="3"/>
             <BoostItem text="ENERGY LIMIT" price="50 000" image="/boost/fire.p.png" level="1"/>
             <BoostItem text="RECHARGE SPEED" price="50 000" image="/boost/power.png" level="1"/>
             <BoostItem text="AUTO TAP" price="50 000" image="/boost/click.png" level="1"/>
