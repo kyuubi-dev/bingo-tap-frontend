@@ -45,7 +45,12 @@ function App() {
                 './btns/task.png',
                 './btns/task_active.png',
                 './btns/team.png',
-                './btns/team_active.png'
+                './btns/team_active.png',
+                './16.png',
+                './17.png',
+                './bg.png',
+                './btn-bg.png',
+                './coin.png'
             ];
 
             const promises = images.map((src) => {
