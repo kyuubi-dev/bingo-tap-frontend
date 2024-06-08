@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Tap.css';
 import './Task.js';
 import Task from "./Task";
-import silentmp3 from "./silent.mp3";
+import silentmp3 from "./silent2.mp3";
 
 function Tap() {
   const [userBalance, setUserBalance] = useState(0);
