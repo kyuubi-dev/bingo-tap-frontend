@@ -2,6 +2,7 @@ import './Task.css';
 import React, { useState, useEffect } from 'react';
 import './TextStyle.css';
 import { useLocation } from 'react-router-dom';
+import CompletionMessage from './ModelMessage';
 
 const Task = () => {
     const location = useLocation();
@@ -33,7 +34,11 @@ const Task = () => {
         setTasksCompleted(updatedTasksCompleted);
         localStorage.setItem('tasksCompleted', JSON.stringify(updatedTasksCompleted));
         setUserBalance(userBalance + reward);
-        setCompletionMessage(`Задание выполнено: ${taskName}, награда - ${reward}`);
+        setCompletionMessage(`Task end: ${taskName}, reward - ${reward}`);
+    };
+
+    const handleCompletionMessageClose = () => {
+        setCompletionMessage('');
     };
 
     const renderContent = () => {
@@ -125,7 +130,12 @@ const Task = () => {
                 </div>
             </nav>
 
-            {completionMessage && <div className="completion-message">{completionMessage}</div>}
+            {completionMessage && (
+                <CompletionMessage
+                    message={completionMessage}
+                    onClose={handleCompletionMessageClose}
+                />
+            )}
 
             {renderContent()}
         </div>
