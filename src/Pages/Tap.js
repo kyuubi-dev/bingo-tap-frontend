@@ -30,7 +30,7 @@ function Tap() {
 
   const hapticsVibrate = async () => {
     try {
-      await Haptics.vibrate(50);
+      await Haptics.vibrate();
     } catch (error) {
       console.error('Failed to trigger haptic feedback:', error);
     }
