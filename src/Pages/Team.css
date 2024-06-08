@@ -126,35 +126,11 @@ body {
   margin-top: 10px;
   padding-left: 10px;
   padding-right: 10px;
-  transition: transform 0.2s, background-color 0.2s;
 }
 
 .copy-button:active {
   transform: scale(0.95); /* Додамо ефект натискання */
   background-color: #1976D2; /* Трохи змінюємо колір для ефекту натискання */
-}
-.copy-message {
-  position: fixed;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: 2px solid #2E7D32; /* Додамо рамку */
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  font-size: 16px;
-  z-index: 1000;
-  pointer-events: none; /* Запобігає взаємодії з елементами */
-  animation: fadeInOut 2s forwards; /* Анімація появи та зникнення */
-}
-
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
 }
 
 .teams {
