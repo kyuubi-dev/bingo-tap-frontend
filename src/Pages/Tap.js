@@ -37,7 +37,20 @@ function Tap() {
       } else if ('webkitVibrate' in navigator) {
         navigator.webkitVibrate(50);
       }
-
+      else if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+        // Створюємо скрипт для відтворення звуку, який відтворює тонкий звук для імітації вібрації
+        const audio = new Audio('silent.mp3');
+        audio.play();
+      }
+      // Якщо Safari на macOS
+      else if (navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1) {
+        // Намагаємося активувати вібрацію за допомогою AppleScript
+        try {
+          window.ScriptEditor.doJavaScript('do shell script "osascript -e \'beep\'"');
+        } catch (error) {
+          console.error('Failed to execute AppleScript:', error);
+        }
+      }
       animatePlusOne(clientX, clientY, '+1');
 
       const robotImg = document.querySelector('.robot-img');
