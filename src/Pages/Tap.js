@@ -1,67 +1,52 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Tap.css';
 import BgImage from './BgImage'; // Import the BgImage component
-
+import Task from './Task.js';
 function Tap() {
   const [userBalance, setUserBalance] = useState(0);
   const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
-  const lastTapTimeRef = useRef(0); // Track last tap time
+  const intervalRef = useRef(null);
 
-  const MIN_TIME_BETWEEN_TAPS = 50; // 50ms debounce time to avoid multiple counts
+  useEffect(() => {
+    // Function to restore 1 energy per second
+    const restoreEnergy = () => {
+      setEnergy((prevEnergy) => {
+        if (prevEnergy < maxEnergy) {
+          return prevEnergy + 1;
+        }
+        return prevEnergy;
+      });
+    };
 
-  const handleClick = (event) => {
-    const currentTime = Date.now();
-    const timeSinceLastTap = currentTime - lastTapTimeRef.current;
+    // Start the interval to restore energy
+    intervalRef.current = setInterval(restoreEnergy, 1000);
 
-    if (timeSinceLastTap < MIN_TIME_BETWEEN_TAPS) return; // Skip if last tap was too recent
+    // Clean up the interval on component unmount
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  }, [maxEnergy]);
 
-    // Update last tap time
-    lastTapTimeRef.current = currentTime;
-
-    if (energy >= 1) {
+  const handleTap = (event) => {
+    if (energy > 0) {
       setEnergy((prevEnergy) => prevEnergy - 1);
       setUserBalance((prevBalance) => prevBalance + 1);
 
       // Adding vibration
       if (navigator.vibrate) {
-        navigator.vibrate(50); // Vibrate for 10ms
+        navigator.vibrate(10); // Vibrate for 10ms
       }
 
-      const { clientX, clientY } = event;
+      const { clientX, clientY } = event.touches ? event.touches[0] : event;
       animatePlusOne(clientX, clientY, '+1');
-    }
-  };
 
-  const handleTouch = (event) => {
-    const currentTime = Date.now();
-    const timeSinceLastTap = currentTime - lastTapTimeRef.current;
-
-    if (timeSinceLastTap < MIN_TIME_BETWEEN_TAPS) return; // Skip if last tap was too recent
-
-    // Update last tap time
-    lastTapTimeRef.current = currentTime;
-
-    const touches = event.touches;
-    if (energy >= touches.length) {
-      setEnergy((prevEnergy) => prevEnergy - touches.length);
-      setUserBalance((prevBalance) => prevBalance + touches.length);
-
-      // Adding vibration
-      if (navigator.vibrate) {
-        navigator.vibrate(50); // Vibrate for 10ms
-      }
-
-      Array.from(touches).forEach((touch) => {
-        const { clientX, clientY } = touch;
-        animatePlusOne(clientX, clientY, '+1');
-      });
+      // Add shake animation
       const robotImg = document.querySelector('.robot-img');
-      robotImg.classList.add('dramatic-shake');
+      robotImg.classList.add('subtle-shake');
       setTimeout(() => {
-        robotImg.classList.remove('dramatic-shake');
-      }, 500); // Remove the class after 100ms
-
+        robotImg.classList.remove('subtle-shake');
+      }, 300); // Remove the class after 300ms
     }
   };
 
@@ -85,7 +70,7 @@ function Tap() {
 
     setTimeout(() => {
       plusOne.remove();
-    }, 1000);
+    }, 1000); // Remove after 1 second for faster feedback
   };
 
   const energyBarWidth = (energy / maxEnergy) * 100 + '%';
@@ -101,7 +86,7 @@ function Tap() {
           <img src="/coin.png" alt="Coin" className="coin-icon " />
           <span className="balance-amount blue-style">{userBalance}</span>
         </div>
-        <div className="tap-gold">
+        <div className="tap-gold" >
           <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank" />
           <span className="gold-text gold-style">GOLD</span>
           <button className='open-btn'>
@@ -110,13 +95,13 @@ function Tap() {
         </div>
         <button
           className="main-button"
-          onClick={handleClick}
-          onTouchStart={handleTouch}
+          onClick={handleTap}
+          onTouchStart={handleTap}
         >
-          <img src="/btns/robotv2.png" alt="Start" className='robot-img'/>
+          <img src="/btns/robotv2.png" alt="Start" className='robot-img' />
         </button>
         <div className="energy-display">
-          <img src='./boost/power.png' className='power-img'/>
+          <img src='./boost/power.png' className='power-img' />
           <div className='blue-style'> {energy}/{maxEnergy}</div>
         </div>
         <div className="energy-container">

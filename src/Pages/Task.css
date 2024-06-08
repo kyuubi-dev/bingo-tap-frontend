@@ -3,7 +3,9 @@
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   outline: none;
 }
-
+html, body {
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
 body {
   font-family: 'Big Shoulders Display', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #000;
@@ -105,7 +107,7 @@ body {
   display: grid;
   align-items: center;
   grid-template-columns: 20vw 45vw auto ;
-  padding: 10px 20px;
+  padding: 10px 10px;
   border: 4px solid #BCF8FA;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.5);
@@ -189,3 +191,30 @@ body {
   .task-reward span {
     font-size: 6vw;
   }
+  .task-item.leagua{
+    grid-template-columns: 15vw 20vw 35vw auto ;
+    grid-template-rows: 15vw auto;
+  }
+.task-reward.leagua{
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+  margin-bottom: 20%;
+}
+.task-item .energy-container{
+  grid-column: 2 / span 3;
+  grid-row: 2;
+}
+.task-text.leagua{
+  grid-column: 2;
+  margin-bottom: 30%;
+}
+.claim-button{
+  grid-column: 4;
+  background: none;
+  border: 2px solid #BCF8FA;
+  border-radius: 10px;
+  font-size: 4vw;
+  width:100%;
+  height: 40%;
+  cursor: pointer;
+}
