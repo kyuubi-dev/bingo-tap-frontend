@@ -32,7 +32,6 @@ function Tap() {
       setEnergy((prevEnergy) => prevEnergy - 1);
       setUserBalance((prevBalance) => prevBalance + 1);
 
-      // Перевірка підтримки WebKit Vibration API
       if ('vibrate' in navigator) {
         navigator.vibrate(50);
       } else if ('webkitVibrate' in navigator) {
