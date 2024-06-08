@@ -1,15 +1,16 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import './Tap.css';
 import './Task.js';
 import Task from "./Task";
 import { Haptics } from '@capacitor/haptics';
-
-function Tap() {
-  const [userBalance, setUserBalance] = useState(0);
+function Tap({ setUserBalance }) {
+  const [userBalance, setUserBalanceState] = useState(0);
   const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
   const intervalRef = useRef(null);
   const activeTouches = useRef(new Set());
+  const navigate = useNavigate();
 
   useEffect(() => {
     const restoreEnergy = () => {
@@ -39,6 +40,7 @@ function Tap() {
   const handleTap = (clientX, clientY) => {
     if (energy > 0) {
       setEnergy((prevEnergy) => prevEnergy - 1);
+      setUserBalanceState((prevBalance) => prevBalance + 1);
       setUserBalance((prevBalance) => prevBalance + 1);
 
       hapticsVibrate();
@@ -102,6 +104,10 @@ function Tap() {
     }, 500);
   };
 
+  const handleGoldButtonClick = () => {
+    navigate('/task?tab=leagues', { state: { userBalance } });
+  };
+
   const energyBarWidth = (energy / maxEnergy) * 100 + '%';
 
   return (
@@ -115,7 +121,7 @@ function Tap() {
             <img src="/coin.png" alt="Coin" className="coin-icon " />
             <span className="balance-amount blue-style">{userBalance}</span>
           </div>
-          <div className="tap-gold" onClick={Task.handleGoldButtonClick}>
+          <div className="tap-gold" onClick={handleGoldButtonClick}>
             <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank" />
             <span className="gold-text gold-style">GOLD</span>
             <button className='open-btn'>
