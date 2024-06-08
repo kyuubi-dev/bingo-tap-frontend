@@ -32,10 +32,11 @@ function Tap() {
       setEnergy((prevEnergy) => prevEnergy - 1);
       setUserBalance((prevBalance) => prevBalance + 1);
 
-      if ('vibrate' in navigator) {
-        navigator.vibrate(50); // Вібрація на 10ms
-      } else if (window.navigator) {
-        window.navigator.vibrate(50); // Спробуйте альтернативний метод для підтримки різних браузерів
+      // Перевіряємо підтримку WebKit Vibration API
+      if ('vibrate' in navigator || 'webkitVibrate' in navigator) {
+        const vibrate = navigator.vibrate || navigator.webkitVibrate;
+        // Вібрація на 50 мс
+        vibrate(50);
       }
 
       animatePlusOne(clientX, clientY, '+1');
