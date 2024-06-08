@@ -58,12 +58,16 @@ const Task = () => {
                             <TaskItem
                                 text="JOIN OUR TELEGRAM"
                                 reward={250000}
+                                url="https://t.me/Bingo_kyuubi_test_bot"
+                                onCompletion={() => handleTaskCompletion('JOIN OUR TELEGRAM', 500000)}
                             />
                         )}
                         {!tasksCompleted['JOIN OUR YOUTUBE'] && (
                             <TaskItem
                                 text="JOIN OUR YOUTUBE"
                                 reward={250000}
+                                url="https://www.youtube.com"
+                                onCompletion={() => handleTaskCompletion('JOIN OUR YOUTUBE', 500000)}
                             />
                         )}
                     </div>
