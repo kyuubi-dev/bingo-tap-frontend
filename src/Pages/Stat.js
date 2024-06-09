@@ -12,7 +12,7 @@ const Stat = () => {
               <div className="stat-title gold-style">TOTAL SHARE BALANCE:</div>
               <div className="shared-balance">
               <img src='./coin.png' alt="coin" className="shared-balance-icon" />
-                <span className="team-header blue-style">82.315 T</span>
+                <span className="team-header stat blue-style">82.315 T</span>
                 </div>
             </div>
           </div>

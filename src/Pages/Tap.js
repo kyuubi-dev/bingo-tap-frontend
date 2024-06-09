@@ -4,6 +4,7 @@ import './Tap.css';
 import './Task.js';
 import Task from "./Task";
 import { Haptics } from '@capacitor/haptics';
+
 function Tap({ setUserBalance }) {
   const [userBalance, setUserBalanceState] = useState(0);
   const [energy, setEnergy] = useState(1500);
@@ -11,6 +12,8 @@ function Tap({ setUserBalance }) {
   const intervalRef = useRef(null);
   const activeTouches = useRef(new Set());
   const navigate = useNavigate();
+  const [userPoints, setUserPoints] = useState(10000); // initial points
+  const [purchasedBoosts, setPurchasedBoosts] = useState({});
 
   useEffect(() => {
     const restoreEnergy = () => {
@@ -39,13 +42,14 @@ function Tap({ setUserBalance }) {
 
   const handleTap = (clientX, clientY) => {
     if (energy > 0) {
+      const tapValue = purchasedBoosts['Taping Guru'] ? 5 : 1;
       setEnergy((prevEnergy) => prevEnergy - 1);
-      setUserBalanceState((prevBalance) => prevBalance + 1);
-      setUserBalance((prevBalance) => prevBalance + 1);
+      setUserBalanceState((prevBalance) => prevBalance + tapValue);
+      setUserBalance((prevBalance) => prevBalance + tapValue);
 
       hapticsVibrate();
 
-      animatePlusOne(clientX, clientY, '+1');
+      animatePlusOne(clientX, clientY, `+${tapValue}`);
 
       const robotImg = document.querySelector('.robot-img');
       robotImg.classList.add('dramatic-shake');
@@ -138,7 +142,7 @@ function Tap({ setUserBalance }) {
           </button>
           <div className="energy-display">
             <img src='./boost/power.png' className='power-img' />
-            <div className='blue-style'> {energy}/{maxEnergy}</div>
+            <div className='blue-style'>{energy}/{maxEnergy}</div>
           </div>
           <div className="energy-container">
             <div className="energy-bar" style={{ width: energyBarWidth }}></div>
