@@ -31,7 +31,7 @@ function Tap({ setUserBalance }) {
 
   const hapticsVibrate = async () => {
     try {
-      await Haptics.vibrate();
+      await navigator.vibrate(50);
     } catch (error) {
       console.error('Failed to trigger haptic feedback:', error);
     }
