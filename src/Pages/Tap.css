@@ -219,8 +219,9 @@
     position: absolute;
     top: 50%;
     left: -85%;
-    width: 100%;
+    width: 120%;
     height: 100%;
+    margin-left: -25%;
     pointer-events: none; /* Ensure it doesn't block clicks */
     z-index: 4; /* Ensure it is above other elements, including the robot */
   }
@@ -229,17 +230,17 @@
     position: absolute;
     width: 140%;
     top: 0%;
-    left: 130%;
     transform: translateY(-50%);
     pointer-events: none; /* Ensure it doesn't block clicks */
   }
   
   .lightning.right {
-    right: 0;
+    right: 40%;
+    left: 115%;
   }
   
   .lightning.left {
-    left: 0;
+    left: 15%;
   }
 
 

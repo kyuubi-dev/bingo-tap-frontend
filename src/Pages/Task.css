@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700&display=swap');
+
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -18,30 +20,34 @@ body {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 18vh); /* Limit height from bottom by 15vh */
-  max-height: calc(100vh - 18vh) ;
+  height: calc(100vh - 18vh); /* Limit height from bottom by 18vh */
+  max-height: calc(100vh - 18vh);
   overflow-y: auto;
+  overflow-x: hidden !important;
+  z-index: 2;
 }
 
 .Task::after {
   content: '';
   position: fixed;
-  bottom: 16vh; /* Розташування на 15vh від нижньої частини екрана */
+  bottom: 16vh; /* 16vh from the bottom */
   left: 0;
   width: 100%;
-  height: 8vh; /* Висота розмиття */
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
-  pointer-events: none; /* Забезпечити, щоб елемент не впливав на взаємодію з іншими елементами */
+  height: 8vh; /* Height of the blur */
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none; /* Ensure element does not affect interactions */
+  z-index: 1; /* Position below content but above background */
 }
 .Task::before {
   content: '';
   position: fixed;
-  bottom: 12vh; /* Розташування на 2vh вище, ніж нижнє розмиття */
+  bottom: 12vh; /* 12vh from the bottom */
   left: 0;
   width: 100%;
-  height: 4vh; /* Висота розмиття */
+  height: 4vh; /* Height of the blur */
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
-  pointer-events: none; /* Забезпечити, щоб елемент не впливав на взаємодію з іншими елементами */
+  pointer-events: none; /* Ensure element does not affect interactions */
+  z-index: 1; /* Position below content but above background */
 }
 
 .header {
@@ -50,11 +56,13 @@ body {
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
+  z-index: 2;
 }
 
 .balance-display-task {
   display: flex;
   align-items: center;
+  z-index: 2;
 }
 
 .coin-icon {
@@ -65,6 +73,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 }
 
 .open-btn {
@@ -72,6 +81,7 @@ body {
   border: none;
   height: auto;
   margin-left: -15px;
+  z-index: 2;
 }
 
 .open-icon {
@@ -81,6 +91,7 @@ body {
 .nav {
   display: flex;
   justify-content: center;
+  z-index: 2;
 }
 
 .tab {
@@ -90,6 +101,7 @@ body {
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.5);
   text-shadow: 0 0 10px #BCF8FA, 0 0 20px #0ff;
+  z-index: 2;
 }
 
 .tab.selected {
@@ -101,6 +113,7 @@ body {
   display: grid;
   gap: 20px;
   height: auto;
+  z-index: 2;
 }
 
 .task-item {
@@ -113,6 +126,7 @@ body {
   background: rgba(0, 0, 0, 0.5);
   box-shadow: 0 0 20px #0ff;
   text-align: left;
+  z-index: 2;
 }
 
 .task-icon {
@@ -139,7 +153,6 @@ body {
   height: auto;
 }
 
-
 .task-item .open-btn {
   grid-column: 4;
   grid-row: 1 / span 2;
@@ -154,67 +167,79 @@ body {
   height: auto;
 }
 
-  .gold span {
-    font-size: 20px;
-  }
-  .task-icon{
-    width: 100%;
-  }
-  .tasks{
-    margin: 5%;
-  }
-
-  .gold img{
-    width: 8vh;
-  }
-.balance-display-task img{
-  width: 80px !important  ;
+.gold span {
+  font-size: 20px;
 }
 
-.balance-display-task span{
+.task-icon {
+  width: 100%;
+}
+
+.tasks {
+  margin: 5%;
+}
+
+.gold img {
+  width: 8vh;
+}
+
+.balance-display-task img {
+  width: 80px !important;
+}
+
+.balance-display-task span {
   font-size: 14vw !important;
 }
-.open-btn{
+
+.open-btn {
   width: 20%;
 }
-.open-btn img{
+
+.open-btn img {
   width: 80%;
 }
-  .tab {
-    font-size: 6vw;
-  }
 
-  .task-text {
-    font-size: 6vw ;
-  }
+.tab {
+  font-size: 6vw;
+}
 
-  .task-reward span {
-    font-size: 6vw;
-  }
-  .task-item.leagua{
-    grid-template-columns: 15vw 20vw 35vw auto ;
-    grid-template-rows: 15vw auto;
-  }
-.task-reward.leagua{
+.task-text {
+  font-size: 6vw;
+}
+
+.task-reward span {
+  font-size: 6vw;
+}
+
+.task-item.leagua {
+  grid-template-columns: 15vw 20vw 35vw auto;
+  grid-template-rows: 15vw auto;
+}
+
+.task-reward.leagua {
   grid-column: 3 !important;
   grid-row: 1 !important;
   margin-bottom: 20%;
 }
-.task-item .energy-container{
+
+.task-item .energy-container {
   grid-column: 2 / span 3;
   grid-row: 2;
 }
-.task-text.leagua{
+
+.task-text.leagua {
   grid-column: 2;
   margin-bottom: 30%;
 }
-.claim-button{
+
+.claim-button {
   grid-column: 4;
   background: none;
   border: 2px solid #BCF8FA;
   border-radius: 10px;
   font-size: 4vw;
-  width:100%;
+  width: 100%;
   height: 40%;
   cursor: pointer;
+  z-index: 2;
 }

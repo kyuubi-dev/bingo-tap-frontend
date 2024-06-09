@@ -6,11 +6,13 @@ import Team from './Pages/Team';
 import Navigation from './Pages/Navigation';
 import Task from './Pages/Task';
 import Boost from './Pages/Boost';
-import LoadingScreen from './Pages/LoadingScreen.js';
+import LoadingScreen from './Pages/LoadingScreen';
 import Stat from './Pages/Stat';
 
 function App() {
     const [userBalance, setUserBalance] = useState(0);
+    const [userPoints, setUserPoints] = useState(100000); // Initial points
+    const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
 
     document.addEventListener('gesturestart', function (e) {
@@ -66,7 +68,7 @@ function App() {
                 await Promise.all(promises);
                 setIsLoaded(true);
             } catch (error) {
-                console.error('Ошибка при загрузке ресурсов:', error);
+                console.error('Error loading resources:', error);
             }
         };
 
@@ -86,7 +88,17 @@ function App() {
                     <Route path="/" element={<Tap setUserBalance={setUserBalance} />} />
                     <Route path="/team" element={<Team />} />
                     <Route path="/task" element={<Task userBalance={userBalance} />} />
-                    <Route path="/boost" element={<Boost />} />
+                    <Route
+                        path="/boost"
+                        element={
+                            <Boost
+                                userPoints={userPoints}
+                                setUserPoints={setUserPoints}
+                                purchasedBoosts={purchasedBoosts}
+                                setPurchasedBoosts={setPurchasedBoosts}
+                            />
+                        }
+                    />
                     <Route path='/stat' element={<Stat />} />
                 </Routes>
             </BrowserRouter>

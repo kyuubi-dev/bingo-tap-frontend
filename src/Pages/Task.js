@@ -98,17 +98,20 @@ const Task = () => {
 
     return (
         <div className="Task">
-            <div className="bg-image" />
+            <div className='lightnings f-tab'>
+                <img src='/16.png' className='lightning f-tab right' alt="Lightning Right"/>
+                <img src='/17.png' className='lightning f-tab left' alt="Lightning Left"/>
+            </div>
             <header className="header">
                 <div className="balance-display-task">
-                    <img src="/coin.png" alt="Coin" className="coin-icon" />
+                    <img src="/coin.png" alt="Coin" className="coin-icon"/>
                     <span className="blue-style">{userBalance}</span>
                 </div>
                 <div className="gold" onClick={handleGoldButtonClick}>
-                    <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank" />
+                    <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank"/>
                     <span className="gold-style">GOLD</span>
                     <button className='open-btn'>
-                        <img src='./tasks/open.png' className='open-icon' alt="Open" />
+                        <img src='./tasks/open.png' className='open-icon' alt="Open"/>
                     </button>
                 </div>
             </header>
@@ -146,7 +149,7 @@ const Task = () => {
     );
 };
 
-const TaskItem = ({ text, reward, url, onCompletion }) => (
+const TaskItem = ({text, reward, url, onCompletion}) => (
     <a
         href={url}
         className="task-item"
