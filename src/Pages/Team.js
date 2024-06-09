@@ -21,7 +21,10 @@ function Team() {
 
     return (
         <div className="Team">
-            <div className="bg-image" />
+            <div className='lightnings f-tab'>
+                <img src='/16.png' className='lightning f-tab right' alt="Lightning Right"/>
+                <img src='/17.png' className='lightning f-tab left' alt="Lightning Left"/>
+            </div>
             <div className="Header">
                 <div className='Referral'>
                     <span className="referral-count blue-style">2</span>
@@ -31,7 +34,8 @@ function Team() {
             <div className="referral-total blue-style">+100 000</div>
             <div className="Invite-link">
                 <div className="invite-text blue-style">MY INVITE LINK:</div>
-                <a href="https://t.me/bng_bot?start=749626634" className="invite-url">https://t.me/bng_bot?start=749626634</a>
+                <a href="https://t.me/bng_bot?start=749626634"
+                   className="invite-url">https://t.me/bng_bot?start=749626634</a>
                 <button className="copy-button blue-style" onClick={handleCopyClick}>COPY</button>
             </div>
             <div className="Team-section">
@@ -61,12 +65,12 @@ function Team() {
     );
 }
 
-const TeamItem = ({ name, balance, leagua, bonus }) => (
+const TeamItem = ({name, balance, leagua, bonus}) => (
     <div className="team-member">
         <span className="name default-style">{name}</span>
         <div className='stat-inf'>
             <div className='Rank'>
-                <img src='./ranks/gold.png' className='rank-img' />
+            <img src='./ranks/gold.png' className='rank-img' />
                 <span className="rank-text gold-style">{leagua}</span>
             </div>
             <div className='Point'>

@@ -4,8 +4,11 @@ body {
     font-family: 'Big Shoulders Display', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #000;
     color: #BCF8FA;
+    overflow-x: hidden;
 }
-
+html, body {
+    overflow-x: hidden !important; /* Prevent horizontal scrolling */
+}
 * {
     -webkit-tap-highlight-color: transparent;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -21,15 +24,48 @@ body {
     gap: 3%;
     text-align: center;
     overflow-y: auto; /* Дозволити скролінг при переповненні контенту */
+    overflow-x: hidden !important;
+    z-index: 2;
+}
+
+.Boost::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2); /* Adjust the opacity for the shadow effect */
+    pointer-events: none; /* Ensure the overlay does not interfere with user interactions */
+    z-index:1; /* Ensure the overlay is below the boost items but above the background */
+}
+.lightnings.f-tab{
+    z-index: 0 !important;
+    width: 120%;
+    height: 100%;
+    margin-left: -25%;
+    left: -85%;
+}
+
+.Boost .lightning{
+}
+
+.lightning.right.f-tab {
+    right: 40%;
+    left: 110%;
+}
+
+.lightning.left.f-tab {
+    left: 20%;
 }
 
 /*.Boost::after {
     content: '';
     position: fixed;
-    bottom: 18vh; 
+    bottom: 18vh;
     left: 0;
     width: 100%;
-    height: 8vh; 
+    height: 8vh;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
     pointer-events: none;
 }
@@ -37,12 +73,12 @@ body {
 .Boost::before {
     content: '';
     position: fixed;
-    bottom: 14vh; 
+    bottom: 14vh;
     left: 0;
     width: 100%;
     height: 4vh;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
-    pointer-events: none; 
+    pointer-events: none;
 }   */
 
 .daily-boosts {
@@ -66,6 +102,7 @@ body {
     text-align: center;
     height: 60%;
     width: auto;
+    z-index: 2;
 }
 
 .boost-icon {
@@ -83,6 +120,7 @@ body {
     display: flex;
     font-size: 7vw;
     padding-left: 10px;
+    z-index: 2;
 }
 .dayli-boost-text {
     font-size: 6vw;
@@ -91,6 +129,7 @@ body {
     margin: 10px;
     display: flex;
     align-items: center;
+    z-index: 2;
 }
 
 .boost-item {
@@ -107,6 +146,7 @@ body {
     text-align: center;
     padding: 2px;
     margin: 5px;
+    z-index: 2;
 }
 .boost-item .boost-icon{
     width: 80%;
@@ -116,7 +156,9 @@ body {
     grid-column: 2;
     grid-row: 1 / span 2;
 }
-
+.Boost .header{
+    z-index: 2;
+}
 .boost-price {
     align-items: center;
     text-align: center;
@@ -143,7 +185,7 @@ body {
         font-size: 5vw;
     }
     .d-boost-text{
-        font-size: 6vw; 
+        font-size: 5vw;
     }
     .dayli-boost-text {
         font-size: 7vw;

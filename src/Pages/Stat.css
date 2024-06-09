@@ -55,6 +55,6 @@ body {
   .team-header{
     font-size: 8vw;
   }
-  .team-header .stat{
-    margin-left: 0px!important;
+  .team-header.stat{
+    margin-left: -10px !important;
   }
