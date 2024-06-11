@@ -2,8 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import './Tap.css';
 import './Task.js';
-import Task from "./Task";
-import { Haptics } from '@capacitor/haptics';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 function Tap({ setUserBalance }) {
   const [userBalance, setUserBalanceState] = useState(0);
@@ -34,28 +33,39 @@ function Tap({ setUserBalance }) {
 
   const hapticsVibrate = async () => {
     try {
-      await navigator.vibrate(50);
+      // Use Capacitor's Haptics API
+      await Haptics.impact({ style: ImpactStyle.Medium });
     } catch (error) {
       console.error('Failed to trigger haptic feedback:', error);
     }
   };
 
   const handleTap = (clientX, clientY) => {
-    if (energy > 0) {
-      const tapValue = purchasedBoosts['Taping Guru'] ? 5 : 1;
-      setEnergy((prevEnergy) => prevEnergy - 1);
-      setUserBalanceState((prevBalance) => prevBalance + tapValue);
-      setUserBalance((prevBalance) => prevBalance + tapValue);
+    const robotImg = document.querySelector('.robot-img');
+    const robotRect = robotImg.getBoundingClientRect();
 
-      hapticsVibrate();
+    // Check if the tap is within the robot image bounds
+    if (
+        clientX >= robotRect.left &&
+        clientX <= robotRect.right &&
+        clientY >= robotRect.top &&
+        clientY <= robotRect.bottom
+    ) {
+      if (energy > 0) {
+        const tapValue = purchasedBoosts['Taping Guru'] ? 5 : 1;
+        setEnergy((prevEnergy) => prevEnergy - 1);
+        setUserBalanceState((prevBalance) => prevBalance + tapValue);
+        setUserBalance((prevBalance) => prevBalance + tapValue);
 
-      animatePlusOne(clientX, clientY, `+${tapValue}`);
+        hapticsVibrate();
 
-      const robotImg = document.querySelector('.robot-img');
-      robotImg.classList.add('dramatic-shake');
-      setTimeout(() => {
-        robotImg.classList.remove('dramatic-shake');
-      }, 500);
+        animatePlusOne(clientX, clientY, `+${tapValue}`);
+
+        robotImg.classList.add('dramatic-shake');
+        setTimeout(() => {
+          robotImg.classList.remove('dramatic-shake');
+        }, 500);
+      }
     }
   };
 
@@ -122,7 +132,7 @@ function Tap({ setUserBalance }) {
             <img src='/17.png' className='lightning left' alt="Lightning Left" />
           </div>
           <div className="balance-display">
-            <img src="/coin.png" alt="Coin" className="coin-icon " />
+            <img src="/coin.png" alt="Coin" className="coin-icon" />
             <span className="balance-amount blue-style">{userBalance}</span>
           </div>
           <div className="tap-gold" onClick={handleGoldButtonClick}>
@@ -134,14 +144,14 @@ function Tap({ setUserBalance }) {
           </div>
           <button
               className="main-button"
-              onMouseDown={handleMouseDown}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
           >
             <img src="/btns/robotv2.png" alt="Start" className='robot-img' />
           </button>
           <div className="energy-display">
-            <img src='./boost/power.png' className='power-img' />
+            <img src='./boost/power.png' className='power-img' alt="Power" />
             <div className='blue-style'>{energy}/{maxEnergy}</div>
           </div>
           <div className="energy-container">
