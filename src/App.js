@@ -12,38 +12,44 @@ import Stat from './Pages/Stat';
 
 function App() {
     const [userBalance, setUserBalance] = useState(0);
-    const [userPoints, setUserPoints] = useState(100000);
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
     const [userId, setUserId] = useState(null);
 
     useEffect(() => {
-        const fetchUserId = async () => {
+        const fetchUserData = async () => {
             try {
+                // 1. Получаем telegramId через API Telegram
                 const response = await axios.get('https://api.telegram.org/bot7208555837:AAF26oAPtwfVIMfOTnUcGHmZepm5QmD6M00/getMe');
                 const telegramId = response.data.result.id;
                 const username = response.data.result.username;
+
+                // 2. Проверяем существует ли пользователь на нашем сервере
                 const checkUserResponse = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
                 const userData = checkUserResponse.data;
+
                 if (userData.userExists) {
+                    // Если пользователь существует, загружаем его данные, включая баланс
                     setUserId(userData.userId);
                     setUserBalance(userData.userBalance);
                 } else {
+                    // Если пользователь не существует, создаем нового пользователя
                     const createUserResponse = await axios.post('http://localhost:8000/api/create-user', {
                         username: username,
                         telegram_id: telegramId
                     });
                     const createUserData = createUserResponse.data;
                     setUserId(createUserData.id);
-                    setUserBalance(0);
+                    setUserBalance(0); // Не обязательно устанавливать 0, мы можем получить актуальные данные с сервера
                 }
+
                 setIsLoaded(true);
             } catch (error) {
                 console.error('Ошибка при получении данных пользователя:', error);
             }
         };
 
-        fetchUserId();
+        fetchUserData();
     }, []);
 
     if (!isLoaded) {
@@ -62,8 +68,6 @@ function App() {
                     path="/boost"
                     element={
                         <Boost
-                            userPoints={userPoints}
-                            setUserPoints={setUserPoints}
                             purchasedBoosts={purchasedBoosts}
                             setPurchasedBoosts={setPurchasedBoosts}
                         />

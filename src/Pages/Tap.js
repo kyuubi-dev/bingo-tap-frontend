@@ -28,10 +28,23 @@ function Tap({ userId, setUserBalance }) {
     }
   };
 
+  // Функция для сохранения баланса пользователя
+  const saveUserBalance = async () => {
+    try {
+      if (userId) {
+        await axios.put(`http://localhost:8000/api/save-balance/${userId}`, {
+          balance: userBalance
+        });
+      }
+    } catch (error) {
+      console.error('Ошибка при сохранении баланса пользователя:', error);
+    }
+  };
+
   useEffect(() => {
     // Загрузка баланса при монтировании компонента
     loadUserBalance();
-  }, [userId]); // Зависимость от userId, чтобы перезагрузить баланс при его изменении
+  },[userId]); // Зависимость только от userId, чтобы загрузка происходила один раз при монтировании
 
   useEffect(() => {
     const restoreEnergy = () => {
@@ -47,8 +60,10 @@ function Tap({ userId, setUserBalance }) {
 
     return () => {
       clearInterval(intervalRef.current);
+      // Сохранение баланса при размонтировании компонента
+      saveUserBalance();
     };
-  }, [maxEnergy]);
+  }, [maxEnergy, userBalance]); // Зависимость от maxEnergy и userBalance
 
   const hapticsVibrate = async () => {
     try {
