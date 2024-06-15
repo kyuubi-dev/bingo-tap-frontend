@@ -3,6 +3,7 @@
     background-color: black;
     min-height: 100vh;
     overflow: hidden;
+    overflow-y: visible;
   }
   html, body {
     overflow-x: hidden; /* Prevent horizontal scrolling */
