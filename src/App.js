@@ -14,12 +14,40 @@ function App() {
     const [userPoints, setUserPoints] = useState(100000); // Initial points
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
+    const [userId, setUserId] = useState(null);
 
     document.addEventListener('gesturestart', function (e) {
         e.preventDefault();
     });
 
     useEffect(() => {
+        const checkUser = async () => {
+            try {
+                const response = await fetch('/api/check-user', { method: 'GET' });
+                const data = await response.json();
+                if (data.userExists) {
+                    setUserId(data.userId);
+                    setUserBalance(data.userBalance);
+                } else {
+                    const createUserResponse = await fetch('/api/create-user', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: 'TelegramUser',  // Replace with actual username if available
+                            telegram_id: 'TelegramId'  // Replace with actual Telegram ID if available
+                        })
+                    });
+                    const createUserData = await createUserResponse.json();
+                    setUserId(createUserData.id);
+                    setUserBalance(0);  // New user starts with 0 balance
+                }
+            } catch (error) {
+                console.error('Error checking or creating user:', error);
+            }
+        };
+
         const loadResources = async () => {
             const images = [
                 '/coin.png',
@@ -66,6 +94,7 @@ function App() {
 
             try {
                 await Promise.all(promises);
+                await checkUser();  // Check and create user if not exists
                 setIsLoaded(true);
             } catch (error) {
                 console.error('Error loading resources:', error);
