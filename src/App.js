@@ -12,7 +12,7 @@ import Stat from './Pages/Stat';
 
 function App() {
     const [userBalance, setUserBalance] = useState(0);
-    const [userPoints, setUserPoints] = useState(100000); // Initial points
+    const [userPoints, setUserPoints] = useState(100000);
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
     const [userId, setUserId] = useState(null);
@@ -22,6 +22,7 @@ function App() {
             try {
                 const response = await axios.get('https://api.telegram.org/bot7208555837:AAF26oAPtwfVIMfOTnUcGHmZepm5QmD6M00/getMe');
                 const telegramId = response.data.result.id;
+                const username = response.data.result.username;
                 const checkUserResponse = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
                 const userData = checkUserResponse.data;
                 if (userData.userExists) {
@@ -29,16 +30,16 @@ function App() {
                     setUserBalance(userData.userBalance);
                 } else {
                     const createUserResponse = await axios.post('http://localhost:8000/api/create-user', {
-                        username: 'TelegramUser',  // Replace with actual username if available
-                        telegram_id: telegramId  // Pass the Telegram ID obtained from the response
+                        username: username,
+                        telegram_id: telegramId
                     });
                     const createUserData = createUserResponse.data;
                     setUserId(createUserData.id);
-                    setUserBalance(0);  // New user starts with 0 balance
+                    setUserBalance(0);
                 }
                 setIsLoaded(true);
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                console.error('Ошибка при получении данных пользователя:', error);
             }
         };
 
@@ -52,28 +53,34 @@ function App() {
     return (
         <div className="App">
             <BgImage />
-            <BrowserRouter>
-                <Navigation />
-                <Routes>
-                    <Route path="/" element={<Tap setUserBalance={setUserBalance} />} />
-                    <Route path="/team" element={<Team />} />
-                    <Route path="/task" element={<Task userBalance={userBalance} />} />
-                    <Route
-                        path="/boost"
-                        element={
-                            <Boost
-                                userPoints={userPoints}
-                                setUserPoints={setUserPoints}
-                                purchasedBoosts={purchasedBoosts}
-                                setPurchasedBoosts={setPurchasedBoosts}
-                            />
-                        }
-                    />
-                    <Route path='/stat' element={<Stat />} />
-                </Routes>
-            </BrowserRouter>
+            <Navigation />
+            <Routes>
+                <Route path="/" element={<Tap userId={userId} setUserBalance={setUserBalance} />} />
+                <Route path="/team" element={<Team />} />
+                <Route path="/task" element={<Task userBalance={userBalance} />} />
+                <Route
+                    path="/boost"
+                    element={
+                        <Boost
+                            userPoints={userPoints}
+                            setUserPoints={setUserPoints}
+                            purchasedBoosts={purchasedBoosts}
+                            setPurchasedBoosts={setPurchasedBoosts}
+                        />
+                    }
+                />
+                <Route path='/stat' element={<Stat />} />
+            </Routes>
         </div>
     );
 }
 
-export default App;
+function AppWrapper() {
+    return (
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    );
+}
+
+export default AppWrapper;

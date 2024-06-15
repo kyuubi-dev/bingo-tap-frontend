@@ -1,18 +1,37 @@
-import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import './Tap.css';
-import './Task.js';
+import { useNavigate } from 'react-router-dom';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
-function Tap({ setUserBalance }) {
+function Tap({ userId, setUserBalance }) {
   const [userBalance, setUserBalanceState] = useState(0);
   const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
   const intervalRef = useRef(null);
   const activeTouches = useRef(new Set());
   const navigate = useNavigate();
-  const [userPoints, setUserPoints] = useState(10000); // initial points
+  const [userPoints, setUserPoints] = useState(10000); // начальные очки
   const [purchasedBoosts, setPurchasedBoosts] = useState({});
+
+  // Функция для загрузки баланса пользователя
+  const loadUserBalance = async () => {
+    try {
+      if (userId) {
+        const response = await axios.get(`http://localhost:8000/api/user-balance/${userId}`);
+        const balance = response.data.balance;
+        setUserBalanceState(balance); // Локальное состояние
+        setUserBalance(balance); // Обновление в основном компоненте
+      }
+    } catch (error) {
+      console.error('Ошибка при загрузке баланса пользователя:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Загрузка баланса при монтировании компонента
+    loadUserBalance();
+  }, [userId]); // Зависимость от userId, чтобы перезагрузить баланс при его изменении
 
   useEffect(() => {
     const restoreEnergy = () => {
@@ -33,7 +52,6 @@ function Tap({ setUserBalance }) {
 
   const hapticsVibrate = async () => {
     try {
-      // Use Capacitor's Haptics API
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch (error) {
       console.error('Failed to trigger haptic feedback:', error);
@@ -44,7 +62,6 @@ function Tap({ setUserBalance }) {
     const robotImg = document.querySelector('.robot-img');
     const robotRect = robotImg.getBoundingClientRect();
 
-    // Check if the tap is within the robot image bounds
     if (
         clientX >= robotRect.left &&
         clientX <= robotRect.right &&
