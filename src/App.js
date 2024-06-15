@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Tap from './Pages/Tap';
 import BgImage from './Pages/BgImage';
@@ -15,34 +14,65 @@ function App() {
     const [userPoints, setUserPoints] = useState(100000); // Initial points
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
-    const [userId, setUserId] = useState(null);
+
+    document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+    });
 
     useEffect(() => {
-        const fetchUserId = async () => {
+        const loadResources = async () => {
+            const images = [
+                '/coin.png',
+                '/ranks/gold.png',
+                './ranks/blue.png',
+                './ranks/neon.png',
+                './ranks/green.png',
+                './tasks/task.png',
+                './tasks/open.png',
+                './tasks/people1.png',
+                './tasks/people2.png',
+                './tasks/people3.png',
+                './boost/power.png',
+                './btns/robotv2.png',
+                './boost/click.png',
+                './boost/dow.png',
+                './boost/fire.b.png',
+                './boost/fire.p.png',
+                './btns/boost.png',
+                './btns/boost_active.png',
+                './btns/stat.png',
+                './btns/stat_active.png',
+                './btns/tap.png',
+                './btns/tap_active.png',
+                './btns/task.png',
+                './btns/task_active.png',
+                './btns/team.png',
+                './btns/team_active.png',
+                './16.png',
+                './17.png',
+                './bg.png',
+                './btn-bg.png',
+                './coin.png'
+            ];
+
+            const promises = images.map((src) => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.src = src;
+                    img.onload = resolve;
+                    img.onerror = reject;
+                });
+            });
+
             try {
-                const response = await axios.get('https://api.telegram.org/bot<7208555837:AAF26oAPtwfVIMfOTnUcGHmZepm5QmD6M00>/getMe');
-                const telegramId = response.data.result.id;
-                const checkUserResponse = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
-                const userData = checkUserResponse.data;
-                if (userData.userExists) {
-                    setUserId(userData.userId);
-                    setUserBalance(userData.userBalance);
-                } else {
-                    const createUserResponse = await axios.post('http://localhost:8000/api/create-user', {
-                        username: 'TelegramUser',  // Replace with actual username if available
-                        telegram_id: telegramId  // Pass the Telegram ID obtained from the response
-                    });
-                    const createUserData = createUserResponse.data;
-                    setUserId(createUserData.id);
-                    setUserBalance(0);  // New user starts with 0 balance
-                }
+                await Promise.all(promises);
                 setIsLoaded(true);
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                console.error('Error loading resources:', error);
             }
         };
 
-        fetchUserId();
+        loadResources();
     }, []);
 
     if (!isLoaded) {
