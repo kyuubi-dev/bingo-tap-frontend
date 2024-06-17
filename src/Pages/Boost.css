@@ -5,9 +5,12 @@ body {
     background-color: #000;
     color: #BCF8FA;
     overflow-x: hidden;
+    overflow-y: hidden; /* Prevent vertical scrolling */
+
 }
 html, body {
     overflow-x: hidden !important; /* Prevent horizontal scrolling */
+    overflow-y: hidden;
 }
 * {
     -webkit-tap-highlight-color: transparent;
@@ -23,7 +26,7 @@ html, body {
     grid-auto-rows: 10% 6% 10% 5%;
     gap: 3%;
     text-align: center;
-    overflow-y: auto; /* Дозволити скролінг при переповненні контенту */
+    overflow-y: hidden; /* Дозволити скролінг при переповненні контенту */
     overflow-x: hidden !important;
     z-index: 2;
 }

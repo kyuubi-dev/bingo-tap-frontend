@@ -4,24 +4,23 @@ import './Tap.css';
 import { useNavigate } from 'react-router-dom';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
-function Tap({ userId, setUserBalance }) {
+function Tap({ telegramId, setUserBalance }) {
   const [userBalance, setUserBalanceState] = useState(0);
   const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
   const intervalRef = useRef(null);
   const activeTouches = useRef(new Set());
   const navigate = useNavigate();
-  const [userPoints, setUserPoints] = useState(10000); // начальные очки
   const [purchasedBoosts, setPurchasedBoosts] = useState({});
 
   // Функция для загрузки баланса пользователя
   const loadUserBalance = async () => {
     try {
-      if (userId) {
-        const response = await axios.get(`http://localhost:8000/api/user-balance/${userId}`);
-        const balance = response.data.balance;
-        setUserBalanceState(balance); // Локальное состояние
-        setUserBalance(balance); // Обновление в основном компоненте
+      const response = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
+      const userData = response.data;
+      if (userData.userExists) {
+        setUserBalanceState(userData.userBalance); // Локальное состояние
+        setUserBalance(userData.userBalance); // Обновление в основном компоненте
       }
     } catch (error) {
       console.error('Ошибка при загрузке баланса пользователя:', error);
@@ -31,9 +30,11 @@ function Tap({ userId, setUserBalance }) {
   // Функция для сохранения баланса пользователя
   const saveUserBalance = async () => {
     try {
-      if (userId) {
-        await axios.put(`http://localhost:8000/api/save-balance/${userId}`, {
-          balance: userBalance
+      const response = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
+      const userData = response.data;
+      if (userData.userExists) {
+        await axios.put(`http://localhost:8000/api/save-balance/${telegramId}`, {
+          balance: userBalance +1
         });
       }
     } catch (error) {
@@ -44,7 +45,7 @@ function Tap({ userId, setUserBalance }) {
   useEffect(() => {
     // Загрузка баланса при монтировании компонента
     loadUserBalance();
-  },[userId]); // Зависимость только от userId, чтобы загрузка происходила один раз при монтировании
+  }, [telegramId]);
 
   useEffect(() => {
     const restoreEnergy = () => {
@@ -60,10 +61,9 @@ function Tap({ userId, setUserBalance }) {
 
     return () => {
       clearInterval(intervalRef.current);
-      // Сохранение баланса при размонтировании компонента
       saveUserBalance();
     };
-  }, [maxEnergy, userBalance]); // Зависимость от maxEnergy и userBalance
+  }, [maxEnergy, userBalance]);
 
   const hapticsVibrate = async () => {
     try {
@@ -160,18 +160,18 @@ function Tap({ userId, setUserBalance }) {
       <div className="Tap">
         <div className="Tap-content">
           <div className='lightnings'>
-            <img src='/16.png' className='lightning right' alt="Lightning Right" />
-            <img src='/17.png' className='lightning left' alt="Lightning Left" />
+            <img src='/16.png' className='lightning right' alt="Lightning Right"/>
+            <img src='/17.png' className='lightning left' alt="Lightning Left"/>
           </div>
           <div className="balance-display">
-            <img src="/coin.png" alt="Coin" className="coin-icon" />
+            <img src="/coin.png" alt="Coin" className="coin-icon"/>
             <span className="balance-amount blue-style">{userBalance}</span>
           </div>
           <div className="tap-gold" onClick={handleGoldButtonClick}>
-            <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank" />
+            <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank"/>
             <span className="gold-text gold-style">GOLD</span>
             <button className='open-btn'>
-              <img src='./tasks/open.png' className='open-icon' alt="Open" />
+              <img src='./tasks/open.png' className='open-icon' alt="Open"/>
             </button>
           </div>
           <button
@@ -180,14 +180,14 @@ function Tap({ userId, setUserBalance }) {
               onTouchEnd={handleTouchEnd}
               onMouseDown={handleMouseDown}
           >
-            <img src="/btns/robotv2.png" alt="Start" className='robot-img' />
+            <img src="/btns/robotv2.png" alt="Start" className='robot-img'/>
           </button>
           <div className="energy-display">
-            <img src='./boost/power.png' className='power-img' alt="Power" />
+            <img src='./boost/power.png' className='power-img' alt="Power"/>
             <div className='blue-style'>{energy}/{maxEnergy}</div>
           </div>
           <div className="energy-container">
-            <div className="energy-bar" style={{ width: energyBarWidth }}></div>
+            <div className="energy-bar" style={{width: energyBarWidth}}></div>
           </div>
         </div>
       </div>

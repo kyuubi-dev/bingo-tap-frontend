@@ -14,23 +14,23 @@ function App() {
     const [userBalance, setUserBalance] = useState(0);
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
-    const [userId, setUserId] = useState(null);
+    const [telegramId, setTelegramId] = useState(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                // 1. Получаем telegramId через API Telegram
+                // Получаем telegramId через API Telegram
                 const response = await axios.get('https://api.telegram.org/bot7208555837:AAF26oAPtwfVIMfOTnUcGHmZepm5QmD6M00/getMe');
                 const telegramId = response.data.result.id;
                 const username = response.data.result.username;
+                setTelegramId(telegramId);
 
-                // 2. Проверяем существует ли пользователь на нашем сервере
+                // Проверяем существует ли пользователь на нашем сервере
                 const checkUserResponse = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
                 const userData = checkUserResponse.data;
 
                 if (userData.userExists) {
                     // Если пользователь существует, загружаем его данные, включая баланс
-                    setUserId(userData.userId);
                     setUserBalance(userData.userBalance);
                 } else {
                     // Если пользователь не существует, создаем нового пользователя
@@ -38,8 +38,6 @@ function App() {
                         username: username,
                         telegram_id: telegramId
                     });
-                    const createUserData = createUserResponse.data;
-                    setUserId(createUserData.id);
                     setUserBalance(0); // Не обязательно устанавливать 0, мы можем получить актуальные данные с сервера
                 }
 
@@ -61,13 +59,14 @@ function App() {
             <BgImage />
             <Navigation />
             <Routes>
-                <Route path="/" element={<Tap userId={userId} setUserBalance={setUserBalance} />} />
+                <Route path="/" element={<Tap telegramId={telegramId} setUserBalance={setUserBalance} />} />
                 <Route path="/team" element={<Team />} />
-                <Route path="/task" element={<Task userBalance={userBalance} />} />
+                <Route path="/task" element={<Task telegramId={telegramId}  />} />
                 <Route
                     path="/boost"
                     element={
                         <Boost
+                            telegramId={telegramId}
                             purchasedBoosts={purchasedBoosts}
                             setPurchasedBoosts={setPurchasedBoosts}
                         />

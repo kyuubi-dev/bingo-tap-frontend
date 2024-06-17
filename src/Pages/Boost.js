@@ -2,13 +2,30 @@ import './Boost.css';
 import React, { useState, useEffect } from 'react';
 import './TextStyle.css';
 import CompletionMessage from './ModelMessage';
+import axios from 'axios';
 
-const Boost = ({ userPoints, setUserPoints, purchasedBoosts, setPurchasedBoosts }) => {
+const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
     const [message, setMessage] = useState(null);
+    const [userBalance, setUserBalance] = useState(0);
     const [dailyBoosts, setDailyBoosts] = useState({
         "TAPPING GURU": 3,
         "FULL TANK": 3,
     });
+    const [boosts, setBoosts] = useState([]);
+
+    // Загрузка бустов с сервера
+    useEffect(() => {
+        const fetchBoosts = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/api/boosts');
+                setBoosts(response.data);
+            } catch (error) {
+                console.error('Error fetching boosts:', error);
+            }
+        };
+
+        fetchBoosts();
+    }, []);
 
     useEffect(() => {
         const resetDailyBoosts = () => {
@@ -30,6 +47,19 @@ const Boost = ({ userPoints, setUserPoints, purchasedBoosts, setPurchasedBoosts 
         return () => clearTimeout(timeoutId);
     }, []);
 
+    useEffect(() => {
+        const fetchUserBalance = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/api/user-balance/${telegramId}`);
+                setUserBalance(response.data.balance);
+            } catch (error) {
+                console.error('Error fetching user balance:', error);
+            }
+        };
+
+        fetchUserBalance();
+    }, [telegramId]);
+
     const handleDailyBoostUse = (boostName) => {
         if (dailyBoosts[boostName] > 0) {
             setDailyBoosts((prevBoosts) => ({
@@ -42,16 +72,28 @@ const Boost = ({ userPoints, setUserPoints, purchasedBoosts, setPurchasedBoosts 
         }
     };
 
-    const handlePurchase = (boostName, price) => {
-        if (userPoints >= price) {
-            setUserPoints(userPoints - price);
-            setPurchasedBoosts((prevBoosts) => ({
-                ...prevBoosts,
-                [boostName]: true,
-            }));
-            setMessage(`${boostName} purchased successfully!`);
-        } else {
-            setMessage('Not enough points for this purchase.');
+    const handlePurchase = async (boostName, price) => {
+        try {
+            const response = await axios.post('http://localhost:8000/api/purchase-boost', {
+                telegram_id: telegramId,
+                boost_name: boostName,
+                price: price
+            });
+            const success = response.data.success;
+
+            if (success) {
+                setPurchasedBoosts((prevBoosts) => ({
+                    ...prevBoosts,
+                    [boostName]: true,
+                }));
+                setUserBalance(response.data.newBalance);
+                setMessage(`${boostName} purchased successfully!`);
+            } else {
+                setMessage('Not enough points for this purchase.');
+            }
+        } catch (error) {
+            console.error('Error purchasing boost:', error);
+            setMessage('Failed to purchase boost.');
         }
     };
 
@@ -92,7 +134,7 @@ const Boost = ({ userPoints, setUserPoints, purchasedBoosts, setPurchasedBoosts 
             <header className="header">
                 <div className="balance-display-task">
                     <img src="/coin.png" alt="Coin" className="coin-icon"/>
-                    <span className="balance-amount blue-style">{userPoints}</span>
+                    <span className="balance-amount blue-style">{userBalance}</span>
                 </div>
             </header>
             <div className="dayli-boost-text gold-style">YOUR DAILY BOOSTERS:</div>
@@ -102,10 +144,15 @@ const Boost = ({ userPoints, setUserPoints, purchasedBoosts, setPurchasedBoosts 
             </div>
             <div className="boosters-text gold-style">BOOSTERS:</div>
             <div className="boosts">
-                <BoostItem text="MULTITAP" price={50000} image='/boost/dow.png' level="3"/>
-                <BoostItem text="Energy Limit" price={50000} image="/boost/fire.p.png" level="1"/>
-                <BoostItem text="Recharge Speed" price={50000} image="/boost/power.png" level="1"/>
-                <BoostItem text="Auto Tap" price={50000} image="/boost/click.png" level="1"/>
+                {boosts.map(boost => (
+                    <BoostItem
+                        key={boost.boost_id}
+                        text={boost.name}
+                        price={boost.price}
+                        image={`/boost/${boost.image}.png`}
+                        level={boost.level}
+                    />
+                ))}
             </div>
             {message && <CompletionMessage message={message} onClose={closeMessage}/>}
         </div>
