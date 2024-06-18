@@ -9,62 +9,15 @@ import Task from './Pages/Task';
 import Boost from './Pages/Boost';
 import LoadingScreen from './Pages/LoadingScreen';
 import Stat from './Pages/Stat';
+import NotMobile from './Pages/NotMobile';
 import config from './config';
-
-
 function App() {
     const [userBalance, setUserBalance] = useState(0);
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
     const [telegramId, setTelegramId] = useState(null);
-    document.addEventListener('gesturestart', function (e) {
-        e.preventDefault();
-    });
-    useEffect(() => {
-        const loadResources = async () => {
-            const images = [
-                '/coin.png',
-                '/ranks/gold.png',
-                './ranks/blue.png',
-                './ranks/neon.png',
-                './ranks/green.png',
-                './tasks/task.png',
-                './tasks/open.png',
-                './tasks/people1.png',
-                './tasks/people2.png',
-                './tasks/people3.png',
-                './boost/power.png',
-                './btns/robotv2.png',
-                './boost/click.png',
-                './boost/dow.png',
-                './boost/fire.b.png',
-                './boost/fire.p.png',
-                './btns/boost.png',
-                './btns/boost_active.png',
-                './btns/stat.png',
-                './btns/stat_active.png',
-                './btns/tap.png',
-                './btns/tap_active.png',
-                './btns/task.png',
-                './btns/task_active.png',
-                './btns/team.png',
-                './btns/team_active.png',
-                './16.png',
-                './17.png',
-                './bg.png',
-                './btn-bg.png',
-                './coin.png'
-            ];
 
-            const promises = images.map((src) => {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.src = src;
-                    img.onload = resolve;
-                    img.onerror = reject;
-                });
-            });
-        }
+    useEffect(() => {
         const fetchUserData = async () => {
             try {
                 // Получаем telegramId через API Telegram
@@ -74,7 +27,7 @@ function App() {
                 setTelegramId(telegramId);
 
                 // Проверяем существует ли пользователь на нашем сервере
-                const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
+                const checkUserResponse = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
                 const userData = checkUserResponse.data;
 
                 if (userData.userExists) {
@@ -82,7 +35,7 @@ function App() {
                     setUserBalance(userData.userBalance);
                 } else {
                     // Если пользователь не существует, создаем нового пользователя
-                    const createUserResponse = await axios.post(`${config.apiBaseUrl}/create-user`, {
+                    const createUserResponse = await axios.post('http://localhost:8000/api/create-user', {
                         username: username,
                         telegram_id: telegramId
                     });
@@ -94,7 +47,7 @@ function App() {
                 console.error('Ошибка при получении данных пользователя:', error);
             }
         };
-        loadResources();
+
         fetchUserData();
     }, []);
 
