@@ -9,6 +9,7 @@ import Task from './Pages/Task';
 import Boost from './Pages/Boost';
 import LoadingScreen from './Pages/LoadingScreen';
 import Stat from './Pages/Stat';
+import NotMobile from './Pages/NotMobile'; 
 
 function App() {
     const [userBalance, setUserBalance] = useState(0);
@@ -78,10 +79,14 @@ function App() {
     );
 }
 
+const isMobileDevice = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+};
+
 function AppWrapper() {
     return (
         <BrowserRouter>
-            <App />
+            {isMobileDevice() ? <App /> : <NotMobile />}
         </BrowserRouter>
     );
 }
