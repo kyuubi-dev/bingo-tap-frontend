@@ -21,7 +21,7 @@ function App() {
         const fetchUserData = async () => {
             try {
                 // Получаем telegramId через API Telegram
-                const response = await axios.get('https://api.telegram.org/bot7208555837:AAF26oAPtwfVIMfOTnUcGHmZepm5QmD6M00/getMe');
+                    const response = await axios.get('https://api.telegram.org/bot7208555837:AAF26oAPtwfVIMfOTnUcGHmZepm5QmD6M00/getMe');
                 const telegramId = response.data.result.id;
                 const username = response.data.result.username;
                 setTelegramId(telegramId);
