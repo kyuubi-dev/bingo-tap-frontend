@@ -27,7 +27,7 @@ function App() {
                 setTelegramId(telegramId);
 
                 // Проверяем существует ли пользователь на нашем сервере
-                const checkUserResponse = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
+                const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
                 const userData = checkUserResponse.data;
 
                 if (userData.userExists) {
@@ -35,7 +35,7 @@ function App() {
                     setUserBalance(userData.userBalance);
                 } else {
                     // Если пользователь не существует, создаем нового пользователя
-                    const createUserResponse = await axios.post('http://localhost:8000/api/create-user', {
+                    const createUserResponse = await axios.post(`${config.apiBaseUrl}/create-user`, {
                         username: username,
                         telegram_id: telegramId
                     });
