@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './TextStyle.css';
 import CompletionMessage from './ModelMessage';
 import axios from 'axios';
+import config from '../config';
 
 const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
     const [message, setMessage] = useState(null);
@@ -17,7 +18,7 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
     useEffect(() => {
         const fetchBoosts = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/api/boosts');
+                const response = await axios.get(`${config.apiBaseUrl}/boosts`);
                 setBoosts(response.data);
             } catch (error) {
                 console.error('Error fetching boosts:', error);
@@ -50,7 +51,7 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
     useEffect(() => {
         const fetchUserBalance = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/api/user-balance/${telegramId}`);
+                const response = await axios.get(`${config.apiBaseUrl}/user-balance/${telegramId}`);
                 setUserBalance(response.data.balance);
             } catch (error) {
                 console.error('Error fetching user balance:', error);
@@ -74,7 +75,7 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
 
     const handlePurchase = async (boostName, price) => {
         try {
-            const response = await axios.post('http://localhost:8000/api/purchase-boost', {
+            const response = await axios.post(`${config.apiBaseUrl}/purchase-boost`, {
                 telegram_id: telegramId,
                 boost_name: boostName,
                 price: price

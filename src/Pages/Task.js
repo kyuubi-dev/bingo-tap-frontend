@@ -4,6 +4,7 @@ import './TextStyle.css';
 import { useLocation } from 'react-router-dom';
 import CompletionMessage from './ModelMessage';
 import axios from 'axios';
+import config from '../config';
 
 const Task = ({ telegramId }) => {
     const location = useLocation();
@@ -30,7 +31,7 @@ const Task = ({ telegramId }) => {
     useEffect(() => {
         const fetchUserBalance = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
+                const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
                 const userData = response.data;
                 if (userData.userExists) {
                     setUserBalance(userData.userBalance);
@@ -82,7 +83,7 @@ const Task = ({ telegramId }) => {
 
         // Update balance on server
         try {
-            await axios.put(`http://localhost:8000/api/save-balance/${telegramId}`, {
+            await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
                 balance: newBalance
             });
             console.log('Баланс успешно обновлен на сервере');
@@ -109,7 +110,7 @@ const Task = ({ telegramId }) => {
             setCompletionMessage(`League claimed: ${league.name}, reward - ${league.reward}`);
 
             try {
-                await axios.put(`http://localhost:8000/api/save-balance/${telegramId}`, {
+                await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
                     balance: newBalance
                 });
                 console.log('Баланс успешно обновлен на сервере');
@@ -148,7 +149,7 @@ const Task = ({ telegramId }) => {
             if (userPoints >= league.requiredPoints && userLeague !== league.name) {
                 setUserLeague(league.name);
                 try {
-                    await axios.put(`http://localhost:8000/api/update-league/${telegramId}`, {
+                    await axios.put(`${config.apiBaseUrl}/update-league/${telegramId}`, {
                         league: league.name
                     });
                     console.log('Лига успешно обновлена на сервере');
