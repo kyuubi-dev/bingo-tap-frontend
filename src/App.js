@@ -17,41 +17,48 @@ function App() {
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
     const [userId, setUserId] = useState(null);
+    const [username, setUsername] = useState(null);
 
     useEffect(() => {
+        const initializeTelegramWebApp = () => {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const webAppUser = window.Telegram.WebApp.initDataUnsafe.user;
+                if (webAppUser) {
+                    const { id, username } = webAppUser;
+                    setUserId(id);
+                    setUsername(username);
+                    return { id, username };
+                }
+            }
+            return null;
+        };
+
         const fetchUserData = async () => {
             try {
-                // Получаем обновления через API Telegram
-                const updatesResponse = await axios.get(`https://api.telegram.org/bot${config.telegramBotToken}/getUpdates`);
-                const updates = updatesResponse.data.result;
+                const user = initializeTelegramWebApp();
+                if (user) {
+                    const { id, username } = user;
 
-                if (updates.length > 0) {
-                    const lastUpdate = updates[updates.length - 1];
-                    const userId = lastUpdate.message.from.id;
-                    const username = lastUpdate.message.from.username;
-
-                    setUserId(userId);
-
-                    // Проверяем существует ли пользователь на нашем сервере
-                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${userId}`);
+                    // Check if user exists on the server
+                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${id}`);
                     const userData = checkUserResponse.data;
 
                     if (userData.userExists) {
-                        // Если пользователь существует, загружаем его данные, включая баланс
+                        // If user exists, load their data, including balance
                         setUserBalance(userData.userBalance);
                     } else {
-                        // Если пользователь не существует, создаем нового пользователя
-                        const createUserResponse = await axios.post(`${config.apiBaseUrl}/create-user`, {
+                        // If user does not exist, create a new user
+                        await axios.post(`${config.apiBaseUrl}/create-user`, {
                             username: username,
-                            telegram_id: userId
+                            telegram_id: id
                         });
-                        setUserBalance(0); // Не обязательно устанавливать 0, мы можем получить актуальные данные с сервера
+                        setUserBalance(0); // Optionally set 0, or get actual data from the server
                     }
                 }
 
                 setIsLoaded(true);
             } catch (error) {
-                console.error('Ошибка при получении данных пользователя:', error);
+                console.error('Error fetching user data:', error);
             }
         };
 
