@@ -141,7 +141,7 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
             <div className="dayli-boost-text gold-style">YOUR DAILY BOOSTERS:</div>
             <div className="daily-boosts">
                 <DailyBoostItem text="TAPPING GURU" reward="3" image='/boost/fire.b.png'/>
-                <DailyBoostItem text="FULL TANK" reward="3" image="/boost/power.png"/>
+                <DailyBoostItem text="FULL TANK" reward="3" image='/boost/power.png'/>
             </div>
             <div className="boosters-text gold-style">BOOSTERS:</div>
             <div className="boosts">
