@@ -6,7 +6,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useLocation } from 'react-router-dom';
 import config from "../config";
 
-function Tap({ telegramId }) {
+function Tap({ userId }) {
   const [userBalance, setUserBalance] = useState(0);
   const [energy, setEnergy] = useState(1500);
   const [userLeague, setUserLeague] = useState('');
@@ -23,7 +23,7 @@ function Tap({ telegramId }) {
   useEffect(() => {
     const fetchActiveBoosts = async () => {
       try {
-        const response = await axios.get(`${config.apiBaseUrl}/active-boosts/${telegramId}`);
+        const response = await axios.get(`${config.apiBaseUrl}/active-boosts/${userId}`);
         setActiveBoosts(response.data.activeBoosts);
       } catch (error) {
         console.error('Error fetching active boosts:', error);
@@ -31,7 +31,7 @@ function Tap({ telegramId }) {
     };
 
     fetchActiveBoosts();
-  }, [telegramId]);
+  }, [userId]);
 
   useEffect(() => {
     const { boostName } = location.state || {};
@@ -60,7 +60,7 @@ function Tap({ telegramId }) {
   // Функция для загрузки баланса пользователя
   const loadUserBalance = async () => {
     try {
-      const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
+      const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${userId}`);
       const userData = response.data;
       if (userData.userExists) {
         setUserBalance(userData.userBalance); // Обновление в основном компоненте
@@ -74,7 +74,7 @@ function Tap({ telegramId }) {
   // Функция для сохранения баланса пользователя
   const saveUserBalance = async (newBalance) => {
     try {
-      await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
+      await axios.put(`${config.apiBaseUrl}/save-balance/${userId}`, {
         balance: newBalance
       });
       setUserBalance(newBalance); // Обновление баланса в состоянии
@@ -86,7 +86,7 @@ function Tap({ telegramId }) {
   useEffect(() => {
     // Загрузка баланса при монтировании компонента и при изменении telegramId
     loadUserBalance();
-  }, [telegramId]);
+  }, [userId]);
 
   useEffect(() => {
     const restoreEnergy = () => {
