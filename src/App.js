@@ -11,35 +11,42 @@ import LoadingScreen from './Pages/LoadingScreen';
 import Stat from './Pages/Stat';
 import NotMobile from './Pages/NotMobile';
 import config from './config';
+
 function App() {
     const [userBalance, setUserBalance] = useState(0);
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
-    const [telegramId, setTelegramId] = useState(null);
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                // Получаем telegramId через API Telegram
-                    const response = await axios.get('https://api.telegram.org/bot7208555837:AAF26oAPtwfVIMfOTnUcGHmZepm5QmD6M00/getMe');
-                const telegramId = response.data.result.id;
-                const username = response.data.result.username;
-                setTelegramId(telegramId);
+                // Получаем обновления через API Telegram
+                const updatesResponse = await axios.get(`https://api.telegram.org/bot${config.telegramBotToken}/getUpdates`);
+                const updates = updatesResponse.data.result;
 
-                // Проверяем существует ли пользователь на нашем сервере
-                const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
-                const userData = checkUserResponse.data;
+                if (updates.length > 0) {
+                    const lastUpdate = updates[updates.length - 1];
+                    const userId = lastUpdate.message.from.id;
+                    const username = lastUpdate.message.from.username;
 
-                if (userData.userExists) {
-                    // Если пользователь существует, загружаем его данные, включая баланс
-                    setUserBalance(userData.userBalance);
-                } else {
-                    // Если пользователь не существует, создаем нового пользователя
-                    const createUserResponse = await axios.post(`${config.apiBaseUrl}/create-user`, {
-                        username: username,
-                        telegram_id: telegramId
-                    });
-                    setUserBalance(0); // Не обязательно устанавливать 0, мы можем получить актуальные данные с сервера
+                    setUserId(userId);
+
+                    // Проверяем существует ли пользователь на нашем сервере
+                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${userId}`);
+                    const userData = checkUserResponse.data;
+
+                    if (userData.userExists) {
+                        // Если пользователь существует, загружаем его данные, включая баланс
+                        setUserBalance(userData.userBalance);
+                    } else {
+                        // Если пользователь не существует, создаем нового пользователя
+                        const createUserResponse = await axios.post(`${config.apiBaseUrl}/create-user`, {
+                            username: username,
+                            telegram_id: userId
+                        });
+                        setUserBalance(0); // Не обязательно устанавливать 0, мы можем получить актуальные данные с сервера
+                    }
                 }
 
                 setIsLoaded(true);
@@ -60,14 +67,14 @@ function App() {
             <BgImage />
             <Navigation />
             <Routes>
-                <Route path="/" element={<Tap telegramId={telegramId} setUserBalance={setUserBalance} />} />
+                <Route path="/" element={<Tap telegramId={userId} setUserBalance={setUserBalance} />} />
                 <Route path="/team" element={<Team />} />
-                <Route path="/task" element={<Task telegramId={telegramId}  />} />
+                <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route
                     path="/boost"
                     element={
                         <Boost
-                            telegramId={telegramId}
+                            telegramId={userId}
                             purchasedBoosts={purchasedBoosts}
                             setPurchasedBoosts={setPurchasedBoosts}
                         />
