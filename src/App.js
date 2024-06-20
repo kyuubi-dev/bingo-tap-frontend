@@ -15,7 +15,8 @@ import config from './config';
 function App() {
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
-    const [telegramId, setTelegramId] = useState(null);
+
+    
     const [loadingImages, setLoadingImages] = useState(true);
     const location = useLocation();
 
@@ -24,24 +25,40 @@ function App() {
         '/task': ['/16.png', '/17.png','/coin.png','./tasks/open.png','./tasks/people1.png','./tasks/people2.png','./tasks/people3.png','./ranks/blue.png','./ranks/gold.png','./ranks/neon.png','./ranks/green.png'],
         '/boost': ['/16.png', '/17.png','/coin.png','/boost/fire.b.png','/boost/power.png']
     };
+    const [userId, setUserId] = useState(null);
+
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axios.get('https://api.telegram.org/bot7208555837:AAF26oAPtwfVIMfOTnUcGHmZepm5QmD6M00/getMe');
-                const telegramId = response.data.result.id;
-                const username = response.data.result.username;
-                setTelegramId(telegramId);
 
-                const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
-                const userData = checkUserResponse.data;
 
-                if (userData.userExists) {
-                } else {
-                    await axios.post(`${config.apiBaseUrl}/create-user`, {
-                        username: username,
-                        telegram_id: telegramId
-                    });
+                // Получаем обновления через API Telegram
+                const updatesResponse = await axios.get(`https://api.telegram.org/bot${config.telegramBotToken}/getUpdates`);
+                const updates = updatesResponse.data.result;
+
+                if (updates.length > 0) {
+                    const lastUpdate = updates[updates.length - 1];
+                    const userId = lastUpdate.message.from.id;
+                    const username = lastUpdate.message.from.username;
+
+                    setUserId(userId);
+
+                    // Проверяем существует ли пользователь на нашем сервере
+                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${userId}`);
+                    const userData = checkUserResponse.data;
+
+                    if (userData.userExists) {
+                        // Если пользователь существует, загружаем его данные, включая баланс
+                        setUserBalance(userData.userBalance);
+                    } else {
+                        // Если пользователь не существует, создаем нового пользователя
+                        const createUserResponse = await axios.post(`${config.apiBaseUrl}/create-user`, {
+                            username: username,
+                            telegram_id: userId
+                        });
+                        setUserBalance(0); // Не обязательно устанавливать 0, мы можем получить актуальные данные с сервера
+                    }
                 }
 
                 setIsLoaded(true);
@@ -92,6 +109,7 @@ function App() {
             <BgImage />
             <Navigation />
             <Routes>
+
                 <Route path="/" element={<Tap telegramId={telegramId} />} />
                 <Route path="/team" element={<Team />} />
                 <Route path="/task" element={<Task telegramId={telegramId} />} />
