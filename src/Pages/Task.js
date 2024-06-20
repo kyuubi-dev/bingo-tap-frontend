@@ -52,7 +52,7 @@ const Task = ({ telegramId }) => {
 
     const fetchTasks = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/tasks');
+            const response = await axios.get(`${config.apiBaseUrl}/tasks`);
             const tasksData = response.data;
             setTasks(tasksData);
         } catch (error) {
@@ -133,8 +133,10 @@ const Task = ({ telegramId }) => {
                 return './ranks/gold.png';
             case 'DIAMOND':
                 return './ranks/neon.png';
+            case 'EMERALD':
+                return './ranks/green.png'
             default:
-                return './ranks/default.png';
+                return './ranks/blue.png';
         }
     };
 

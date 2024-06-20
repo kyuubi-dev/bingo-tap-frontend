@@ -3,24 +3,68 @@ import axios from 'axios';
 import './Tap.css';
 import { useNavigate } from 'react-router-dom';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { useLocation } from 'react-router-dom';
+import config from "../config";
 
-function Tap({ telegramId, setUserBalance }) {
-  const [userBalance, setUserBalanceState] = useState(0);
+function Tap({ telegramId }) {
+  const [userBalance, setUserBalance] = useState(0);
   const [energy, setEnergy] = useState(1500);
+  const [userLeague, setUserLeague] = useState('');
+  const [activeBoosts, setActiveBoosts] = useState([]);
   const maxEnergy = 1500;
   const intervalRef = useRef(null);
   const activeTouches = useRef(new Set());
   const navigate = useNavigate();
   const [purchasedBoosts, setPurchasedBoosts] = useState({});
+  const location = useLocation();
+  const [timer, setTimer] = useState(null);
+  const [isFullTankActive, setIsFullTankActive] = useState(false);
+
+  useEffect(() => {
+    const fetchActiveBoosts = async () => {
+      try {
+        const response = await axios.get(`${config.apiBaseUrl}/active-boosts/${telegramId}`);
+        setActiveBoosts(response.data.activeBoosts);
+      } catch (error) {
+        console.error('Error fetching active boosts:', error);
+      }
+    };
+
+    fetchActiveBoosts();
+  }, [telegramId]);
+
+  useEffect(() => {
+    const { boostName } = location.state || {};
+
+    if (boostName === 'ENERGY LIMIT') {
+      activateFullTank();
+    }
+  }, [location.state]);
+
+  const activateFullTank = () => {
+    setIsFullTankActive(true);
+    setEnergy(Infinity); // Устанавливаем бесконечную энергию
+
+    // Включаем таймер на 15 секунд
+    if (timer) {
+      clearTimeout(timer);
+    }
+    const newTimer = setTimeout(() => {
+      setIsFullTankActive(false);
+      setEnergy(maxEnergy); // Возвращаем энергию к 1500 после окончания действия буста
+    }, 15000); // 15 секунд
+
+    setTimer(newTimer);
+  };
 
   // Функция для загрузки баланса пользователя
   const loadUserBalance = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
+      const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
       const userData = response.data;
       if (userData.userExists) {
-        setUserBalanceState(userData.userBalance); // Локальное состояние
         setUserBalance(userData.userBalance); // Обновление в основном компоненте
+        setUserLeague(userData.userLeague); // Обновлення ліги користувача
       }
     } catch (error) {
       console.error('Ошибка при загрузке баланса пользователя:', error);
@@ -28,22 +72,19 @@ function Tap({ telegramId, setUserBalance }) {
   };
 
   // Функция для сохранения баланса пользователя
-  const saveUserBalance = async () => {
+  const saveUserBalance = async (newBalance) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/check-user?telegram_id=${telegramId}`);
-      const userData = response.data;
-      if (userData.userExists) {
-        await axios.put(`http://localhost:8000/api/save-balance/${telegramId}`, {
-          balance: userBalance +1
-        });
-      }
+      await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
+        balance: newBalance
+      });
+      setUserBalance(newBalance); // Обновление баланса в состоянии
     } catch (error) {
       console.error('Ошибка при сохранении баланса пользователя:', error);
     }
   };
 
   useEffect(() => {
-    // Загрузка баланса при монтировании компонента
+    // Загрузка баланса при монтировании компонента и при изменении telegramId
     loadUserBalance();
   }, [telegramId]);
 
@@ -86,7 +127,6 @@ function Tap({ telegramId, setUserBalance }) {
       if (energy > 0) {
         const tapValue = purchasedBoosts['Taping Guru'] ? 5 : 1;
         setEnergy((prevEnergy) => prevEnergy - 1);
-        setUserBalanceState((prevBalance) => prevBalance + tapValue);
         setUserBalance((prevBalance) => prevBalance + tapValue);
 
         hapticsVibrate();
@@ -101,14 +141,25 @@ function Tap({ telegramId, setUserBalance }) {
     }
   };
 
+  const getLeagueImage = (league) => {
+    switch (league.toUpperCase()) {
+      case 'SILVER':
+        return './ranks/blue.png';
+      case 'GOLD':
+        return './ranks/gold.png';
+      case 'DIAMOND':
+        return './ranks/neon.png';
+      default:
+        return './ranks/blue.png';
+    }
+  };
+
   const handleMouseDown = (event) => {
     event.preventDefault();
     handleTap(event.clientX, event.clientY);
   };
 
   const handleTouchStart = (event) => {
-    event.preventDefault();
-
     const touches = Array.from(event.changedTouches);
     touches.forEach(touch => {
       if (!activeTouches.current.has(touch.identifier)) {
@@ -126,6 +177,17 @@ function Tap({ telegramId, setUserBalance }) {
       }
     });
   };
+
+  useEffect(() => {
+    const mainButton = document.querySelector('.main-button');
+    mainButton.addEventListener('touchstart', handleTouchStart, { passive: false });
+    mainButton.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      mainButton.removeEventListener('touchstart', handleTouchStart);
+      mainButton.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
 
   const animatePlusOne = (startX, startY, text) => {
     const coinElement = document.querySelector('.balance-display img');
@@ -168,16 +230,14 @@ function Tap({ telegramId, setUserBalance }) {
             <span className="balance-amount blue-style">{userBalance}</span>
           </div>
           <div className="tap-gold" onClick={handleGoldButtonClick}>
-            <img src='./ranks/gold.png' className='rank-img' alt="Gold Rank"/>
-            <span className="gold-text gold-style">GOLD</span>
+            <img src={getLeagueImage(userLeague)} className='rank-img' alt="Gold Rank"/>
+            <span className="gold-text gold-style">{userLeague.toUpperCase()}</span>
             <button className='open-btn'>
               <img src='./tasks/open.png' className='open-icon' alt="Open"/>
             </button>
           </div>
           <button
               className="main-button"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
               onMouseDown={handleMouseDown}
           >
             <img src="/btns/robotv2.png" alt="Start" className='robot-img'/>
@@ -187,7 +247,7 @@ function Tap({ telegramId, setUserBalance }) {
             <div className='blue-style'>{energy}/{maxEnergy}</div>
           </div>
           <div className="energy-container">
-            <div className="energy-bar" style={{width: energyBarWidth}}></div>
+            <div className="energy-bar" style={{ width: energyBarWidth }}></div>
           </div>
         </div>
       </div>
