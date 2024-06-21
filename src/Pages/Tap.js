@@ -1,193 +1,90 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 import './Tap.css';
-import { useNavigate } from 'react-router-dom';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { useLocation } from 'react-router-dom';
 import config from "../config";
+import { useNavigate } from 'react-router-dom';
 
-function Tap({ userId }) {
-  const [userBalance, setUserBalance] = useState(0);
+function Tap({ telegramId }) {
   const [energy, setEnergy] = useState(1500);
-  const [userLeague, setUserLeague] = useState('');
-  const [activeBoosts, setActiveBoosts] = useState([]);
   const maxEnergy = 1500;
-  const intervalRef = useRef(null);
-  const activeTouches = useRef(new Set());
+  const [userBalance, setUserBalance] = useState(0);
+  const ws = useRef(null);
   const navigate = useNavigate();
-  const [purchasedBoosts, setPurchasedBoosts] = useState({});
-  const location = useLocation();
-  const [timer, setTimer] = useState(null);
-  const [isFullTankActive, setIsFullTankActive] = useState(false);
-
+  const [userLeague, setUserLeague] = useState('');
+  const [multitapLevel, setMultitapLevel] = useState(1);
+  const audioRef = useRef(new Audio('../haptics.mp3')); // Аудиофайл
   useEffect(() => {
-    const fetchActiveBoosts = async () => {
-      try {
-        const response = await axios.get(`${config.apiBaseUrl}/active-boosts/${userId}`);
-        setActiveBoosts(response.data.activeBoosts);
-      } catch (error) {
-        console.error('Error fetching active boosts:', error);
+    const url = `${config.wsBaseUrl}`; // Replace localhost with your server
+    ws.current = new ReconnectingWebSocket(url);
+
+    ws.current.onopen = () => {
+      console.log('WebSocket connection established');
+      ws.current.send(JSON.stringify({
+        type: 'requestUserData',
+        telegram_id: telegramId
+      }));
+    };
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'userData') {
+        setUserBalance(data.balance);
+        setUserLeague(data.league);
+      } else if (data.type === 'balanceUpdate' && data.telegram_id === telegramId) {
+        setUserBalance(data.newBalance);
+      } else if (data.type === 'error') {
+        console.error(data.message);
       }
     };
 
-    fetchActiveBoosts();
-  }, [userId]);
-
-  useEffect(() => {
-    const { boostName } = location.state || {};
-
-    if (boostName === 'ENERGY LIMIT') {
-      activateFullTank();
-    }
-  }, [location.state]);
-
-  const activateFullTank = () => {
-    setIsFullTankActive(true);
-    setEnergy(Infinity); // Устанавливаем бесконечную энергию
-
-    // Включаем таймер на 15 секунд
-    if (timer) {
-      clearTimeout(timer);
-    }
-    const newTimer = setTimeout(() => {
-      setIsFullTankActive(false);
-      setEnergy(maxEnergy); // Возвращаем энергию к 1500 после окончания действия буста
-    }, 15000); // 15 секунд
-
-    setTimer(newTimer);
-  };
-
-  // Функция для загрузки баланса пользователя
-  const loadUserBalance = async () => {
-    try {
-      const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${userId}`);
-      const userData = response.data;
-      if (userData.userExists) {
-        setUserBalance(userData.userBalance); // Обновление в основном компоненте
-        setUserLeague(userData.userLeague); // Обновлення ліги користувача
-      }
-    } catch (error) {
-      console.error('Ошибка при загрузке баланса пользователя:', error);
-    }
-  };
-
-  // Функция для сохранения баланса пользователя
-  const saveUserBalance = async (newBalance) => {
-    try {
-      await axios.put(`${config.apiBaseUrl}/save-balance/${userId}`, {
-        balance: newBalance
-      });
-      setUserBalance(newBalance); // Обновление баланса в состоянии
-    } catch (error) {
-      console.error('Ошибка при сохранении баланса пользователя:', error);
-    }
-  };
-
-  useEffect(() => {
-    // Загрузка баланса при монтировании компонента и при изменении telegramId
-    loadUserBalance();
-  }, [userId]);
-
-  useEffect(() => {
-    const restoreEnergy = () => {
-      setEnergy((prevEnergy) => {
-        if (prevEnergy < maxEnergy) {
-          return prevEnergy + 1;
-        }
-        return prevEnergy;
-      });
+    ws.current.onerror = (error) => {
+      console.error('WebSocket error', error);
     };
-
-    intervalRef.current = setInterval(restoreEnergy, 1500);
 
     return () => {
-      clearInterval(intervalRef.current);
-      saveUserBalance();
+      ws.current.close();
     };
-  }, [maxEnergy, userBalance]);
+  }, [telegramId]);
 
-  const hapticsVibrate = async () => {
-    try {
-      await Haptics.impact({ style: ImpactStyle.Medium });
-    } catch (error) {
-      console.error('Failed to trigger haptic feedback:', error);
+  const handleEvent = (event) => {
+    // Determine click or touch coordinates and number of touches
+    let clientX, clientY, touches;
+    if (event.type === 'touchstart') {
+      clientX = event.touches[0].clientX;
+      clientY = event.touches[0].clientY;
+      touches = event.touches.length;
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
+      touches = 1;
     }
+
+    // Call function to handle tap
+    handleTap(clientX, clientY, touches);
   };
 
   const handleTap = (clientX, clientY) => {
-    const robotImg = document.querySelector('.robot-img');
-    const robotRect = robotImg.getBoundingClientRect();
+    const newBalance = userBalance + multitapLevel;
+    setUserBalance(newBalance);
 
-    if (
-        clientX >= robotRect.left &&
-        clientX <= robotRect.right &&
-        clientY >= robotRect.top &&
-        clientY <= robotRect.bottom
-    ) {
-      if (energy > 0) {
-        const tapValue = purchasedBoosts['Taping Guru'] ? 5 : 1;
-        setEnergy((prevEnergy) => prevEnergy - 1);
-        setUserBalance((prevBalance) => prevBalance + tapValue);
+    // Send updated balance to the server
+    ws.current.send(JSON.stringify({
+      type: 'updateBalance',
+      telegram_id: telegramId,
+      newBalance: newBalance
+    }));
 
-        hapticsVibrate();
+    // Trigger the tap animation
+    animatePlusOne(clientX, clientY, `+${multitapLevel}`);
 
-        animatePlusOne(clientX, clientY, `+${tapValue}`);
-
-        robotImg.classList.add('dramatic-shake');
-        setTimeout(() => {
-          robotImg.classList.remove('dramatic-shake');
-        }, 500);
-      }
+    // Trigger vibration and audio feedback
+    if (navigator.vibrate) {
+      navigator.vibrate(100); // Vibrate for 100ms
+    }
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
     }
   };
-
-  const getLeagueImage = (league) => {
-    switch (league.toUpperCase()) {
-      case 'SILVER':
-        return './ranks/blue.png';
-      case 'GOLD':
-        return './ranks/gold.png';
-      case 'DIAMOND':
-        return './ranks/neon.png';
-      default:
-        return './ranks/blue.png';
-    }
-  };
-
-  const handleMouseDown = (event) => {
-    event.preventDefault();
-    handleTap(event.clientX, event.clientY);
-  };
-
-  const handleTouchStart = (event) => {
-    const touches = Array.from(event.changedTouches);
-    touches.forEach(touch => {
-      if (!activeTouches.current.has(touch.identifier)) {
-        activeTouches.current.add(touch.identifier);
-        handleTap(touch.clientX, touch.clientY);
-      }
-    });
-  };
-
-  const handleTouchEnd = (event) => {
-    const touches = Array.from(event.changedTouches);
-    touches.forEach(touch => {
-      if (activeTouches.current.has(touch.identifier)) {
-        activeTouches.current.delete(touch.identifier);
-      }
-    });
-  };
-
-  useEffect(() => {
-    const mainButton = document.querySelector('.main-button');
-    mainButton.addEventListener('touchstart', handleTouchStart, { passive: false });
-    mainButton.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-    return () => {
-      mainButton.removeEventListener('touchstart', handleTouchStart);
-      mainButton.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, []);
 
   const animatePlusOne = (startX, startY, text) => {
     const coinElement = document.querySelector('.balance-display img');
@@ -212,38 +109,50 @@ function Tap({ userId }) {
     }, 500);
   };
 
+  const energyBarWidth = (energy / maxEnergy) * 100 + '%';
+  const getLeagueImage = (league) => {
+    switch (league.toUpperCase()) {
+      case 'SILVER':
+        return './ranks/blue.png';
+      case 'GOLD':
+        return './ranks/gold.png';
+      case 'DIAMOND':
+        return './ranks/neon.png';
+      default:
+        return './ranks/blue.png';
+    }
+  };
   const handleGoldButtonClick = () => {
     navigate('/task?tab=leagues', { state: { userBalance } });
   };
-
-  const energyBarWidth = (energy / maxEnergy) * 100 + '%';
 
   return (
       <div className="Tap">
         <div className="Tap-content">
           <div className='lightnings'>
-            <img src='/16.png' className='lightning right' alt="Lightning Right"/>
-            <img src='/17.png' className='lightning left' alt="Lightning Left"/>
+            <img src='/16.png' className='lightning right' alt="Lightning Right" />
+            <img src='/17.png' className='lightning left' alt="Lightning Left" />
           </div>
           <div className="balance-display">
-            <img src="/coin.png" alt="Coin" className="coin-icon"/>
+            <img src="/coin.png" alt="Coin" className="coin-icon" />
             <span className="balance-amount blue-style">{userBalance}</span>
           </div>
           <div className="tap-gold" onClick={handleGoldButtonClick}>
-            <img src={getLeagueImage(userLeague)} className='rank-img' alt="Gold Rank"/>
+            <img src={getLeagueImage(userLeague)} className='rank-img' alt="Gold Rank" />
             <span className="gold-text gold-style">{userLeague.toUpperCase()}</span>
             <button className='open-btn'>
-              <img src='./tasks/open.png' className='open-icon' alt="Open"/>
+              <img src='./tasks/open.png' className='open-icon' alt="Open" />
             </button>
           </div>
           <button
               className="main-button"
-              onMouseDown={handleMouseDown}
+              onClick={handleEvent}
+              onTouchStart={handleEvent}
           >
-            <img src="/btns/robotv2.png" alt="Start" className='robot-img'/>
+            <img src="/btns/robotv2.png" alt="Start" className='robot-img' />
           </button>
           <div className="energy-display">
-            <img src='./boost/power.png' className='power-img' alt="Power"/>
+            <img src='./boost/power.png' className='power-img' alt="Power" />
             <div className='blue-style'>{energy}/{maxEnergy}</div>
           </div>
           <div className="energy-container">
