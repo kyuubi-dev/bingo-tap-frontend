@@ -26,7 +26,7 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
             // Запитуємо дані користувача при підключенні
             ws.current.send(JSON.stringify({
                 type: 'requestUserData',
-                telegram_id: 874423521
+                telegram_id: telegramId
             }));
         };
 
@@ -85,7 +85,7 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
         // Відправляємо запит на покупку буста через WebSocket
         ws.current.send(JSON.stringify({
             type: 'purchaseBoost',
-            telegram_id: 874423521,
+            telegram_id: telegramId,
             boost_name: boostName,
             price: price
         }));
