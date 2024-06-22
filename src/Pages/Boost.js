@@ -1,10 +1,11 @@
+import React, { useState, useEffect, useRef } from 'react';
 import './Boost.css';
-import React, { useState, useEffect } from 'react';
 import './TextStyle.css';
 import CompletionMessage from './ModelMessage';
-import axios from 'axios';
-import config from '../config';
-
+import boostsData from './boostData.js';  // Імпортуємо дані бустів
+import boostLevels from './boostLevel.js';  // Імпортуємо рівні бустів
+import ReconnectingWebSocket from 'reconnecting-websocket';
+import config from "../config";
 const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
     const [message, setMessage] = useState(null);
     const [userBalance, setUserBalance] = useState(0);
@@ -12,53 +13,58 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
         "TAPPING GURU": 3,
         "FULL TANK": 3,
     });
-    const [boosts, setBoosts] = useState([]);
+    const [boosts, setBoosts] = useState(boostsData);  // Встановлюємо початковий список бустів з файлу
+    const ws = useRef(null);
 
-    // Загрузка бустов с сервера
+    // Підключення до WebSocket
     useEffect(() => {
-        const fetchBoosts = async () => {
-            try {
-                const response = await axios.get(`${config.apiBaseUrl}/boosts`);
-                setBoosts(response.data);
-            } catch (error) {
-                console.error('Error fetching boosts:', error);
+        const url = `${config.wsBaseUrl}`; // Вставте правильну URL-адресу WebSocket
+        ws.current = new ReconnectingWebSocket(url);
+
+        ws.current.onopen = () => {
+            console.log('WebSocket connection established');
+            // Запитуємо дані користувача при підключенні
+            ws.current.send(JSON.stringify({
+                type: 'requestUserData',
+                telegram_id: 874423521
+            }));
+        };
+
+        ws.current.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Received message:', data);
+
+            if (data.type === 'userData' ) {
+                setUserBalance(data.balance);
+                setBoosts(boosts.map(boost => ({
+                    ...boost,
+                    level: data.boosts[boost.name]?.level || boost.level,
+                    price: data.boosts[boost.name]?.price || boost.price
+                })));
+            } else if (data.type === 'balanceUpdate' && data.telegram_id === telegramId) {
+                setUserBalance(data.newBalance);
+            } else if (data.type === 'boostUpdate' && data.telegram_id === telegramId) {
+                setBoosts(boosts.map(boost => (
+                    boost.name === data.boost_name
+                        ? { ...boost, level: data.newLevel, price: data.newPrice }
+                        : boost
+                )));
+            } else if (data.type === 'error') {
+                setMessage(data.message);
             }
         };
 
-        fetchBoosts();
-    }, []);
-
-    useEffect(() => {
-        const resetDailyBoosts = () => {
-            setDailyBoosts({
-                "TAPPING GURU": 3,
-                "FULL TANK": 3,
-            });
+        ws.current.onerror = (error) => {
+            console.error('WebSocket error:', error);
         };
 
-        const now = new Date();
-        const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
-        const timeUntilMidnight = midnight - now;
-
-        const timeoutId = setTimeout(() => {
-            resetDailyBoosts();
-            setInterval(resetDailyBoosts, 24 * 60 * 60 * 1000); // reset daily boosts every 24 hours
-        }, timeUntilMidnight);
-
-        return () => clearTimeout(timeoutId);
-    }, []);
-
-    useEffect(() => {
-        const fetchUserBalance = async () => {
-            try {
-                const response = await axios.get(`${config.apiBaseUrl}/user-balance/${telegramId}`);
-                setUserBalance(response.data.balance);
-            } catch (error) {
-                console.error('Error fetching user balance:', error);
-            }
+        ws.current.onclose = () => {
+            console.log('WebSocket connection closed');
         };
 
-        fetchUserBalance();
+        return () => {
+            ws.current.close();
+        };
     }, [telegramId]);
 
     const handleDailyBoostUse = (boostName) => {
@@ -73,29 +79,16 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
         }
     };
 
-    const handlePurchase = async (boostName, price) => {
-        try {
-            const response = await axios.post(`${config.apiBaseUrl}/purchase-boost`, {
-                telegram_id: telegramId,
-                boost_name: boostName,
-                price: price
-            });
-            const success = response.data.success;
+    const handlePurchase = (boostName, price) => {
+        setMessage(`Purchasing ${boostName}...`);
 
-            if (success) {
-                setPurchasedBoosts((prevBoosts) => ({
-                    ...prevBoosts,
-                    [boostName]: true,
-                }));
-                setUserBalance(response.data.newBalance);
-                setMessage(`${boostName} purchased successfully!`);
-            } else {
-                setMessage('Not enough points for this purchase.');
-            }
-        } catch (error) {
-            console.error('Error purchasing boost:', error);
-            setMessage('Failed to purchase boost.');
-        }
+        // Відправляємо запит на покупку буста через WebSocket
+        ws.current.send(JSON.stringify({
+            type: 'purchaseBoost',
+            telegram_id: 874423521,
+            boost_name: boostName,
+            price: price
+        }));
     };
 
     const closeMessage = () => {
@@ -129,19 +122,19 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
     return (
         <div className='Boost'>
             <div className='lightnings f-tab'>
-                <img src='/16.png' className='lightning f-tab right' alt="Lightning Right"/>
-                <img src='/17.png' className='lightning f-tab left' alt="Lightning Left"/>
+                <img src='/16.png' className='lightning f-tab right' alt="Lightning Right" />
+                <img src='/17.png' className='lightning f-tab left' alt="Lightning Left" />
             </div>
             <header className="header">
                 <div className="balance-display-task">
-                    <img src="/coin.png" alt="Coin" className="coin-icon"/>
+                    <img src="/coin.png" alt="Coin" className="coin-icon" />
                     <span className="balance-amount blue-style">{userBalance}</span>
                 </div>
             </header>
             <div className="dayli-boost-text gold-style">YOUR DAILY BOOSTERS:</div>
             <div className="daily-boosts">
-                <DailyBoostItem text="TAPPING GURU" reward="3" image='/boost/fire.b.png'/>
-                <DailyBoostItem text="FULL TANK" reward="3" image='/boost/power.png'/>
+                <DailyBoostItem text="TAPPING GURU" reward="3" image='/boost/fire.b.png' />
+                <DailyBoostItem text="FULL TANK" reward="3" image='/boost/power.png' />
             </div>
             <div className="boosters-text gold-style">BOOSTERS:</div>
             <div className="boosts">
@@ -155,7 +148,7 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
                     />
                 ))}
             </div>
-            {message && <CompletionMessage message={message} onClose={closeMessage}/>}
+            {message && <CompletionMessage message={message} onClose={closeMessage} />}
         </div>
     );
 };

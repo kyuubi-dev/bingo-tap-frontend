@@ -16,12 +16,11 @@ function Tap({ telegramId }) {
   useEffect(() => {
     const url = `${config.wsBaseUrl}`; // Replace localhost with your server
     ws.current = new ReconnectingWebSocket(url);
-
     ws.current.onopen = () => {
       console.log('WebSocket connection established');
       ws.current.send(JSON.stringify({
         type: 'requestUserData',
-        telegram_id: telegramId
+        telegram_id: 874423521
       }));
     };
 
@@ -71,7 +70,7 @@ function Tap({ telegramId }) {
     // Send updated balance to the server
     ws.current.send(JSON.stringify({
       type: 'updateBalance',
-      telegram_id: telegramId,
+      telegram_id: 874423521,
       newBalance: newBalance
     }));
 

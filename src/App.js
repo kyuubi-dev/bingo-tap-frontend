@@ -74,7 +74,7 @@ function App() {
             <BgImage />
             <Navigation />
             <Routes>
-                <Route path="/" element={<Tap telegramId={userId} setUserBalance={setUserBalance} />} />
+                <Route path="/" element={<Tap telegramId={userId}  />} />
                 <Route path="/team" element={<Team />} />
                 <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route

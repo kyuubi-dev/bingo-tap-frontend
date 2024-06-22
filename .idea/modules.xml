@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Bingo-back-end/.idea/Bingo-back-end.iml" filepath="$PROJECT_DIR$/../Bingo-back-end/.idea/Bingo-back-end.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/bingo-frontend-react.iml" filepath="$PROJECT_DIR$/.idea/bingo-frontend-react.iml" />
     </modules>
   </component>
