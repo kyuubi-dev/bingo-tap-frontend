@@ -51,7 +51,7 @@ function App() {
             if (window.Telegram && window.Telegram.WebApp) {
                 const webAppData = window.Telegram.WebApp.initDataUnsafe;
                 const user = webAppData.user;
-                const botName = webAppData.bot?.username;
+                const botName = "Bingo_kyuubi_test_bot";
 
                 if (user) {
                     const { id, username } = user;

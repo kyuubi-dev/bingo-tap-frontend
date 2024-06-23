@@ -98,7 +98,7 @@ function Tap({ telegramId }) {
 
       ws.current.send(JSON.stringify({
         type: 'updateBalance',
-        telegram_id: 874423521,
+        telegram_id: telegramId,
         newBalance: newBalance
       }));
 
