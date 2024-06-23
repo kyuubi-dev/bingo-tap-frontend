@@ -18,6 +18,7 @@ function App() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [userId, setUserId] = useState(null);
     const [username, setUsername] = useState(null);
+    const [botName, setBotName] = useState(null);
     const [isMobile, setIsMobile] = useState(true);
     const [loadingImages, setLoadingImages] = useState(true);
     const location = useLocation();
