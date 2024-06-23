@@ -26,7 +26,7 @@ const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
             // Запитуємо дані користувача при підключенні
             ws.current.send(JSON.stringify({
                 type: 'requestUserData',
-                telegram_id: telegramId
+                telegram_id: 874423521
             }));
         };
 

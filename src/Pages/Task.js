@@ -1,3 +1,4 @@
+// src/components/Task.js
 import './Task.css';
 import React, { useState, useEffect } from 'react';
 import './TextStyle.css';
@@ -5,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import CompletionMessage from './ModelMessage';
 import axios from 'axios';
 import config from '../config';
+import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
 
 const Task = ({ telegramId }) => {
     const location = useLocation();
@@ -23,6 +25,7 @@ const Task = ({ telegramId }) => {
         JSON.parse(localStorage.getItem('completedLeagues')) || {}
     );
     const [completionMessage, setCompletionMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(true); // Loading state
 
     useEffect(() => {
         setSelectedTab(defaultTab);
@@ -31,15 +34,17 @@ const Task = ({ telegramId }) => {
     useEffect(() => {
         const fetchUserBalance = async () => {
             try {
-                const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
+                const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${874423521}`);
                 const userData = response.data;
                 if (userData.userExists) {
                     setUserBalance(userData.userBalance);
                     setUserPoints(userData.userPoints);
                     setUserLeague(userData.userLeague);
                 }
+                setIsLoading(false); // Set loading to false after data is fetched
             } catch (error) {
                 console.error('Ошибка при загрузке данных пользователя:', error);
+                setIsLoading(false); // Ensure loading state is reset in case of error
             }
         };
 
@@ -214,6 +219,10 @@ const Task = ({ telegramId }) => {
                 return null;
         }
     };
+
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
 
     return (
         <div className="Task">

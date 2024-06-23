@@ -3,24 +3,30 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import './Tap.css';
 import config from "../config";
 import { useNavigate } from 'react-router-dom';
+import LoadingScreen from './LoadingScreen';
 
 function Tap({ telegramId }) {
   const [energy, setEnergy] = useState(1500);
   const maxEnergy = 1500;
   const [userBalance, setUserBalance] = useState(0);
-  const ws = useRef(null);
-  const navigate = useNavigate();
   const [userLeague, setUserLeague] = useState('');
   const [multitapLevel, setMultitapLevel] = useState(1);
-  const audioRef = useRef(new Audio('../haptics.mp3')); // Аудиофайл
+  const [isLoaded, setIsLoaded] = useState(false); // Loading state
+  const ws = useRef(null);
+  const navigate = useNavigate();
+  const audioRef = useRef(null);
+  const energyInterval = useRef(null);
+
   useEffect(() => {
+    audioRef.current = new Audio('../HepticsforIphoneV3.mp3');
     const url = `${config.wsBaseUrl}`; // Replace localhost with your server
     ws.current = new ReconnectingWebSocket(url);
+
     ws.current.onopen = () => {
       console.log('WebSocket connection established');
       ws.current.send(JSON.stringify({
         type: 'requestUserData',
-        telegram_id: telegramId
+        telegram_id: 874423521
       }));
     };
 
@@ -28,10 +34,12 @@ function Tap({ telegramId }) {
       const data = JSON.parse(event.data);
 
       if (data.type === 'userData') {
-        setUserBalance(data.balance);
-        setUserLeague(data.league);
+        if (data.balance != null) setUserBalance(data.balance);
+        if (data.league != null) setUserLeague(data.league);
+        if (data.multiTapLevel != null) setMultitapLevel(data.multiTapLevel);
+        setIsLoaded(true); // Data is loaded
       } else if (data.type === 'balanceUpdate' && data.telegram_id === telegramId) {
-        setUserBalance(data.newBalance);
+        if (data.newBalance != null) setUserBalance(data.newBalance);
       } else if (data.type === 'error') {
         console.error(data.message);
       }
@@ -46,8 +54,28 @@ function Tap({ telegramId }) {
     };
   }, [telegramId]);
 
+  useEffect(() => {
+    // Energy regeneration
+    energyInterval.current = setInterval(() => {
+      setEnergy((prevEnergy) => {
+        if (prevEnergy < maxEnergy) {
+          return prevEnergy + 1;
+        }
+        return prevEnergy;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(energyInterval.current);
+    };
+  }, []);
+
   const handleEvent = (event) => {
-    // Determine click or touch coordinates and number of touches
+    if (!isLoaded) {
+      console.log('Data not loaded yet');
+      return;
+    }
+
     let clientX, clientY, touches;
     if (event.type === 'touchstart') {
       clientX = event.touches[0].clientX;
@@ -59,29 +87,41 @@ function Tap({ telegramId }) {
       touches = 1;
     }
 
-    // Call function to handle tap
     handleTap(clientX, clientY, touches);
   };
 
   const handleTap = (clientX, clientY) => {
-    const newBalance = userBalance + multitapLevel;
-    setUserBalance(newBalance);
+    if (energy > 0) {
+      setEnergy((prevEnergy) => prevEnergy - 1);
+      const newBalance = userBalance + multitapLevel;
+      setUserBalance(newBalance);
 
-    // Send updated balance to the server
-    ws.current.send(JSON.stringify({
-      type: 'updateBalance',
-      telegram_id: telegramId,
-      newBalance: newBalance
-    }));
+      ws.current.send(JSON.stringify({
+        type: 'updateBalance',
+        telegram_id: 874423521,
+        newBalance: newBalance
+      }));
 
-    // Trigger the tap animation
-    animatePlusOne(clientX, clientY, `+${multitapLevel}`);
+      animatePlusOne(clientX, clientY, `+${multitapLevel}`);
 
-    // Trigger vibration and audio feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(100); // Vibrate for 100ms
+      if (navigator.vibrate) {
+        navigator.vibrate(50); // Vibrate for 100ms
+      }
+
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        playAudio();
+      }
+    } else {
+      console.log('Not enough energy to tap');
     }
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+  };
+
+  const playAudio = () => {
+    const playPromise = audioRef.current.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((error) => {
+        console.error('Audio play failed:', error);
+      });
     }
   };
 
@@ -121,9 +161,14 @@ function Tap({ telegramId }) {
         return './ranks/blue.png';
     }
   };
+
   const handleGoldButtonClick = () => {
     navigate('/task?tab=leagues', { state: { userBalance } });
   };
+
+  if (!isLoaded) {
+    return <LoadingScreen />;
+  }
 
   return (
       <div className="Tap">
