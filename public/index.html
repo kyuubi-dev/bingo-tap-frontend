@@ -29,14 +29,25 @@
     <title>React App</title>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        if (!Telegram.WebApp.isExpanded) {
-            Telegram.WebApp.expand();
-        }
-        Telegram.WebApp.ready();
-        Telegram.WebApp.enableClosingConfirmation();
+      Telegram.WebApp.ready(); // Повідомлення, що Mini App готовий до відображення
+      Telegram.WebApp.expand(); // Розгортання Mini App на максимальну висоту
+      Telegram.WebApp.enableClosingConfirmation(); // Включення діалогу підтвердження при закритті Mini App
+
+      // Постійне розгортання Mini App на максимальну висоту
+      Telegram.WebApp.onEvent('viewportChanged', function(event) {
+          if (!Telegram.WebApp.isExpanded) {
+              Telegram.WebApp.expand();
+          }
       });
-    </script>
+
+      // Перевірка і постійне розгортання
+      setInterval(function() {
+          if (!Telegram.WebApp.isExpanded) {
+              Telegram.WebApp.expand();
+          }
+      }, 1000); // Перевірка кожну секунду
+  </script>
+
     
   </head>
   <body>
