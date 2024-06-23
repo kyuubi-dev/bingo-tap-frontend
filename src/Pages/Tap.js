@@ -26,7 +26,7 @@ function Tap({ telegramId }) {
       console.log('WebSocket connection established');
       ws.current.send(JSON.stringify({
         type: 'requestUserData',
-        telegram_id: telegramId
+        telegram_id: 874423521
       }));
     };
 
@@ -98,7 +98,7 @@ function Tap({ telegramId }) {
 
       ws.current.send(JSON.stringify({
         type: 'updateBalance',
-        telegram_id: telegramId,
+        telegram_id: 874423521,
         newBalance: newBalance
       }));
 
