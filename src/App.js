@@ -48,18 +48,20 @@ function App() {
 
         const initializeTelegramWebApp = () => {
             if (window.Telegram && window.Telegram.WebApp) {
-                const webAppUser = window.Telegram.WebApp.initDataUnsafe.user;
-                if (webAppUser) {
-                    const { id, username } = webAppUser;
+                const webAppData = window.Telegram.WebApp.initDataUnsafe;
+                const user = webAppData.user;
+                const botName = webAppData.bot?.username;
+
+                if (user) {
+                    const { id, username } = user;
                     setUserId(id);
                     setUsername(username);
-                    return { id, username };
+                    setBotName(botName);
+                    return { id, username, botName };
                 }
             }
             return null;
         };
-
-
 
         const fetchUserData = async () => {
             try {
@@ -68,7 +70,7 @@ function App() {
                     const { id, username } = user;
 
                     // Check if user exists on the server
-                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${874423521}`);
+                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${id}`);
                     const userData = checkUserResponse.data;
 
                     if (userData.userExists) {
@@ -138,7 +140,7 @@ function App() {
             <Navigation />
             <Routes>
                 <Route path="/" element={<Tap telegramId={userId} />} />
-                <Route path="/team" element={<Team userId={userId} />} />
+                <Route path="/team" element={<Team userId={userId} botName={botName} />} />
                 <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route
                     path="/boost"
