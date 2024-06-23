@@ -19,7 +19,7 @@ function Team({ userId, botName }) {
             });
     };
 
-    const inviteLink = `https://t.me/bng_bot?start=${userId}`;
+    const inviteLink = `https://t.me/${botName}?start=${userId}`;
 
     return (
         <div className="Team">
