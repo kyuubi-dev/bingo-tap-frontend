@@ -31,7 +31,9 @@
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
+        if (!Telegram.WebApp.isExpanded) {
+            Telegram.WebApp.expand();
+        }
       });
     </script>
     
