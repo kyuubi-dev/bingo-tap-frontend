@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route,useLocation  } from 'react-router-dom';
 import Tap from './Pages/Tap';
 import BgImage from './Pages/BgImage';
 import Team from './Pages/Team';
@@ -19,6 +19,16 @@ function App() {
     const [userId, setUserId] = useState(null);
     const [username, setUsername] = useState(null);
     const [isMobile, setIsMobile] = useState(true);
+    const [loadingImages, setLoadingImages] = useState(true);
+    const location = useLocation();
+
+    const imageSources = {
+        '/': ['./robot.png', './coin.png','/16.png', '/17.png','./ranks/blue.png','./ranks/gold.png','./ranks/neon.png','./ranks/green.png','./boost/power.png','./tasks/open.png'],
+        '/task': ['/16.png', '/17.png','/coin.png','./tasks/open.png','./tasks/people1.png','./tasks/people2.png','./tasks/people3.png','./ranks/blue.png','./ranks/gold.png','./ranks/neon.png','./ranks/green.png'],
+        '/boost': ['/16.png', '/17.png','/coin.png','/boost/fire.b.png','/boost/power.png']
+    };
+
+  
 
     useEffect(() => {
         const checkIfMobile = () => {
@@ -49,6 +59,8 @@ function App() {
             return null;
         };
 
+
+
         const fetchUserData = async () => {
             try {
                 const user = initializeTelegramWebApp();
@@ -56,7 +68,7 @@ function App() {
                     const { id, username } = user;
 
                     // Check if user exists on the server
-                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${id}`);
+                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${874423521}`);
                     const userData = checkUserResponse.data;
 
                     if (userData.userExists) {
@@ -81,13 +93,44 @@ function App() {
         fetchUserData();
     }, []);
 
-    if (!isLoaded) {
+    useEffect(() => {
+        setLoadingImages(true);
+
+        const loadImage = (src) => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.src = src;
+                img.onload = resolve;
+                img.onerror = () => {
+                    console.error(`Failed to load image: ${src}`);
+                    reject();
+                };
+            });
+        };
+
+        const loadImagesForRoute = async (route) => {
+            const sources = imageSources[route] || [];
+            try {
+                await Promise.all(sources.map(src => loadImage(src)));
+                setLoadingImages(false);
+            } catch (error) {
+                console.error('Error loading images:', error);
+                setLoadingImages(false);
+            }
+        };
+
+        loadImagesForRoute(location.pathname);
+    }, [location.pathname]);
+
+    if (!isLoaded || loadingImages) {
         return <LoadingScreen />;
     }
+
 
     if (!isMobile) {
         return <NotMobile />;
     }
+
 
     return (
         <div className="App">
