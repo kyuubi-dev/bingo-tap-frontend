@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import './Team.css';
 import './TextStyle.css';
 
-function Team() {
+function Team({ userId }) {
     const [copySuccess, setCopySuccess] = useState('');
 
     const handleCopyClick = () => {
-        const inviteLink = 'https://t.me/bng_bot?start=749626634';
+        const inviteLink = `https://t.me/bng_bot?start=${userId}`;
         navigator.clipboard.writeText(inviteLink)
             .then(() => {
                 setCopySuccess('Посилання скопійовано!');
@@ -34,8 +34,8 @@ function Team() {
             <div className="referral-total blue-style">+100 000</div>
             <div className="Invite-link">
                 <div className="invite-text blue-style">MY INVITE LINK:</div>
-                <a href="https://t.me/bng_bot?start=749626634"
-                   className="invite-url">https://t.me/bng_bot?start=749626634</a>
+                <a href={inviteLink}
+                   className="invite-url">{inviteLink}</a>
                 <button className="copy-button blue-style" onClick={handleCopyClick}>COPY</button>
             </div>
             <div className="Team-section">
