@@ -138,7 +138,7 @@ function App() {
             <Navigation />
             <Routes>
                 <Route path="/" element={<Tap telegramId={userId} />} />
-                <Route path="/team" element={<Team />} />
+                <Route path="/team" element={<Team userId={userId} />} />
                 <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route
                     path="/boost"

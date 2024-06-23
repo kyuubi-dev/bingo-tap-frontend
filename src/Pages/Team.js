@@ -19,6 +19,8 @@ function Team({ userId }) {
             });
     };
 
+    const inviteLink = `https://t.me/bng_bot?start=${userId}`;
+
     return (
         <div className="Team">
             <div className='lightnings f-tab'>
@@ -34,9 +36,9 @@ function Team({ userId }) {
             <div className="referral-total blue-style">+100 000</div>
             <div className="Invite-link">
                 <div className="invite-text blue-style">MY INVITE LINK:</div>
-                <a href={inviteLink}
-                   className="invite-url">{inviteLink}</a>
+                <a href={inviteLink} className="invite-url">{inviteLink}</a>
                 <button className="copy-button blue-style" onClick={handleCopyClick}>COPY</button>
+                {copySuccess && <div className="copy-success">{copySuccess}</div>}
             </div>
             <div className="Team-section">
                 <div className="team-header blue-style">MY TEAM:</div>
@@ -65,12 +67,12 @@ function Team({ userId }) {
     );
 }
 
-const TeamItem = ({name, balance, leagua, bonus}) => (
+const TeamItem = ({ name, balance, leagua, bonus }) => (
     <div className="team-member">
         <span className="name default-style">{name}</span>
         <div className='stat-inf'>
             <div className='Rank'>
-            <img src='./ranks/gold.png' className='rank-img' />
+                <img src='./ranks/gold.png' className='rank-img' />
                 <span className="rank-text gold-style">{leagua}</span>
             </div>
             <div className='Point'>
