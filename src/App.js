@@ -18,6 +18,7 @@ function App() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [userId, setUserId] = useState(null);
     const [username, setUsername] = useState(null);
+    const [isMobile, setIsMobile] = useState(true);
     const [loadingImages, setLoadingImages] = useState(true);
     const location = useLocation();
 
@@ -27,7 +28,24 @@ function App() {
         '/boost': ['/16.png', '/17.png','/coin.png','/boost/fire.b.png','/boost/power.png']
     };
 
+  
+
     useEffect(() => {
+        const checkIfMobile = () => {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            // Check for Android
+            if (/android/i.test(userAgent)) {
+                return true;
+            }
+            // Check for iOS
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return true;
+            }
+            return false;
+        };
+
+        setIsMobile(checkIfMobile());
+
         const initializeTelegramWebApp = () => {
             if (window.Telegram && window.Telegram.WebApp) {
                 const webAppUser = window.Telegram.WebApp.initDataUnsafe.user;
@@ -109,12 +127,17 @@ function App() {
     }
 
 
+    if (!isMobile) {
+        return <NotMobile />;
+    }
+
+
     return (
         <div className="App">
             <BgImage />
             <Navigation />
             <Routes>
-                <Route path="/" element={<Tap telegramId={userId}  />} />
+                <Route path="/" element={<Tap telegramId={userId} />} />
                 <Route path="/team" element={<Team />} />
                 <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route
