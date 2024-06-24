@@ -28,13 +28,28 @@ const Task = ({ telegramId }) => {
     const [isLoading, setIsLoading] = useState(true); // Loading state
 
     useEffect(() => {
+        const initializeUserData = async () => {
+            // Отримання даних користувача, які зберігаються локально
+            const cachedUserBalance = localStorage.getItem('userBalance');
+
+            if (cachedUserBalance) {
+                setUserBalance(parseInt(cachedUserBalance));
+            }
+
+            setIsLoading(true);
+        };
+
+        initializeUserData();
+    }, []);
+
+    useEffect(() => {
         setSelectedTab(defaultTab);
     }, [defaultTab]);
 
     useEffect(() => {
         const fetchUserBalance = async () => {
             try {
-                const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${874423521}`);
+                const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
                 const userData = response.data;
                 if (userData.userExists) {
                     setUserBalance(userData.userBalance);

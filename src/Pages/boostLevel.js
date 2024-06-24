@@ -49,9 +49,6 @@ const boostLevels = {
         { level: 1, price: 300000, description: "+3 monet in 1 tap. Next level costs 400000 points." },
         { level: 2, price: 400000, description: "+6 monet in 1 tap. Next level costs 500000 points." },
         { level: 3, price: 500000, description: "+6 monet in 1 tap. Next level costs 500000 points." },
-    ],
-    "Auto Tap": [
-        { level: 1, price: 200000, description: "3 hours of automatic tapping." },
     ]
 };
 

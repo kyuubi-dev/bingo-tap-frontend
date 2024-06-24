@@ -19,7 +19,9 @@ function Team({ userId, botName }) {
             });
     };
 
+
     const inviteLink = `https://t.me/${botName}?start=${userId}`;
+
 
     return (
         <div className="Team">

@@ -2,31 +2,34 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import './Tap.css';
 import config from "../config";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingScreen from './LoadingScreen';
 
-function Tap({ telegramId }) {
+function Tap({ telegramId, onBalanceChange }) {
+  const [maxEnergy, setMaxEnergy] = useState(1500);
   const [energy, setEnergy] = useState(1500);
-  const maxEnergy = 1500;
+  const [cachedBalance, setCachedBalance] = useState(0);
   const [userBalance, setUserBalance] = useState(0);
   const [userLeague, setUserLeague] = useState('');
   const [multitapLevel, setMultitapLevel] = useState(1);
-  const [isLoaded, setIsLoaded] = useState(false); // Loading state
+  const [isLoaded, setIsLoaded] = useState(false);
   const ws = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const audioRef = useRef(null);
   const energyInterval = useRef(null);
+  const [rechargeSpeed, setRechargeSpeed] = useState(1);
 
   useEffect(() => {
     audioRef.current = new Audio('../HepticsforIphoneV3.mp3');
-    const url = `${config.wsBaseUrl}`; // Replace localhost with your server
+    const url = `${config.wsBaseUrl}`;
     ws.current = new ReconnectingWebSocket(url);
 
     ws.current.onopen = () => {
       console.log('WebSocket connection established');
       ws.current.send(JSON.stringify({
         type: 'requestUserData',
-        telegram_id: 874423521
+        telegram_id: telegramId
       }));
     };
 
@@ -34,12 +37,16 @@ function Tap({ telegramId }) {
       const data = JSON.parse(event.data);
 
       if (data.type === 'userData') {
-        if (data.balance != null) setUserBalance(data.balance);
+        if (data.balance != null) { setUserBalance(data.balance); setCachedBalance(data.balance); }
         if (data.league != null) setUserLeague(data.league);
         if (data.multiTapLevel != null) setMultitapLevel(data.multiTapLevel);
-        setIsLoaded(true); // Data is loaded
+        if (data.energyLimitLevel != null) setMaxEnergy(1000 + data.energyLimitLevel * 500);
+        if (data.rechargingSpeed != null) setRechargeSpeed(data.rechargingSpeed);
+        if (data.energy != null) setEnergy(data.energy);
+        setIsLoaded(true);
       } else if (data.type === 'balanceUpdate' && data.telegram_id === telegramId) {
-        if (data.newBalance != null) setUserBalance(data.newBalance);
+        if (data.newBalance != null) { setUserBalance(data.newBalance); setCachedBalance(data.newBalance); }
+        if (data.newEnergy != null) setEnergy(data.newEnergy);
       } else if (data.type === 'error') {
         console.error(data.message);
       }
@@ -55,20 +62,106 @@ function Tap({ telegramId }) {
   }, [telegramId]);
 
   useEffect(() => {
-    // Energy regeneration
     energyInterval.current = setInterval(() => {
       setEnergy((prevEnergy) => {
         if (prevEnergy < maxEnergy) {
-          return prevEnergy + 1;
+          return prevEnergy + rechargeSpeed;
         }
         return prevEnergy;
       });
-    }, 1000);
+    }, 750);
+
+    const handleUnload = async () => {
+      if (cachedBalance !== userBalance || energy !== maxEnergy) {
+        try {
+          await saveData();
+          console.log('Balance and energy saved successfully');
+        } catch (error) {
+          console.error('Error saving balance and energy:', error);
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('unload', handleUnload);
 
     return () => {
       clearInterval(energyInterval.current);
+      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('unload', handleUnload);
     };
-  }, []);
+  }, [cachedBalance, userBalance,energy,maxEnergy, rechargeSpeed, telegramId]);
+
+  useEffect(() => {
+    onBalanceChange(cachedBalance,energy);
+  }, [cachedBalance, onBalanceChange]);
+
+  useEffect(() => {
+    const saveDataOnRouteChange = async () => {
+      if (cachedBalance !== userBalance || energy !== maxEnergy) {
+        try {
+          await saveData();
+          console.log('Balance and energy saved successfully');
+        } catch (error) {
+          console.error('Error saving balance and energy:', error);
+        }
+      }
+    };
+
+    saveDataOnRouteChange();
+
+    return () => {
+      saveDataOnRouteChange();
+    };
+  }, [location]);
+
+  // Save balance on route change
+  useEffect(() => {
+    const saveBalanceOnRouteChange = async () => {
+      if (cachedBalance !== userBalance) {
+        try {
+          await saveData();
+          console.log('Balance saved successfully');
+        } catch (error) {
+          console.error('Error saving balance:', error);
+        }
+      }
+    };
+
+    saveBalanceOnRouteChange();
+
+    return () => {
+      saveBalanceOnRouteChange();
+    };
+  }, [location]);
+
+  const saveData = async () => {
+    return new Promise((resolve, reject) => {
+      if (cachedBalance !== userBalance || energy !== maxEnergy) {
+        ws.current.send(JSON.stringify({
+          type: 'updateBalance',
+          telegram_id: telegramId,
+          newBalance: cachedBalance,
+          newEnergy: energy
+        }), (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
+    });
+  };
+
+  useEffect(() => {
+    // Збереження балансу та енергії в локальне сховище при їх зміні
+    localStorage.setItem('userBalance', cachedBalance.toString());
+    localStorage.setItem('energy', energy.toString());
+  }, [cachedBalance, energy]);
+
 
   const handleEvent = (event) => {
     if (!isLoaded) {
@@ -93,19 +186,23 @@ function Tap({ telegramId }) {
   const handleTap = (clientX, clientY) => {
     if (energy > 0) {
       setEnergy((prevEnergy) => prevEnergy - 1);
-      const newBalance = userBalance + multitapLevel;
-      setUserBalance(newBalance);
+      const newBalance = cachedBalance + multitapLevel;
+      setCachedBalance(newBalance);
 
-      ws.current.send(JSON.stringify({
-        type: 'updateBalance',
-        telegram_id: 874423521,
-        newBalance: newBalance
-      }));
+      if (newBalance - userBalance >= 50) {
+        setUserBalance(newBalance);
+        ws.current.send(JSON.stringify({
+          type: 'updateBalance',
+          telegram_id: telegramId,
+          newBalance: newBalance,
+          newEnergy: energy
+        }));
+      }
 
       animatePlusOne(clientX, clientY, `+${multitapLevel}`);
 
       if (navigator.vibrate) {
-        navigator.vibrate(50); // Vibrate for 100ms
+        navigator.vibrate(50);
       }
 
       if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
@@ -149,6 +246,7 @@ function Tap({ telegramId }) {
   };
 
   const energyBarWidth = (energy / maxEnergy) * 100 + '%';
+
   const getLeagueImage = (league) => {
     switch (league.toUpperCase()) {
       case 'SILVER':
@@ -179,7 +277,7 @@ function Tap({ telegramId }) {
           </div>
           <div className="balance-display">
             <img src="/coin.png" alt="Coin" className="coin-icon" />
-            <span className="balance-amount blue-style">{userBalance}</span>
+            <span className="balance-amount blue-style">{cachedBalance}</span>
           </div>
           <div className="tap-gold" onClick={handleGoldButtonClick}>
             <img src={getLeagueImage(userLeague)} className='rank-img' alt="Gold Rank" />
