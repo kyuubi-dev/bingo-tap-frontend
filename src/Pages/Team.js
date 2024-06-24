@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import './Team.css';
 import './TextStyle.css';
 
-function Team({ userId }) {
+function Team({ userId, botName }) {
     const [copySuccess, setCopySuccess] = useState('');
 
     const handleCopyClick = () => {
-        const inviteLink = `https://t.me/bng_bot?start=${userId}`;
+        const inviteLink = `https://t.me/${botName}?start=${userId}`;
         navigator.clipboard.writeText(inviteLink)
             .then(() => {
                 setCopySuccess('Посилання скопійовано!');
@@ -19,7 +19,9 @@ function Team({ userId }) {
             });
     };
 
-    const inviteLink = `https://t.me/bng_bot?start=${userId}`;
+
+    const inviteLink = `https://t.me/${botName}?start=${userId}`;
+
 
     return (
         <div className="Team">

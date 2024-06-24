@@ -18,6 +18,7 @@ function App() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [userId, setUserId] = useState(null);
     const [username, setUsername] = useState(null);
+    const [botName, setBotName] = useState(null);
     const [isMobile, setIsMobile] = useState(true);
     const [loadingImages, setLoadingImages] = useState(true);
     const location = useLocation();
@@ -45,12 +46,16 @@ function App() {
 
         const initializeTelegramWebApp = () => {
             if (window.Telegram && window.Telegram.WebApp) {
-                const webAppUser = window.Telegram.WebApp.initDataUnsafe.user;
-                if (webAppUser) {
-                    const { id, username } = webAppUser;
+                const webAppData = window.Telegram.WebApp.initDataUnsafe;
+                const user = webAppData.user;
+                const botName = "Bingo_kyuubi_test_bot";
+
+                if (user) {
+                    const { id, username } = user;
                     setUserId(id);
                     setUsername(username);
-                    return { id, username };
+                    setBotName(botName);
+                    return { id, username, botName };
                 }
             }
             return null;
@@ -61,6 +66,7 @@ function App() {
                 const user = initializeTelegramWebApp();
                 if (user) {
                     const { id, username } = user;
+
 
                     const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${id}`);
                     const userData = checkUserResponse.data;
@@ -138,8 +144,10 @@ function App() {
             <BgImage />
             <Navigation />
             <Routes>
+
                 <Route path="/" element={<Tap telegramId={userId} onBalanceChange={handleBalanceChange} />} />
-                <Route path="/team" element={<Team />} />
+                <Route path="/team" element={<Team userId={userId} botName={botName} />} />
+
                 <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route
                     path="/boost"
