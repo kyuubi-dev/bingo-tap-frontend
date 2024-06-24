@@ -213,3 +213,36 @@ html, body {
     .price-icon {
         width: 30%;
     }
+
+.tap-bot-timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 1.2em;
+    color: #ffd700; /* золотий колір */
+}
+
+.tap-bot-timer span {
+    margin: 5px 0;
+}
+
+.tap-animation {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+    animation: tap-animation 0.5s ease-in-out;
+}
+
+@keyframes tap-animation {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+}

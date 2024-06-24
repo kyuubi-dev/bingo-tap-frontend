@@ -22,14 +22,6 @@ const boostsData = [
         image: "power",
         price:1000,
         description: "Level 1: + 3 monet in 1 tap. Next level costs 4000000 points."
-    },
-    {
-        boost_id: 4,
-        name: "Auto Tap",
-        image: "click",
-        level: 1,
-        price:1000,
-        description: "1 use - 3 hours automatic taping."
     }
     ];
 

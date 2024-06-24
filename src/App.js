@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { BrowserRouter, Routes, Route,useLocation  } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Tap from './Pages/Tap';
 import BgImage from './Pages/BgImage';
 import Team from './Pages/Team';
@@ -21,23 +21,20 @@ function App() {
     const [isMobile, setIsMobile] = useState(true);
     const [loadingImages, setLoadingImages] = useState(true);
     const location = useLocation();
+    const ws = useRef(null);
 
     const imageSources = {
-        '/': ['./robotv2.png', './coin.png','/16.png', '/17.png','./ranks/blue.png','./ranks/gold.png','./ranks/neon.png','./ranks/green.png','./boost/power.png','./tasks/open.png'],
-        '/task': ['/16.png', '/17.png','/coin.png','./tasks/open.png','./tasks/people1.png','./tasks/people2.png','./tasks/people3.png','./ranks/blue.png','./ranks/gold.png','./ranks/neon.png','./ranks/green.png'],
-        '/boost': ['/16.png', '/17.png','/coin.png','/boost/fire.b.png','/boost/power.png']
+        '/': ['./robotv2.png', './coin.png', '/16.png', '/17.png', './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png', './boost/power.png', './tasks/open.png'],
+        '/task': ['/16.png', '/17.png', '/coin.png', './tasks/open.png', './tasks/people1.png', './tasks/people2.png', './tasks/people3.png', './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png'],
+        '/boost': ['/16.png', '/17.png', '/coin.png', '/boost/fire.b.png', '/boost/power.png']
     };
-
-  
 
     useEffect(() => {
         const checkIfMobile = () => {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            // Check for Android
             if (/android/i.test(userAgent)) {
                 return true;
             }
-            // Check for iOS
             if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
                 return true;
             }
@@ -59,31 +56,25 @@ function App() {
             return null;
         };
 
-
-
         const fetchUserData = async () => {
             try {
                 const user = initializeTelegramWebApp();
                 if (user) {
                     const { id, username } = user;
 
-                    // Check if user exists on the server
-                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${874423521}`);
+                    const checkUserResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${id}`);
                     const userData = checkUserResponse.data;
 
                     if (userData.userExists) {
-                        // If user exists, load their data, including balance
                         setUserBalance(userData.userBalance);
                     } else {
-                        // If user does not exist, create a new user
                         await axios.post(`${config.apiBaseUrl}/create-user`, {
                             username: username,
                             telegram_id: id
                         });
-                        setUserBalance(0); // Optionally set 0, or get actual data from the server
+                        setUserBalance(0);
                     }
                 }
-
                 setIsLoaded(true);
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -122,22 +113,32 @@ function App() {
         loadImagesForRoute(location.pathname);
     }, [location.pathname]);
 
+    const handleBalanceChange = (newBalance,newEnergy) => {
+        setUserBalance(newBalance);
+        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+            ws.current.send(JSON.stringify({
+                type: 'updateBalance',
+                telegram_id: 874423521,
+                newBalance: 1000,
+                newEnergy: newEnergy
+            }));
+        }
+    };
+
     if (!isLoaded || loadingImages) {
         return <LoadingScreen />;
     }
 
-
     if (!isMobile) {
         return <NotMobile />;
     }
-
 
     return (
         <div className="App">
             <BgImage />
             <Navigation />
             <Routes>
-                <Route path="/" element={<Tap telegramId={userId} />} />
+                <Route path="/" element={<Tap telegramId={userId} onBalanceChange={handleBalanceChange} />} />
                 <Route path="/team" element={<Team />} />
                 <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route
