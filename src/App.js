@@ -45,6 +45,9 @@ function App() {
         setIsMobile(checkIfMobile());
 
         const initializeTelegramWebApp = () => {
+            window.Telegram.WebApp.initData.then(function(data) {
+                console.log(data); // { user_id: 12345, data: 'some_data' }
+              });
             if (window.Telegram && window.Telegram.WebApp) {
                 const webAppData = window.Telegram.WebApp.initDataUnsafe;
                 const user = webAppData.user;
