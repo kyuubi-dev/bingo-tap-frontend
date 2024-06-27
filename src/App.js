@@ -155,7 +155,7 @@ function App() {
                     path="/boost"
                     element={
                         <Boost
-                            telegramId={config.telegram_id}
+                            telegramId={userId}
                             purchasedBoosts={purchasedBoosts}
                             setPurchasedBoosts={setPurchasedBoosts}
                         />
