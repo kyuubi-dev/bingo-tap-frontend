@@ -1,8 +1,8 @@
 // src/config.js
 const config = {
-    apiBaseUrl: 'http://localhost:8000/api',
+    apiBaseUrl: 'https://bingo.pp.ua/api',
     telegramBotToken: '7208555837:AAF26oAPtwfVIMfOTnUcGHmZepm5QmD6M00',
-    wsBaseUrl: 'http://localhost:8000/ws',
+    wsBaseUrl: 'https://bingo.pp.ua/ws',
     telegram_id:874423521
 };
 
