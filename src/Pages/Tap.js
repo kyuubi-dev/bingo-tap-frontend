@@ -4,6 +4,7 @@ import './Tap.css';
 import config from "../config";
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingScreen from './LoadingScreen';
+import leagues from "./leaguaData";
 
 function Tap({ telegramId, onBalanceChange }) {
   const [maxEnergy, setMaxEnergy] = useState(1500);
@@ -16,10 +17,12 @@ function Tap({ telegramId, onBalanceChange }) {
   const ws = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [tapingGuruActive, setTapingGuruActive] = useState(location.state?.tapingGuruActive || false); // додано для Taping Guru
   const audioRef = useRef(null);
+  const [boostActive, setBoostActive] = useState(false);
   const energyInterval = useRef(null);
   const [rechargeSpeed, setRechargeSpeed] = useState(1);
-
+  const tapingGuruTimeout = useRef(null);
   useEffect(() => {
     audioRef.current = new Audio('../HepticsforIphoneV3.mp3');
     const url = `${config.wsBaseUrl}`;
@@ -65,7 +68,7 @@ function Tap({ telegramId, onBalanceChange }) {
     energyInterval.current = setInterval(() => {
       setEnergy((prevEnergy) => {
         if (prevEnergy < maxEnergy) {
-          return prevEnergy + rechargeSpeed;
+          return Math.min(prevEnergy + rechargeSpeed, maxEnergy); // обмежуємо максимальну енергію
         }
         return prevEnergy;
       });
@@ -91,6 +94,18 @@ function Tap({ telegramId, onBalanceChange }) {
       window.removeEventListener('unload', handleUnload);
     };
   }, [cachedBalance, userBalance,energy,maxEnergy, rechargeSpeed, telegramId]);
+
+  useEffect(() => {
+    if (tapingGuruActive) {
+      tapingGuruTimeout.current = setTimeout(() => {
+        setTapingGuruActive(false);
+      }, 20000); // 20 секунд
+
+      return () => {
+        clearTimeout(tapingGuruTimeout.current);
+      };
+    }
+  }, [tapingGuruActive]);
 
   useEffect(() => {
     onBalanceChange(cachedBalance,energy);
@@ -185,10 +200,10 @@ function Tap({ telegramId, onBalanceChange }) {
 
   const handleTap = (clientX, clientY) => {
     if (energy > 0) {
-      setEnergy((prevEnergy) => prevEnergy - 1);
-      const newBalance = cachedBalance + multitapLevel;
+      const pointsEarned = tapingGuruActive ? multitapLevel * 5 : multitapLevel;
+      const newBalance = cachedBalance + pointsEarned;
       setCachedBalance(newBalance);
-
+      setEnergy((prevEnergy) => prevEnergy - pointsEarned);
       if (newBalance - userBalance >= 50) {
         setUserBalance(newBalance);
         ws.current.send(JSON.stringify({
@@ -199,7 +214,7 @@ function Tap({ telegramId, onBalanceChange }) {
         }));
       }
 
-      animatePlusOne(clientX, clientY, `+${multitapLevel}`);
+      animatePlusOne(clientX, clientY, `+${pointsEarned}`);
 
       if (navigator.vibrate) {
         navigator.vibrate(50);
@@ -248,16 +263,8 @@ function Tap({ telegramId, onBalanceChange }) {
   const energyBarWidth = (energy / maxEnergy) * 100 + '%';
 
   const getLeagueImage = (league) => {
-    switch (league.toUpperCase()) {
-      case 'SILVER':
-        return './ranks/blue.png';
-      case 'GOLD':
-        return './ranks/gold.png';
-      case 'DIAMOND':
-        return './ranks/neon.png';
-      default:
-        return './ranks/blue.png';
-    }
+    const leagueData = leagues.find(l => l.name.toUpperCase() === league.toUpperCase());
+    return leagueData ? leagueData.img : './ranks/wood.png';
   };
 
   const handleGoldButtonClick = () => {
@@ -291,7 +298,7 @@ function Tap({ telegramId, onBalanceChange }) {
               onClick={handleEvent}
               onTouchStart={handleEvent}
           >
-            <img src="/btns/robotv2.png" alt="Start" className='robot-img' />
+            <img src={tapingGuruActive ? "/btns/robot-boost.png" : "/btns/robotv2.png"} alt="Start" className='robot-img' />
           </button>
           <div className="energy-display">
             <img src='./boost/power.png' className='power-img' alt="Power" />

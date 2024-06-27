@@ -183,6 +183,9 @@ html, body {
     height: auto;
 }
 
+.tap-bot-timer{
+    font-size: 4vw;
+}
 
     .daily-boost-h {
         font-size: 5vw;

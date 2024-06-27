@@ -23,7 +23,7 @@ const boostLevels = {
         { level: 19, price: 900000, description: "3 points per tap. Next level costs 8000 points." },
         { level: 20, price: 1000000, description: "3 points per tap. Next level costs 8000 points." },
     ],
-    "Energy Limit": [
+    "ENERGY LIMIT": [
         { level: 1, price: 500, description: "Max energy = 500. Next level costs 2000 points." },
         { level: 2, price: 1000, description: "Max energy = 1000. Next level costs 4000 points." },
         { level: 3, price: 2000, description: "Max energy = 1500. Next level costs 8000 points." },
@@ -45,7 +45,7 @@ const boostLevels = {
         { level: 19, price: 900000, description: "Max energy = 1500. Next level costs 8000 points." },
         { level: 20, price: 1000000, description: "Max energy = 1500. Next level costs 8000 points." },
     ],
-    "Recharge Speed": [
+    "RECHARGE SPEED": [
         { level: 1, price: 300000, description: "+3 monet in 1 tap. Next level costs 400000 points." },
         { level: 2, price: 400000, description: "+6 monet in 1 tap. Next level costs 500000 points." },
         { level: 3, price: 500000, description: "+6 monet in 1 tap. Next level costs 500000 points." },
