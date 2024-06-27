@@ -150,7 +150,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Tap telegramId={userId} onBalanceChange={handleBalanceChange} />} />
                 <Route path="/team" element={<Team userId={userId} botName={botName} />} />
-                <Route path="/task" element={<Task telegramId={config.telegram_id} />} />
+                <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route
                     path="/boost"
                     element={
