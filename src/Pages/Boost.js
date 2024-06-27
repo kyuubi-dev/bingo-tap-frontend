@@ -1,280 +1,462 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './Boost.css';
-import './TextStyle.css';
-import CompletionMessage from './ModelMessage';
-import boostsData from './boostData.js';  // Import boost data
-import boostLevels from './boostLevel.js';
-import ReconnectingWebSocket from 'reconnecting-websocket';
-import config from "../config";
-import LoadingScreen from "./LoadingScreen";
+    import React, { useState, useEffect, useRef } from 'react';
+    import './Boost.css';
+    import './TextStyle.css';
+    import CompletionMessage from './ModelMessage';
+    import boostsData from './boostData.js';  // Import boost data
+    import boostLevels from './boostLevel.js';
+    import ReconnectingWebSocket from 'reconnecting-websocket';
+    import config from "../config";
+    import LoadingScreen from "./LoadingScreen";
+    import BoostModal from './boostModal';
+    import axios from "axios";
+    import {useLocation, useNavigate} from "react-router-dom";  // Import the modal component
 
-const Boost = ({ telegramId, purchasedBoosts, setPurchasedBoosts }) => {
-    const [message, setMessage] = useState(null);
-    const [userBalance, setUserBalance] = useState(0);
-    const [dailyBoosts, setDailyBoosts] = useState({
-        "TAPPING GURU": 3,
-        "FULL TANK": 3,
-    });
-    const [boosts, setBoosts] = useState(boostsData);  // Set initial boost list from file
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [tapBotActive, setTapBotActive] = useState(false);
-    const [tapBotPoints, setTapBotPoints] = useState(0);
-    const [tapBotTimer, setTapBotTimer] = useState(0);
-    const [lastTapBotTime, setLastTapBotTime] = useState(null);
-    const ws = useRef(null);
+    const Boost = ({ telegramId }) => {
+        const [message, setMessage] = useState(null);
+        const location = useLocation();
+        const navigate = useNavigate();
+        const initialBalance = location.state?.userBalance || 0;
+        const [userBalance, setUserBalance] = useState(initialBalance);
+        const [dailyBoosts, setDailyBoosts] = useState({
+            "tapingGuru": { charges: 0, lastUpdate: Date.now() },
+            "fullTank": { charges: 0, lastUpdate: Date.now() },
+        });
+        const [autoTapData, setAutoTapData] = useState({
+            active: false,
+            accumulatedPoints: 0,
+            timeLeft: 0,
+            lastUpdate: null
+        });
 
-    useEffect(() => {
-        const initializeUserData = async () => {
-            // Отримання даних користувача, які зберігаються локально
-            const cachedUserBalance = localStorage.getItem('userBalance');
+        const [boosts, setBoosts] = useState(boostsData);  // Set initial boost list from file
+        const [isLoaded, setIsLoaded] = useState(false);
+        const [tapBotActive, setTapBotActive] = useState(false);
+        const [tapBotPoints, setTapBotPoints] = useState(0);
+        const [tapBotTimer, setTapBotTimer] = useState(0);
+        const [lastTapBotTime, setLastTapBotTime] = useState(null);
+        const [tapingGuruActive, setTapingGuruActive] = useState(false);
+        const ws = useRef(null);
+        const [selectedBoost, setSelectedBoost] = useState(null);
+        const [energy, setEnergy]=useState(0);
+        useEffect(() => {
+            const initializeUserData = async () => {
+                const cachedUserBalance = localStorage.getItem('userBalance');
+                if (cachedUserBalance) {
+                    setUserBalance(parseInt(cachedUserBalance, 10));
+                }
 
-            if (cachedUserBalance) {
-                setUserBalance(parseInt(cachedUserBalance));
-            }
+                try {
+                    await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
+                        balance: cachedUserBalance
+                    });
 
-            setIsLoaded(true);
+                    setIsLoaded(true);
+                    // Після збереження даних відкриваємо WebSocket
+                    openWebSocket();
+                } catch (error) {
+                    console.error("Error saving balance:", error);
+                }
+            };
+
+            initializeUserData();
+        }, [telegramId]);
+
+        const openWebSocket = () => {
+            const url = `${config.wsBaseUrl}`; // Insert the correct WebSocket URL
+            ws.current = new ReconnectingWebSocket(url);
+
+            ws.current.onopen = () => {
+                console.log('WebSocket connection established');
+                // Request user data upon connection
+                ws.current.send(JSON.stringify({
+                    type: 'requestUserData',
+                    telegram_id: telegramId
+                }));
+
+            };
+
+            ws.current.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log('Received message:', data);
+
+                if (data.type === 'userData') {
+                    setIsLoaded(false);
+                    setUserBalance(data.balance);
+                    setDailyBoosts(data.dailyBoosts);
+                    setBoosts(boosts.map(boost => {
+                        if (boost.name === 'MULTITAP') {
+                            return { ...boost, level: data.multiTapLevel } ;
+                        } else if (boost.name === 'ENERGY LIMIT') {
+                            return { ...boost, level: data.energyLimitLevel };
+                        } else if (boost.name === 'RECHARGE SPEED') {
+                            return { ...boost, level: data.rechargingSpeed };
+                        }
+                        return boost;
+                    }));
+                    setEnergy(data.energy);
+                    setAutoTapData(data.autoTapData || autoTapData);
+                    setIsLoaded(true);
+                } else if (data.type === 'updateBalance' && data.telegram_id === telegramId) {
+                    setUserBalance(data.newBalance);
+                } else if (data.type === 'boostUpdate' && data.telegram_id === telegramId) {
+                    setIsLoaded(false);
+                    setBoosts(boosts.map(boost => {
+                        if (boost.name === 'MULTITAP') {
+                            return { ...boost, level: data.boostLevels.multiTapLevel };
+                        } else if (boost.name === 'ENERGY LIMIT') {
+                            return { ...boost, level: data.boostLevels.energyLimitLevel };
+                        } else if (boost.name === 'RECHARGE SPEED') {
+                            return { ...boost, level: data.boostLevels.rechargingSpeed };
+                        }
+                        return boost;
+                    }));
+                    setUserBalance(data.balance);
+                    setIsLoaded(true);
+                } else if(data.type === 'boostActivated'){
+                    if (data.telegram_id === telegramId) {
+                        setDailyBoosts(prevBoosts => ({
+                            ...prevBoosts,
+                            [data.boost]: {
+                                ...prevBoosts[data.boost],
+                                charges: data.chargesLeft
+                            }
+                        }));
+                    }
+                } else if (data.type === 'autoTapActivated' && data.telegram_id === telegramId) {
+                    setAutoTapData({
+                        active: data.active,
+                        accumulatedPoints: data.accumulatedPoints,
+                        timeLeft: data.timeLeft,
+                        lastUpdate: data.lastUpdate
+                    });
+                    console.log(`autoTapActivation - ${data.timeLeft}`);
+                    setMessage('AUTO TAP has been activated.');
+                }else if (data.type === 'autoTapUpdate' && data.telegram_id === telegramId) {
+                    setAutoTapData(data.autoTapData);
+                    localStorage.setItem('autoTapData', JSON.stringify(data.autoTapData));
+                } else if (data.type === 'error') {
+                    setMessage(data.message);
+                }
+            };
+
+            ws.current.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.current.onclose = () => {
+                console.log('WebSocket connection closed');
+            };
+
+            return () => {
+                ws.current.close();
+            };
         };
 
-        initializeUserData();
-    }, []);
+        useEffect(() => {
+            const timer = setInterval(() => {
+                const now = Date.now();
+                setDailyBoosts(prevBoosts => {
+                    const newBoosts = { ...prevBoosts };
+                    for (let boostName in newBoosts) {
+                        const elapsedTime = now - new Date(newBoosts[boostName].lastUpdate).getTime();
+                        const remainingTime = Math.max(8 * 60 * 60 * 1000 - elapsedTime);
+                        newBoosts[boostName].remainingTime = remainingTime;
+                    }
+                    return newBoosts;
+                });
+            }, 1000);  // Update every second
 
+            return () => clearInterval(timer);
+        }, []);
 
-    // Connect to WebSocket
-    useEffect(() => {
-        const url = `${config.wsBaseUrl}`; // Insert the correct WebSocket URL
-        ws.current = new ReconnectingWebSocket(url);
+        const handleActivateAutoTap = () => {
+            const autoTapPrice = 200000;
 
-        ws.current.onopen = () => {
-            console.log('WebSocket connection established');
-            // Request user data upon connection
+            if (userBalance >= autoTapPrice) {
+                const now = Date.now();
+                const threeHoursLater = now + 3 * 60 * 60 * 1000; // 3 години
+
+                const updatedBalance = userBalance - autoTapPrice;
+                setUserBalance(updatedBalance);
+                ws.current.send(JSON.stringify({
+                    type: 'purchaseBoost',
+                    telegram_id: telegramId,
+                    boostType: `AUTO TAP`,
+                    price: autoTapPrice,
+                }));
+
+                sendAutoTapActivation();
+
+                setMessage('AUTO TAP purchased! Points will be added automatically for the next 3 hours.');
+            } else {
+                setMessage('Insufficient balance for purchasing AUTO TAP.');
+            }
+        };
+
+        const handleClaimPoints = () => {
+            if (autoTapData.accumulatedPoints > 0) {
+                const updatedBalance = userBalance + autoTapData.accumulatedPoints;
+                setUserBalance(updatedBalance);
+
+                // Відправка оновленого балансу на сервер
+                ws.current.send(JSON.stringify({
+                    type: 'updateBalance',
+                    telegram_id: telegramId,
+                    newBalance: updatedBalance,
+                    energy:energy
+                }));
+                setAutoTapData((prevData) => ({
+                    ...prevData,
+                    accumulatedPoints: 0
+                }));
+                localStorage.setItem('autoTapData', JSON.stringify({
+                    ...autoTapData,
+                    accumulatedPoints: 0
+                }));
+                setMessage(`Claimed ${autoTapData.accumulatedPoints} points!`);
+            } else {
+                setMessage('No points to claim.');
+            }
+        };
+
+        const handleDailyBoostClick = (boost) => {
+            setSelectedBoost(boost);
+        };
+
+        const handleBoostClick = (boost) => {
+            setSelectedBoost(boost);
+        };
+
+        const sendAutoTapActivation = () => {
             ws.current.send(JSON.stringify({
-                type: 'requestUserData',
+                type: 'activateAutoTap',
                 telegram_id: telegramId
             }));
+            console.log(`autoTapActivation - ${autoTapData}`);
         };
 
-        ws.current.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            console.log('Received message:', data);
 
-            if (data.type === 'userData') {
-                setUserBalance(data.balance);
-                setBoosts(boosts.map(boost => {
-                    if (boost.name === 'MULTITAP') {
-                        return { ...boost, level: data.multiTapLevel };
-                    } else if (boost.name === 'Energy Limit') {
-                        return { ...boost, level: data.energyLimitLevel };
-                    } else if (boost.name === 'Recharge Speed') {
-                        return { ...boost, level: data.rechargingSpeed };
-                    }
-                    return boost;
+        const handleBuyBoost = (boost) => {
+            // Логіка для покупки буста
+            if (boost.name === 'AUTO TAP') {
+                handleActivateAutoTap();
+                setSelectedBoost(null);  // Закриття модального вікна після покупки
+                return; // Виходимо, оскільки для AUTO TAP ми вже обробили покупку
+            }
+            if (!boost || boost.level === undefined) {
+                setMessage('Invalid boost data.');
+                return;
+            }
+
+            const nextLevel = boost.level + 1;
+            const boostData = boostLevels[boost.name].find(level => level.level === nextLevel);
+
+            if (!boostData) {
+                setMessage(`Max level reached for ${boost.name}.`);
+                return;
+            }
+
+            const { price } = boostData;
+
+            if (userBalance < price) {
+                setMessage('Insufficient balance.');
+                return;
+            }
+
+            setUserBalance((prevBalance) => prevBalance - price);
+            setIsLoaded(false);
+            try {
+                ws.current.send(JSON.stringify({
+                    type: 'purchaseBoost',
+                    telegram_id: telegramId,
+                    boostType: boost.name,
+                    price: price,
                 }));
+
+                ws.current.send(JSON.stringify({
+                    type: 'requestUserData',
+                    telegram_id: telegramId
+                }));
+            } catch (error) {
+                console.error("Error purchasing boost:", error);
                 setIsLoaded(true);
-            } else if (data.type === 'balanceUpdate' && data.telegram_id === telegramId) {
-                setUserBalance(data.newBalance);
-            } else if (data.type === 'boostUpdate' && data.telegram_id === telegramId) {
-                setBoosts(boosts.map(boost => {
-                    if (boost.name === data.boostType) {
-                        return { ...boost, level: data.newLevel };
+                setMessage('Error purchasing boost. Please try again.');
+            }
+            setSelectedBoost(null);  // Закриття модального вікна після покупки
+        };
+
+        const handleModalClose = () => {
+            setSelectedBoost(null);
+        };
+
+        const handleActivateTapingGuru = () => {
+            const tapingGuruBoost = dailyBoosts["tapingGuru"];
+
+            if (!tapingGuruBoost) {
+                setMessage('Taping Guru boost data is unavailable.');
+                return;
+            }
+
+            if (tapingGuruBoost.charges > 0 && !tapingGuruActive) {
+                setDailyBoosts((prevBoosts) => ({
+                    ...prevBoosts,
+                    "tapingGuru": {
+                        charges: prevBoosts["tapingGuru"].charges - 1,
+                        lastUpdate: prevBoosts["tapingGuru"].lastUpdate
                     }
-                    return boost;
                 }));
-            } else if (data.type === 'error') {
-                setMessage(data.message);
+                ws.current.send(JSON.stringify({
+                    type: 'activateBoost',
+                    telegram_id: telegramId,
+                    boost: "tapingGuru"
+                }));
+                setTapingGuruActive(true);
+
+                navigate('/', { state: { tapingGuruActive: true } });
+
+                setTimeout(() => {
+                    setTapingGuruActive(false);
+                }, 20000); // 20 seconds
+            } else if (tapingGuruActive) {
+                setMessage('Taping Guru is already active.');
+            } else {
+                setMessage('No Taping Guru boosts left.');
             }
         };
 
-        ws.current.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
 
-        ws.current.onclose = () => {
-            console.log('WebSocket connection closed');
-        };
-
-        return () => {
-            ws.current.close();
-        };
-    }, [telegramId]);
-
-    useEffect(() => {
-        let interval;
-        if (tapBotActive) {
-            const storedTime = localStorage.getItem('tapBotTime');
-            const storedPoints = localStorage.getItem('tapBotPoints');
-            const storedLastTime = localStorage.getItem('lastTapBotTime');
-
-            if (storedTime && storedPoints && storedLastTime) {
-                const timeDifference = Math.floor((Date.now() - new Date(storedLastTime).getTime()) / 3600000);
-                const newPoints = Math.min(timeDifference, 3) + parseInt(storedPoints, 10);
-                setTapBotPoints(newPoints);
-                setTapBotTimer(3 - newPoints);
+        const handleActivateFullTank = () => {
+                if (dailyBoosts["fullTank"].charges > 0 ) {
+                    setTapingGuruActive(true);
+                    setDailyBoosts((prevBoosts) => ({
+                        ...prevBoosts,
+                        "fullTank": {
+                            charges: prevBoosts["fullTank"].charges - 1,
+                            lastUpdate: prevBoosts["fullTank"].lastUpdate
+                        }
+                    }));
+                    ws.current.send(JSON.stringify({
+                        type: 'activateBoost',
+                        telegram_id: telegramId,
+                        boost: "fullTank"
+                    }));
+                    ws.current.send(JSON.stringify({
+                    type: 'maximizeEnergy',
+                    telegram_id: telegramId
+                }));
+                    setMessage('Full Tank is activated.');
+                } else {
+                    setMessage('No Full Tank boosts left.');
+                }
             }
 
-            interval = setInterval(() => {
-                setTapBotPoints((prevPoints) => prevPoints + 1);
-                setTapBotTimer((prevTimer) => prevTimer - 1);
-                localStorage.setItem('tapBotTime', tapBotTimer);
-                localStorage.setItem('tapBotPoints', tapBotPoints);
-                localStorage.setItem('lastTapBotTime', new Date());
-            }, 3600000); // 1 hour in milliseconds
-
-            if (tapBotTimer <= 0) {
-                clearInterval(interval);
-                setTapBotActive(false);
-                setUserBalance((prevBalance) => prevBalance + tapBotPoints);
-                setTapBotPoints(0);
-                setTapBotTimer(0);
-                localStorage.removeItem('tapBotTime');
-                localStorage.removeItem('tapBotPoints');
-                localStorage.removeItem('lastTapBotTime');
-            }
+        if (!isLoaded) {
+            return <LoadingScreen />;
         }
 
-        return () => clearInterval(interval);
-    }, [tapBotActive, tapBotTimer]);
+        const closeMessage = () => {
+            setMessage(null);
+        };
 
-    const handleDailyBoostUse = (boostName) => {
-        if (dailyBoosts[boostName] > 0) {
-            setDailyBoosts((prevBoosts) => ({
-                ...prevBoosts,
-                [boostName]: prevBoosts[boostName] - 1,
-            }));
-            setMessage(`${boostName} boost used!`);
-        } else {
-            setMessage('No charges left for this boost.');
-        }
-    };
 
-    const handlePurchase = (boostName, currentLevel) => {
-        const nextLevel = currentLevel + 1;
-        const boostData = boostLevels[boostName].find(level => level.level === nextLevel);
+        const formatRemainingTime = (milliseconds) => {
+            const hours = String(Math.floor((milliseconds / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+            const minutes = String(Math.floor((milliseconds / (1000 * 60)) % 60)).padStart(2, '0');
+            const seconds = String(Math.floor((milliseconds / 1000) % 60)).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        };
 
-        if (!boostData) {
-            setMessage(`Max level reached for ${boostName}.`);
-            currentLevel = "MAX LEVEL"
-            return;
+        if (!isLoaded) {
+            return <LoadingScreen />;
         }
 
-        const { price } = boostData;
-        setMessage(`Purchasing ${boostName} level ${nextLevel}... Waiting for upgrading ${boostName}`);
-
-        ws.current.send(JSON.stringify({
-            type: 'purchaseBoost',
-            telegram_id: telegramId,
-            boostType: boostName,
-            price: price,
-            level: nextLevel
-        }));
-    };
-
-    const handleTapBotPurchase = () => {
-        const tapBotPrice = 200000;
-
-        if (userBalance >= tapBotPrice) {
-            setUserBalance((prevBalance) => prevBalance - tapBotPrice);
-            setTapBotActive(true);
-            setTapBotTimer(3); // 3 hours
-            setLastTapBotTime(new Date());
-            setMessage('AUTO TAP purchased! 1 point per hour will be added to your balance for the next 3 hours.');
-
-            ws.current.send(JSON.stringify({
-                type: 'purchaseBoost',
-                telegram_id: 874423521,
-                boostType: 'AUTO TAP',
-                price: tapBotPrice
-            }));
-
-            localStorage.setItem('tapBotTime', 3);
-            localStorage.setItem('tapBotPoints', 0);
-            localStorage.setItem('lastTapBotTime', new Date());
-        } else {
-            setMessage('Insufficient balance for purchasing AUTO TAP.');
-        }
-    };
-
-    if (!isLoaded) {
-        return <LoadingScreen />;
-    }
-
-    const closeMessage = () => {
-        setMessage(null);
-    };
-
-    const DailyBoostItem = ({ text, reward, image }) => (
-        <div className="daily-boost-item" onClick={() => handleDailyBoostUse(text)}>
-            <img src={image} alt="icon" className="boost-icon" />
-            <div className="d-boost-text blue-style">{text}</div>
-            <div className="daily-boost-h">
-                <span className="gold-style">{dailyBoosts[text]}/{reward}</span>
+        const DailyBoostItem = ({ text,txt, reward, image, description }) => (
+            <div className="daily-boost-item" onClick={() => handleDailyBoostClick({price:"FREE", name: txt, description: description,remaining: dailyBoosts[text]?.charges ?? 0, image })}>
+                <img src={image} alt="icon" className="boost-icon" />
+                <div className="d-boost-text blue-style">{txt}</div>
+                {dailyBoosts[text].charges === 0 && (
+                    <div className="boost-timer">{formatRemainingTime(dailyBoosts[text].remainingTime)}</div>
+                )}
+                <div className="daily-boost-h">
+                    <span className="gold-style">{dailyBoosts[text]?.charges ?? 0}/{reward}</span>
+                </div>
             </div>
-        </div>
-    );
+        );
 
-    const BoostItem = ({ text, price, image, level }) => {
-        const isTapBot = text === 'AUTO TAP';
-        const nextLevel = level + 1;
-        const nextLevelData = boostLevels[text] ? boostLevels[text].find(lvl => lvl.level === nextLevel) : null;
+        const BoostItem = ({ text, price, image, level,description }) => {
+            const isTapBot = text === 'AUTO TAP';
+            const nextLevel = level + 1;
+            const nextLevelData = boostLevels[text] ? boostLevels[text].find(lvl => lvl.level === nextLevel) : null;
+
+            const boost = {
+                name: text,
+                price: nextLevelData ? nextLevelData.price : 'MAX LVL',
+                image,
+                level,
+                description
+            };
+
+            return (
+                <div className="boost-item" onClick={() => handleBoostClick(boost)}>
+                    <img src={image} alt="icon" className="boost-icon" />
+                    {isTapBot && autoTapData.active ? (
+                        <div className="tap-bot-timer">
+                            <button onClick={handleClaimPoints}>CHECK POINTS</button>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="boost-text blue-style">{text}</div>
+                            <div className="boost-price">
+                                <img src="/coin.png" alt="Price-Coin" className="price-icon" />
+                                <span className="gold-style">{isTapBot ? price : nextLevelData?.price || 'MAX LVL'}</span>
+                            </div>
+                            {!isTapBot && <div className="boost-level blue-style">Level {level}</div>}
+                        </>
+                    )}
+                </div>
+            );
+        };
 
         return (
-            <div className="boost-item" onClick={() => isTapBot ? handleTapBotPurchase() : handlePurchase(text, level)}>
-                <img src={image} alt="icon" className="boost-icon" />
-                {isTapBot && tapBotActive ? (
-                    <div className="tap-bot-timer">
-                        <span>Time remaining: {tapBotTimer} hours</span>
-                        <span className="gold-style">{tapBotPoints} points accumulated</span>
+            <div className='Boost'>
+                <div className='lightnings f-tab'>
+                    <img src='/16.png' className='lightning f-tab right' alt="Lightning Right" />
+                    <img src='/17.png' className='lightning f-tab left' alt="Lightning Left" />
+                </div>
+                <header className="header">
+                    <div className="balance-display-task">
+                        <img src="/coin.png" alt="Coin" className="coin-icon" />
+                        <span className="balance-amount blue-style">{userBalance}</span>
                     </div>
-                ) : (
-                    <>
-                        <div className="boost-text blue-style">{text}</div>
-                        <div className="boost-price">
-                            <img src="/coin.png" alt="Price-Coin" className="price-icon" />
-                            <span className="gold-style">{isTapBot ? price : nextLevelData?.price || 'N/A'}</span>
-                        </div>
-                        {!isTapBot && <div className="boost-level blue-style">Level {level}</div>}
-                    </>
-                )}
+                </header>
+                <div className="dayli-boost-text gold-style">YOUR DAILY BOOSTERS:</div>
+                <div className="daily-boosts">
+                    <DailyBoostItem text="tapingGuru" txt="TAPING GURU" reward="3" image='/boost/fire.b.png' description="+5 points per click for 1 min" />
+                    <DailyBoostItem text="fullTank" txt="FULL TANK" reward="3" image='/boost/power.png'  description="Set full for yours energy"/>
+                </div>
+                <div className="boosters-text gold-style">BOOSTERS:</div>
+                <div className="boosts">
+                    {boosts.map(boost => (
+                        <BoostItem
+                            key={boost.boost_id}
+                            text={boost.name}
+                            price={boost.price}
+                            image={`/boost/${boost.image}.png`}
+                            level={boost.level}
+                            description={boost.description}
+                        />
+                    ))}
+                    <BoostItem
+                        text="AUTO TAP"
+                        price={200000}
+                        image='/boost/click.png'
+                        description="Auto click by 3 hours"
+                    />
+                </div>
+                {message && <CompletionMessage message={message} onClose={closeMessage} />}
+                {selectedBoost && <BoostModal boost={selectedBoost} onClose={handleModalClose} onBuy={handleBuyBoost} onActivateTG={handleActivateTapingGuru} onActiveFT={handleActivateFullTank} autoTapData={autoTapData} handleClaimPoints={handleClaimPoints} />}
             </div>
         );
     };
 
-    return (
-        <div className='Boost'>
-            <div className='lightnings f-tab'>
-                <img src='/16.png' className='lightning f-tab right' alt="Lightning Right" />
-                <img src='/17.png' className='lightning f-tab left' alt="Lightning Left" />
-            </div>
-            <header className="header">
-                <div className="balance-display-task">
-                    <img src="/coin.png" alt="Coin" className="coin-icon" />
-                    <span className="balance-amount blue-style">{userBalance}</span>
-                </div>
-            </header>
-            <div className="dayli-boost-text gold-style">YOUR DAILY BOOSTERS:</div>
-            <div className="daily-boosts">
-                <DailyBoostItem text="TAPPING GURU" reward="3" image='/boost/fire.b.png' />
-                <DailyBoostItem text="FULL TANK" reward="3" image='/boost/power.png' />
-            </div>
-            <div className="boosters-text gold-style">BOOSTERS:</div>
-            <div className="boosts">
-                {boosts.map(boost => (
-                    <BoostItem
-                        key={boost.boost_id}
-                        text={boost.name}
-                        price={boost.price}
-                        image={`/boost/${boost.image}.png`}
-                        level={boost.level}
-                    />
-                ))}
-                <BoostItem
-                    text="AUTO TAP"
-                    price={200000}
-                    image='/boost/click.png'
-                />
-            </div>
-            {message && <CompletionMessage message={message} onClose={closeMessage} />}
-        </div>
-    );
-};
-
-export default Boost;
+    export default Boost;
