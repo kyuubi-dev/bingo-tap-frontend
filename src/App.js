@@ -16,7 +16,7 @@ function App() {
     const [userBalance, setUserBalance] = useState(0);
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
-    const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState(874423521);
     const [username, setUsername] = useState(null);
     const [botName, setBotName] = useState(null);
     const [isMobile, setIsMobile] = useState(true);
@@ -63,7 +63,7 @@ function App() {
 
         const fetchUserData = async () => {
             try {
-                const user = initializeTelegramWebApp();
+                const user = {id:874423521,username:"bogdan_krvsk"};
                 if (user) {
                     const { id, username } = user;
 
@@ -145,12 +145,12 @@ function App() {
             <Routes>
                 <Route path="/" element={<Tap telegramId={userId} onBalanceChange={handleBalanceChange} />} />
                 <Route path="/team" element={<Team userId={userId} botName={botName} />} />
-                <Route path="/task" element={<Task telegramId={config.telegram_id} />} />
+                <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route
                     path="/boost"
                     element={
                         <Boost
-                            telegramId={config.telegram_id}
+                            telegramId={userId}
                             purchasedBoosts={purchasedBoosts}
                             setPurchasedBoosts={setPurchasedBoosts}
                         />

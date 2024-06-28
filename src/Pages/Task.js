@@ -48,25 +48,11 @@ const Task = ({ telegramId }) => {
     useEffect(() => {
         const storedTasksCompleted = JSON.parse(localStorage.getItem('tasksCompleted')) || {};
         setTasksCompleted(storedTasksCompleted);
+
+        const storedCompletedLeagues = JSON.parse(localStorage.getItem('completedLeagues')) || {};
+        setCompletedLeagues(storedCompletedLeagues);
     }, []);
-    const markCompletedLeagues = () => {
-        const updatedCompletedLeagues = {};
 
-        leagues.forEach(league => {
-            if (userPoints >= league.requiredPoints) {
-                updatedCompletedLeagues[league.name] = true;
-            }
-        });
-
-        setCompletedLeagues(updatedCompletedLeagues);
-        localStorage.setItem('completedLeagues', JSON.stringify(updatedCompletedLeagues));
-
-    };
-
-
-    useEffect(() => {
-        markCompletedLeagues();
-    }, [userBalance]);
     useEffect(() => {
         const initializeUserData = async () => {
             // Отримання даних користувача, які зберігаються локально
@@ -143,6 +129,7 @@ const Task = ({ telegramId }) => {
         console.log(updatedTasks)
         setTasks(updatedTasks);
         const newBalance = userBalance + reward;
+        console.log(tasksCompleted)
         // Зберігання інформації про завершення у localStorage (необов'язково, залежить від вашої логіки)
         const updatedTasksCompleted = { ...tasksCompleted, [taskId]: true };
         console.log(updatedTasksCompleted)
@@ -224,7 +211,7 @@ const Task = ({ telegramId }) => {
                                 key={task.task_id}
                                 task={task}
                                 onCompletion={() => handleTaskCompletion(task.task_id, task.reward)}
-                                xisCompleted={task.isCompleted}
+                                xisCompleted={tasksCompleted[task.task_id] || false}
                             />
                         ))}
                     </div>
@@ -239,7 +226,7 @@ const Task = ({ telegramId }) => {
                                 key={league.name}
                                 league={league}
                                 userPoints={userBalance}
-                                completed={completedLeagues[league.name]}
+                                completed={completedLeagues[league.name]|| false}
                                 onClaim={() => handleClaimLeague(league)}
                                 leagueProgress={leagueProgress}
                             />
@@ -333,11 +320,12 @@ const TaskItem = ({ task, onCompletion,xisCompleted }) => {
         }
     };
     return <a
-        href={task.url}
+        href={isCompleted ? '#' : task.url}
         className={`task-item ${isCompleted ? 'completed' : ''}`}
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleCompletion}
+        style={{ pointerEvents: isCompleted ? 'none' : 'auto', opacity: isCompleted ? 0.5 : 1 }}
     >
         <img src='./tasks/task.png' alt="icon" className="task-icon"/>
         <div className="task-text blue-style">{isCompleted ? `${task.task_name} - COMPLETED` : task.task_name}</div>
@@ -354,7 +342,9 @@ const TaskItem = ({ task, onCompletion,xisCompleted }) => {
 
 
 const LeagueItem = ({ league, completed, onClaim,leagueProgress }) => {
-    const progress = leagueProgress.find(progress => progress.league === league.name)?.progress || 0;
+    console.log(leagueProgress)
+    const progress = leagueProgress[league.name] || 0;
+
     return (
         <div className={`task-item leagua ${completed ? 'completed' : ''}`}>
             <img src={league.img} alt="icon" className="task-icon"/>

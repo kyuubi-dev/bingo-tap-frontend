@@ -3,6 +3,7 @@
 
 body {
   font-family: 'Big Shoulders Display', sans-serif;
+  overflow-y: auto;
 }
  
 .blue-style {

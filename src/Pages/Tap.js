@@ -197,14 +197,20 @@ function Tap({ telegramId, onBalanceChange }) {
 
     handleTap(clientX, clientY, touches);
   };
+  const getCachingThreshold = () => {
+    return Math.floor(50 * Math.pow(1.5, multitapLevel));
+  };
 
   const handleTap = (clientX, clientY) => {
     if (energy > 0) {
       const pointsEarned = tapingGuruActive ? multitapLevel * 5 : multitapLevel;
       const newBalance = cachedBalance + pointsEarned;
       setCachedBalance(newBalance);
-      setEnergy((prevEnergy) => prevEnergy - pointsEarned);
-      if (newBalance - userBalance >= 50) {
+      setEnergy((prevEnergy) => {
+        const newEnergy = prevEnergy - pointsEarned;
+        return newEnergy >= 0 ? newEnergy : 0; // перевірка, щоб енергія не від'ємною
+      });
+      if (newBalance - userBalance >= getCachingThreshold) {
         setUserBalance(newBalance);
         ws.current.send(JSON.stringify({
           type: 'updateBalance',
