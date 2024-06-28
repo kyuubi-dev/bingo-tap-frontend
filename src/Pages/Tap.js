@@ -24,7 +24,7 @@ function Tap({ telegramId, onBalanceChange }) {
   const [rechargeSpeed, setRechargeSpeed] = useState(1);
   const tapingGuruTimeout = useRef(null);
   useEffect(() => {
-    audioRef.current = new Audio('../HepticsforIphoneV3.mp3');
+   
     const url = `${config.wsBaseUrl}`;
     ws.current = new ReconnectingWebSocket(url);
 
@@ -225,23 +225,12 @@ function Tap({ telegramId, onBalanceChange }) {
       if (navigator.vibrate) {
         navigator.vibrate(50);
       }
-
-      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        playAudio();
-      }
     } else {
       console.log('Not enough energy to tap');
     }
   };
 
-  const playAudio = () => {
-    const playPromise = audioRef.current.play();
-    if (playPromise !== undefined) {
-      playPromise.catch((error) => {
-        console.error('Audio play failed:', error);
-      });
-    }
-  };
+  
 
   const animatePlusOne = (startX, startY, text) => {
     const coinElement = document.querySelector('.balance-display img');
