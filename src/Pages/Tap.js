@@ -210,7 +210,7 @@ function Tap({ telegramId, onBalanceChange }) {
         const newEnergy = prevEnergy - pointsEarned;
         return newEnergy >= 0 ? newEnergy : 0; // перевірка, щоб енергія не від'ємною
       });
-      if (newBalance - userBalance >= getCachingThreshold) {
+      if (newBalance - userBalance >= 50) {
         setUserBalance(newBalance);
         ws.current.send(JSON.stringify({
           type: 'updateBalance',
