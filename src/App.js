@@ -16,7 +16,7 @@ function App() {
     const [userBalance, setUserBalance] = useState(0);
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
-    const [userId, setUserId] = useState(874423521);
+    const [userId, setUserId] = useState(null);
     const [username, setUsername] = useState(null);
     const [botName, setBotName] = useState(null);
     const [isMobile, setIsMobile] = useState(true);
@@ -68,7 +68,7 @@ function App() {
 
         const fetchUserData = async () => {
             try {
-                const user = {id:874423521,username:"bogdan_krvsk"};
+                const user = initializeTelegramWebApp();
                 if (user) {
                     const { id, username } = user;
 
