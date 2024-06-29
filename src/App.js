@@ -49,12 +49,17 @@ function App() {
                 const webAppData = window.Telegram.WebApp.initDataUnsafe;
                 const user = webAppData.user;
                 const botName = "Bingo_kyuubi_test_bot";
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const refererId = urlParams.get('r');
 
+                console.log('Referer ID:', refererId);
                 if (user) {
                     const { id, username } = user;
                     setUserId(id);
                     setUsername(username);
                     setBotName(botName);
+                    
                     return { id, username, botName };
                 }
             }
