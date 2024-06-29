@@ -25,7 +25,7 @@ function App() {
     const ws = useRef(null);
 
     const imageSources = {
-        '/': ['./btns/robotv2.png', './coin.png', '/16.png', '/17.png', './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png', './boost/power.png', './tasks/open.png'],
+        '/': ['./btns/robotv2.png', './coin.png', '/16.png', '/17.png', './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png', './boost/power.png', './tasks/open.png', "./btns/robot-boost.png",'./ranks/master.png','./ranks/wood.png','./ranks/grandmaster.png','./ranks/bronze.png'],
         '/task': ['/16.png', '/17.png', '/coin.png', './tasks/open.png', './tasks/people1.png', './tasks/people2.png', './tasks/people3.png', './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png','./ranks/master.png','./ranks/wood.png','./ranks/grandmaster.png','./ranks/bronze.png'],
         '/boost': ['/16.png', '/17.png', '/coin.png', '/boost/fire.b.png', '/boost/power.png']
     };
@@ -128,7 +128,7 @@ function App() {
         if (ws.current && ws.current.readyState === WebSocket.OPEN) {
             ws.current.send(JSON.stringify({
                 type: 'updateBalance',
-                telegram_id: 874423521,
+                telegram_id: userId,
                 newBalance: 1000,
                 newEnergy: newEnergy
             }));

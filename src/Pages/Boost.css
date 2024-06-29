@@ -28,7 +28,6 @@ html, body {
     text-align: center;
     overflow-y: hidden; /* Дозволити скролінг при переповненні контенту */
     overflow-x: hidden !important;
-    z-index: 2;
 }
 
 .Boost::before {
@@ -89,7 +88,9 @@ html, body {
 }
 
 .boosts {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
+
     padding-top: -10vw !important;
 }
 
@@ -109,8 +110,6 @@ html, body {
 }
 
 .boost-icon {
-    width: 50px;
-    height: auto;
     grid-row: 1 / span 2;
     grid-column: 1;
 }
@@ -126,7 +125,7 @@ html, body {
     z-index: 2;
 }
 .dayli-boost-text {
-    font-size: 6vw;
+    font-size: 5vw;
     padding-top: 20px;
     padding-bottom: 10px;
     margin: 10px;
@@ -137,10 +136,10 @@ html, body {
 
 .boost-item {
     display: grid;
-    width: 50%;
+    width: 100%;
     align-items: center;
     grid-column: 1;
-    grid-template-columns: auto auto     auto;
+    grid-template-columns: 20% 25% 30% 25%;
     grid-template-rows: 1fr auto;
     border: 4px solid #BCF8FA;
     border-radius: 10px;
@@ -152,11 +151,16 @@ html, body {
     z-index: 2;
 }
 .boost-item .boost-icon{
-    width: 80%;
+    width: 100%;
+    justify-items: center;
+    margin-bottom: -10%;
+    margin-top: -10%;
+    margin-right: -10%;
 }
 .boost-text {
-    font-size: 3vw;
+    font-size: 5vw;
     grid-column: 2;
+    text-align: center;
     grid-row: 1 / span 2;
 }
 .Boost .header{
@@ -166,21 +170,29 @@ html, body {
     align-items: center;
     text-align: center;
     display: flex;
-    grid-column: 3;
+    grid-column: 4;
     grid-row: 1;
 }
 
 .boost-level {
     grid-column: 3;
-    grid-row: 2;
-    align-items: center;
-    text-align: center;
-    font-size: 4vw;
+    grid-row: 1;
+    margin-left: 5%;
+    font-size: 5vw;
+}
+.daily-boost-item.inactive {
+    background-color: black; /* Колір фону для неактивного стану */
+    pointer-events: none;   /* Робить компонент неактивним */
+    opacity: 0.5;           /* Напівпрозорість для неактивного стану */
+}
+.grey-text {
+    color: white; /* Сірий колір для неактивного тексту */
 }
 
 .price-icon {
     width: 30px;
     height: auto;
+    align-items: center;
 }
 
 .tap-bot-timer{
@@ -191,23 +203,19 @@ html, body {
         font-size: 5vw;
     }
     .d-boost-text{
-        font-size: 5vw;
+        font-size: 4.5vw;
+        margin-right: 8%;
     }
     .dayli-boost-text {
         font-size: 7vw;
     }
 
-    .boost-text {
-        font-size: 4vw;
-    }
 
     .boost-price {
         font-size: 5vw;
+        text-align: center !important;
     }
 
-    .boost-level {
-        font-size: 4vw;
-    }
 
     .boost-icon {
         width: 30%;
@@ -248,4 +256,10 @@ html, body {
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.5);
     }
+}
+
+.boost-timer{
+    font-size: 4.5vw;
+    left: 10%;
+    margin-right: -10%;
 }

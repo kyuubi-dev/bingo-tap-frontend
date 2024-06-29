@@ -1,6 +1,6 @@
 // src/components/Task.js
 import './Task.css';
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './TextStyle.css';
 import { useLocation } from 'react-router-dom';
 import CompletionMessage from './ModelMessage';
@@ -8,6 +8,7 @@ import axios, {isCancel} from 'axios';
 import config from '../config';
 import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
 import leagues from './leaguaData';
+import ReconnectingWebSocket from "reconnecting-websocket";
 const Task = ({ telegramId }) => {
     const location = useLocation();
     const initialBalance = location.state?.userBalance || 0;
@@ -27,14 +28,16 @@ const Task = ({ telegramId }) => {
     const [completionMessage, setCompletionMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true); // Loading state
     const [userData, setUserData] = useState([]);
+    const ws = useRef(null);
     useEffect(() => {
-        const ws = new WebSocket(config.wsBaseUrl);
+        ws.current = new ReconnectingWebSocket(config.wsBaseUrl);
 
-        ws.onopen = () => {
-            ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
+        ws.current.onopen = () => {
+            console.log('WebSocket connection established');
+            ws.current.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
         };
 
-        ws.onmessage = (event) => {
+        ws.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === 'userData') {
                 setUserData(data);
@@ -42,7 +45,7 @@ const Task = ({ telegramId }) => {
         };
 
         return () => {
-            ws.close();
+            ws.current.close();
         };
     }, [telegramId]);
     useEffect(() => {
@@ -162,7 +165,7 @@ const Task = ({ telegramId }) => {
             console.log(completedLeagues)
             setUserBalance(newBalance);
             setCompletionMessage(`League claimed: ${league.name}, reward - ${league.reward}`);
-
+            updateLeague()
             try {
                 await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
                     balance: newBalance

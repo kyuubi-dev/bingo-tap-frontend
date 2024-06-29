@@ -39,6 +39,7 @@
         const [selectedBoost, setSelectedBoost] = useState(null);
         const [energy, setEnergy]=useState(0);
         useEffect(() => {
+            setIsLoaded(false);
             const initializeUserData = async () => {
                 const cachedUserBalance = localStorage.getItem('userBalance');
                 if (cachedUserBalance) {
@@ -285,7 +286,7 @@
             setSelectedBoost(null);  // Закриття модального вікна після покупки
         };
 
-        const handleModalClose = () => {
+        const handleModalClose = (event) => {
             setSelectedBoost(null);
         };
 
@@ -344,7 +345,7 @@
                     type: 'maximizeEnergy',
                     telegram_id: telegramId
                 }));
-                    setMessage('Full Tank is activated.');
+                    navigate('/');
                 } else {
                     setMessage('No Full Tank boosts left.');
                 }
@@ -370,20 +371,28 @@
             return <LoadingScreen />;
         }
 
-        const DailyBoostItem = ({ text,txt, reward, image, description }) => (
-            <div className="daily-boost-item" onClick={() => handleDailyBoostClick({price:"FREE", name: txt, description: description,remaining: dailyBoosts[text]?.charges ?? 0, image })}>
-                <img src={image} alt="icon" className="boost-icon" />
-                <div className="d-boost-text blue-style">{txt}</div>
-                {dailyBoosts[text].charges === 0 && (
-                    <div className="boost-timer">{formatRemainingTime(dailyBoosts[text].remainingTime)}</div>
-                )}
-                <div className="daily-boost-h">
-                    <span className="gold-style">{dailyBoosts[text]?.charges ?? 0}/{reward}</span>
-                </div>
-            </div>
-        );
+        const DailyBoostItem = ({ text,txt, reward, image, description }) => {
+            const isInactive = dailyBoosts[text]?.charges === 0;
+            return (
+                <div className={`daily-boost-item ${isInactive ? 'inactive' : ''}`} onClick={() => { if (!isInactive) {handleDailyBoostClick({
+                    price: "FREE",
+                    name: txt,
+                    description: description,
+                    remaining: dailyBoosts[text]?.charges ?? 0,
+                    image
+                })}}}>
+                    <img src={image} alt="icon" className="boost-icon"/>
+                    <div className={`d-boost-text ${isInactive ? 'grey-text' : 'blue-style'}`}>{txt}</div>
+                    {dailyBoosts[text].charges === 0 ? (
+                        <div className="boost-timer">{formatRemainingTime(dailyBoosts[text].remainingTime)}</div>
+                    ) : (<div className="daily-boost-h">
+                        <span className="gold-style">{dailyBoosts[text]?.charges ?? 0}/{reward}</span>
+                    </div>)}
 
-        const BoostItem = ({ text, price, image, level,description }) => {
+                </div>
+            );
+        }
+        const BoostItem = ({text, price, image, level, description}) => {
             const isTapBot = text === 'AUTO TAP';
             const nextLevel = level + 1;
             const nextLevelData = boostLevels[text] ? boostLevels[text].find(lvl => lvl.level === nextLevel) : null;
@@ -407,10 +416,12 @@
                         <>
                             <div className="boost-text blue-style">{text}</div>
                             <div className="boost-price">
-                                <img src="/coin.png" alt="Price-Coin" className="price-icon" />
-                                <span className="gold-style">{isTapBot ? price : nextLevelData?.price || 'MAX LVL'}</span>
+                                <img src="/coin.png" alt="Price-Coin" className="price-icon"/>
+                                <span
+                                    className="gold-style">{isTapBot ? price : nextLevelData?.price || 'MAX LVL'}</span>
                             </div>
                             {!isTapBot && <div className="boost-level blue-style">Level {level}</div>}
+
                         </>
                     )}
                 </div>

@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect,useState } from 'react';
 import './boostModal.css'; // Ensure you have the appropriate styles
 
 const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapData, handleClaimPoints }) => {
+    const [startY, setStartY] = useState(null);
+    const [currentY, setCurrentY] = useState(0);
+    useEffect(() => {
+        const modal = document.querySelector('.modal');
+        modal.classList.add('active');
+        return () => modal.classList.remove('active');
+    }, []);
     if (!boost) return null;
-
     const isTapingGuru = boost.name === 'TAPING GURU';
     const isFullTank = boost.name === 'FULL TANK';
     const isAutoTap = boost.name === 'AUTO TAP';
@@ -24,10 +30,40 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
         const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
         return `${hours}h ${minutes}m`;
     };
+    const handleOverlayClick = (event) => {
+        if (!event.target.closest('.modal-content')) {
+            onClose();
+        }
+    };
+
+    const handleTouchStart = (event) => {
+        const touch = event.touches[0];
+        setStartY(touch.clientY);
+    };
+
+    const handleTouchMove = (event) => {
+        const touch = event.touches[0];
+        const deltaY = touch.clientY - startY;
+
+        if (deltaY > 0) {
+            setCurrentY(deltaY);
+        }
+    };
+
+    const handleTouchEnd = () => {
+        if (currentY > 150) { // Порог для закриття вікна, якщо зміщення більше 150 пікселів
+            onClose();
+        } else {
+            setCurrentY(0);
+        }
+        setStartY(null);
+    };
 
     return (
-        <div className="modal">
-            <div className="modal-content">
+        <div className="modal" onClick={handleOverlayClick}>
+            <div className="modal-content" onTouchStart={handleTouchStart}
+                 onTouchMove={handleTouchMove}
+                 onTouchEnd={handleTouchEnd}  style={{ transform: `translateY(${currentY}px)`}}>
                 <img src={boost.image} alt={boost.name} className="boost-icon" />
                 <h2 className="boost-name">{boost.name}</h2>
                 <p className="boost-price">Price: {boost.price}</p>
@@ -42,10 +78,9 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
                 )}
 
                 <div className="modal-buttons">
-                    <button className="btn btn-buy" onClick={handleAction}>
-                        {isTapingGuru || isFullTank ? "Activate" : "Buy"}
-                    </button>
-                    <button className="btn btn-close" onClick={onClose}>Close</button>
+                    <button className="btn btn-buy blue-style" onClick={handleAction}>
+                    GET IT!
+                        </button>
                 </div>
             </div>
         </div>
