@@ -197,6 +197,10 @@ function Tap({ telegramId, onBalanceChange }) {
   };
   const updateUserLeague = async (telegramId) => {
     try {
+      const tapGoldElement = document.querySelector('.rank-img');
+      if (tapGoldElement) {
+        createExplosionEffect(tapGoldElement);
+      }
       const response = await axios.put(`${config.apiBaseUrl}/update-league/${telegramId}`);
 
       if (response.status !== 200) {
@@ -206,10 +210,7 @@ function Tap({ telegramId, onBalanceChange }) {
       const data = response.data;
       setUserLeague(data.league);
 
-      const tapGoldElement = document.querySelector('.rank-img');
-      if (tapGoldElement) {
-        createExplosionEffect(tapGoldElement);
-      }
+
     } catch (error) {
       console.error('Update league error:', error);
     }
@@ -318,7 +319,7 @@ function Tap({ telegramId, onBalanceChange }) {
 
     setTimeout(() => {
       explosion.remove();
-    }, 500); // Видалити вибух після анімації
+    }, 2000); // Видалити вибух після анімації
   };
   return (
       <div className="Tap">
