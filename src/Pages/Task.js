@@ -346,7 +346,7 @@ const TaskItem = ({ task, onCompletion,xisCompleted }) => {
 
 const LeagueItem = ({ league, completed, onClaim,leagueProgress }) => {
     console.log(leagueProgress)
-    const progress = leagueProgress[league.name] || 0;
+    const progress = leagueProgress && leagueProgress[league.name] ? leagueProgress[league.name] : 0;
 
     return (
         <div className={`task-item leagua ${completed ? 'completed' : ''}`}>
