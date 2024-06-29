@@ -63,6 +63,7 @@
     display: flex;
     align-items: center;
     margin-left: 100px;
+    margin-bottom: 10%;
   }
   
   .gold-text {
@@ -183,7 +184,7 @@
     }
   
     .main-button img {
-      width: 80vw !important; /* Adjusted for very small screens */
+      width: 100% !important; /* Adjusted for very small screens */
     }
   
     .energy-display {
@@ -245,7 +246,41 @@
     left: 15%;
   }
 
+.Tap .open-icon{
+  width: 15vw;
+}
 
-  
-  
+  /* Tap.css */
+  @keyframes explosion {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+
+  .explosion {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: url('explosion.png') no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+  }
+
+
+  .robot-img {
+    transition: transform 0.3s; /* Додає плавний перехід для зміни розміру */
+  }
+
+  .robot-large {
+    transform: scale(1.1); /* Збільшити на 20% */
+  }
+
+  .robot-normal {
+    transform: scale(1); /* Звичайний розмір */
+  }
   

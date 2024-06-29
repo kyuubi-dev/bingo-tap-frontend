@@ -5,6 +5,7 @@ import config from "../config";
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingScreen from './LoadingScreen';
 import leagues from "./leaguaData";
+import axios from 'axios';
 
 function Tap({ telegramId, onBalanceChange }) {
   const [maxEnergy, setMaxEnergy] = useState(1500);
@@ -184,21 +185,44 @@ function Tap({ telegramId, onBalanceChange }) {
       return;
     }
 
-    let clientX, clientY, touches;
     if (event.type === 'touchstart') {
-      clientX = event.touches[0].clientX;
-      clientY = event.touches[0].clientY;
-      touches = event.touches.length;
-    } else {
-      clientX = event.clientX;
-      clientY = event.clientY;
-      touches = 1;
+      for (let i = 0; i < event.touches.length; i++) {
+        const touch = event.touches[i];
+        const clientX = touch.clientX;
+        const clientY = touch.clientY;
+        handleTap(clientX, clientY, event.touches.length);
+      }
     }
 
-    handleTap(clientX, clientY, touches);
   };
-  const getCachingThreshold = () => {
-    return Math.floor(50 * Math.pow(1.5, multitapLevel));
+  const updateUserLeague = async (telegramId) => {
+    try {
+      const response = await axios.put(`${config.apiBaseUrl}/update-league/${telegramId}`);
+
+      if (response.status !== 200) {
+        throw new Error('Failed to update league');
+      }
+
+      const data = response.data;
+      setUserLeague(data.league);
+
+      const tapGoldElement = document.querySelector('.rank-img');
+      if (tapGoldElement) {
+        createExplosionEffect(tapGoldElement);
+      }
+    } catch (error) {
+      console.error('Update league error:', error);
+    }
+  };
+
+  const leagueThresholds = {
+    WOOD: 0,
+    BRONZE: 1000,
+    SILVER: 50000,
+    GOLD: 250000,
+    DIAMOND: 500000,
+    MASTER: 750000,
+    GRANDMASTER: 1000000
   };
 
   const handleTap = (clientX, clientY) => {
@@ -206,11 +230,14 @@ function Tap({ telegramId, onBalanceChange }) {
       const pointsEarned = tapingGuruActive ? multitapLevel * 5 : multitapLevel;
       const newBalance = cachedBalance + pointsEarned;
       setCachedBalance(newBalance);
-      setEnergy((prevEnergy) => {
-        const newEnergy = prevEnergy - pointsEarned;
-        return newEnergy >= 0 ? newEnergy : 0; // перевірка, щоб енергія не від'ємною
-      });
-      if (newBalance - userBalance >= getCachingThreshold) {
+      if (!tapingGuruActive) {
+        setEnergy((prevEnergy) => {
+          const newEnergy = prevEnergy - pointsEarned;
+          return newEnergy >= 0 ? newEnergy : 0; // перевірка, щоб енергія не була від'ємною
+        });
+      }
+
+      if (newBalance - userBalance >= 50) {
         setUserBalance(newBalance);
         ws.current.send(JSON.stringify({
           type: 'updateBalance',
@@ -218,6 +245,18 @@ function Tap({ telegramId, onBalanceChange }) {
           newBalance: newBalance,
           newEnergy: energy
         }));
+      }
+      const currentLeague = userLeague;
+      let newLeague = currentLeague;
+      for (const [league, threshold] of Object.entries(leagueThresholds)) {
+        if (newBalance >= threshold) {
+          newLeague = league;
+        }
+      }
+
+      if (newLeague !== currentLeague) {
+        setUserLeague(newLeague);
+        updateUserLeague(telegramId);
       }
 
       animatePlusOne(clientX, clientY, `+${pointsEarned}`);
@@ -274,13 +313,24 @@ function Tap({ telegramId, onBalanceChange }) {
   };
 
   const handleGoldButtonClick = () => {
-    navigate('/task?tab=leagues', { state: { userBalance } });
+    navigate('/task?tab=leagues');
   };
 
   if (!isLoaded) {
     return <LoadingScreen />;
   }
+  const createExplosionEffect = (element) => {
+    const rect = element.getBoundingClientRect();
+    const explosion = document.createElement('div');
+    explosion.className = 'explosion';
+    explosion.style.left = `${rect.left + rect.width / 2 - 50}px`; // Відцентрувати вибух
+    explosion.style.top = `${rect.top + rect.height / 2 - 50}px`; // Відцентрувати вибух
+    document.body.appendChild(explosion);
 
+    setTimeout(() => {
+      explosion.remove();
+    }, 500); // Видалити вибух після анімації
+  };
   return (
       <div className="Tap">
         <div className="Tap-content">
@@ -304,7 +354,9 @@ function Tap({ telegramId, onBalanceChange }) {
               onClick={handleEvent}
               onTouchStart={handleEvent}
           >
-            <img src={tapingGuruActive ? "/btns/robot-boost.png" : "/btns/robotv2.png"} alt="Start" className='robot-img' />
+            <img src={tapingGuruActive ? "/btns/boost-robotv2.png" : "/btns/robotv2.png"} alt="Start"
+                 className={`robot-img ${tapingGuruActive ? 'robot-large' : 'robot-normal'}`}
+            />
           </button>
           <div className="energy-display">
             <img src='./boost/power.png' className='power-img' alt="Power" />
