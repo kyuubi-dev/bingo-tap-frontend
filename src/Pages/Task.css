@@ -6,7 +6,8 @@
   outline: none;
 }
 html, body {
-  overflow: hidden !important; /* Prevent horizontal scrolling */
+  overflow: hidden !important; /* Prevent scrolling */
+  height: 100%; /* Ensure full height */
 }
 body {
   font-family: 'Big Shoulders Display', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -20,7 +21,7 @@ body {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 18vh); /* Limit height from bottom by 18vh */
+  height: 100%; /* Limit height from bottom by 18vh */
   max-height: calc(100vh - 18vh);
   overflow-x: hidden !important;
   z-index: 2;
