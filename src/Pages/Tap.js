@@ -209,6 +209,19 @@ function Tap({ telegramId }) {
     }
   };
 
+  document.addEventListener('DOMContentLoaded', (event) => {
+    function isMobile() {
+      return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    }
+
+    if (isMobile()) {
+      // Блокируем прокрутку на мобильных устройствах
+      document.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+      }, { passive: false });
+    }
+  });
+
 
   const handleTap = (clientX, clientY) => {
     if (energy > 0) {

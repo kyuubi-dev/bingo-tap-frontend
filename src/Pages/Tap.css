@@ -4,12 +4,13 @@
     min-height: 100vh;
   }
   html, body {
-    overflow-x: hidden;
-    overflow-y: hidden/* Prevent horizontal scrolling */
+    overflow:hidden;/* Prevent horizontal scrolling */
+    height:100%;
   }
   body {
     position: fixed; /* Prevent scrolling on mobile devices */
     width: 100%;
+    overflow-y: hidden;
     height: 100%;
   }
   

@@ -10,6 +10,8 @@
     justify-content: center;
     align-items: center;
     z-index: 10000;
+    overflow-y: hidden;
+
 }
 
 .spinner {
@@ -19,6 +21,7 @@
     border-top: 5px solid #fff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
+
 }
 
 @keyframes spin {

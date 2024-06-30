@@ -47,6 +47,18 @@
           }
       }, 1000); // Перевірка кожну секунду
   </script>
+    <script>
+      // Функция для блокировки прокрутки
+      function preventScroll(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+
+      // Добавление обработчиков событий
+      document.addEventListener('touchmove', preventScroll, { passive: false });
+      document.addEventListener('wheel', preventScroll, { passive: false });
+    </script>
     <style>
       body, html {
         margin: 0;
