@@ -7,7 +7,7 @@ import LoadingScreen from './LoadingScreen';
 import leagues from "./leaguaData";
 import axios from 'axios';
 
-function Tap({ telegramId, onBalanceChange }) {
+function Tap({ telegramId }) {
   const [maxEnergy, setMaxEnergy] = useState(1500);
   const [energy, setEnergy] = useState(1500);
   const [cachedBalance, setCachedBalance] = useState(0);
@@ -108,9 +108,6 @@ function Tap({ telegramId, onBalanceChange }) {
     }
   }, [tapingGuruActive]);
 
-  useEffect(() => {
-    onBalanceChange(cachedBalance,energy);
-  }, [cachedBalance, onBalanceChange]);
 
   useEffect(() => {
     const saveDataOnRouteChange = async () => {
@@ -197,10 +194,7 @@ function Tap({ telegramId, onBalanceChange }) {
   };
   const updateUserLeague = async (telegramId) => {
     try {
-      const tapGoldElement = document.querySelector('.rank-img');
-      if (tapGoldElement) {
-        createExplosionEffect(tapGoldElement);
-      }
+
       const response = await axios.put(`${config.apiBaseUrl}/update-league/${telegramId}`);
 
       if (response.status !== 200) {
@@ -210,21 +204,11 @@ function Tap({ telegramId, onBalanceChange }) {
       const data = response.data;
       setUserLeague(data.league);
 
-
     } catch (error) {
       console.error('Update league error:', error);
     }
   };
 
-  const leagueThresholds = {
-    WOOD: 0,
-    BRONZE: 1000,
-    SILVER: 50000,
-    GOLD: 250000,
-    DIAMOND: 500000,
-    MASTER: 750000,
-    GRANDMASTER: 1000000
-  };
 
   const handleTap = (clientX, clientY) => {
     if (energy > 0) {
@@ -246,17 +230,6 @@ function Tap({ telegramId, onBalanceChange }) {
           newBalance: newBalance,
           newEnergy: energy
         }));
-      }
-      const currentLeague = userLeague;
-      let newLeague = currentLeague;
-      for (const [league, threshold] of Object.entries(leagueThresholds)) {
-        if (newBalance >= threshold) {
-          newLeague = league;
-        }
-      }
-
-      if (newLeague !== currentLeague) {
-        setUserLeague(newLeague);
         updateUserLeague(telegramId);
       }
 
@@ -344,7 +317,7 @@ function Tap({ telegramId, onBalanceChange }) {
               onClick={handleEvent}
               onTouchStart={handleEvent}
           >
-            <img src={tapingGuruActive ? "/btns/boost-robotv2.png" : "/btns/robotv2.png"} alt="Start"
+            <img src={tapingGuruActive ? "/btns/2.png" : "/btns/1.png"} alt="Start"
                  className={`robot-img ${tapingGuruActive ? 'robot-large' : 'robot-normal'}`}
             />
           </button>

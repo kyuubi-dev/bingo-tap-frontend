@@ -6,7 +6,6 @@ body {
     color: #BCF8FA;
     overflow-x: hidden;
     overflow-y: hidden; /* Prevent vertical scrolling */
-
 }
 html, body {
     overflow-x: hidden !important; /* Prevent horizontal scrolling */

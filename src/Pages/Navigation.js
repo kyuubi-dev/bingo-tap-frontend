@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import './Navigation.css';
-import { Link } from 'react-router-dom'; 
+import { Link, useLocation } from 'react-router-dom';
 
 function Navigation() {
   const [navButtonActive, setNavButtonActive] = useState({
@@ -10,6 +10,18 @@ function Navigation() {
     boost: false,
     stat: false
   });
+
+    const location = useLocation();
+    useEffect(() => {
+        const path = location.pathname;
+        setNavButtonActive({
+            team: path === '/team',
+            task: path === '/task',
+            tap: path === '/',
+            boost: path === '/boost',
+            stat: path === '/stat'
+        });
+    }, [location]);
 
   const handleNavButtonClick = (buttonName) => {
     setNavButtonActive({

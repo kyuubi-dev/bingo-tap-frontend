@@ -24,6 +24,7 @@ body {
   max-height: calc(100vh - 18vh);
   overflow-x: hidden !important;
   z-index: 2;
+  overflow-y: hidden !important;
 }
 
 .Task::after {
