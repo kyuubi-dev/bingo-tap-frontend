@@ -123,18 +123,6 @@ function App() {
         loadImagesForRoute(location.pathname);
     }, [location.pathname]);
 
-    const handleBalanceChange = (newBalance,newEnergy) => {
-        setUserBalance(newBalance);
-        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-            ws.current.send(JSON.stringify({
-                type: 'updateBalance',
-                telegram_id: userId,
-                newBalance: 1000,
-                newEnergy: newEnergy
-            }));
-        }
-    };
-
     if (!isLoaded || loadingImages) {
         return <LoadingScreen />;
     }
@@ -148,7 +136,7 @@ function App() {
             <BgImage />
             <Navigation />
             <Routes>
-                <Route path="/" element={<Tap telegramId={userId} onBalanceChange={handleBalanceChange} />} />
+                <Route path="/" element={<Tap telegramId={userId} />} />
                 <Route path="/team" element={<Team userId={userId} botName={botName} />} />
                 <Route path="/task" element={<Task telegramId={userId} />} />
                 <Route

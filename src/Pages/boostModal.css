@@ -31,7 +31,6 @@
     align-items: center;
     height: 100%;
     width: 100%;
-
     display: flex;
     flex-direction: column;
     justify-content: normal;
@@ -85,4 +84,17 @@
     width: 80vw;
     margin-bottom: -20%;
     margin-top: -20%;
+}
+
+.closeImg{
+    opacity: 1;
+    background: rgba(0,0,0,0);
+    position: absolute;
+    top: 2%;
+    width: 10% ;
+    height:auto;
+    left: 89%;
+    padding: 0; /* Убираем padding, если он не нужен */
+    border: none; /* Убираем border, если он не нужен */
+    cursor: pointer;
 }

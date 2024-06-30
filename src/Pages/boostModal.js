@@ -81,6 +81,7 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
                     <button className="btn btn-buy blue-style" onClick={handleAction}>
                     GET IT!
                         </button>
+                        <img src="/btns/delete.png" onClick={onClose} alt="Close" className="closeImg"/>
                 </div>
             </div>
         </div>
