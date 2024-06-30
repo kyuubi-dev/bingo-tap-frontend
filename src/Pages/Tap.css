@@ -5,7 +5,11 @@
   }
   html, body {
     overflow-x: hidden;
-    overflow-y: hidden/* Prevent horizontal scrolling */
+    overflow-y: hidden;/* Prevent horizontal scrolling */
+    height: 100%;
+    width: 100%;
+    position: fixed; /* Фиксирует положение страницы */
+    touch-action: none; /* Отключает стандартные действия при касаниях */
   }
   body {
     position: fixed; /* Prevent scrolling on mobile devices */
