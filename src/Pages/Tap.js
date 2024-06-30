@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import LoadingScreen from './LoadingScreen';
 import leagues from "./leaguaData";
 import axios from 'axios';
+import useSwipe from './useSwipe'; // Импортируем хук
 
 function Tap({ telegramId }) {
   const [maxEnergy, setMaxEnergy] = useState(1500);
@@ -24,6 +25,10 @@ function Tap({ telegramId }) {
   const energyInterval = useRef(null);
   const [rechargeSpeed, setRechargeSpeed] = useState(1);
   const tapingGuruTimeout = useRef(null);
+
+  const tapRef = useRef(null); // Создаем реф для элемента, который будем отслеживать
+  useSwipe(tapRef); // Применяем хук
+
   useEffect(() => {
    
     const url = `${config.wsBaseUrl}`;
@@ -187,10 +192,9 @@ function Tap({ telegramId }) {
         const touch = event.touches[i];
         const clientX = touch.clientX;
         const clientY = touch.clientY;
-        handleTap(clientX, clientY, event.touches.length);
+        handleTap(clientX, clientY);
       }
     }
-
   };
   const updateUserLeague = async (telegramId) => {
     try {
@@ -208,20 +212,6 @@ function Tap({ telegramId }) {
       console.error('Update league error:', error);
     }
   };
-
-  document.addEventListener('DOMContentLoaded', (event) => {
-    function isMobile() {
-      return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    }
-
-    if (isMobile()) {
-      // Блокируем прокрутку на мобильных устройствах
-      document.addEventListener('touchmove', function (e) {
-        e.preventDefault();
-      }, { passive: false });
-    }
-  });
-
 
   const handleTap = (clientX, clientY) => {
     if (energy > 0) {
@@ -308,7 +298,7 @@ function Tap({ telegramId }) {
     }, 2000); // Видалити вибух після анімації
   };
   return (
-      <div className="Tap">
+      <div className="Tap" ref={tapRef}>
         <div className="Tap-content">
           <div className='lightnings'>
             <img src='/16.png' className='lightning right' alt="Lightning Right" />
