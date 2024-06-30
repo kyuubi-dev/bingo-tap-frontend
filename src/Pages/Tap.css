@@ -23,6 +23,7 @@
   .round-button {
     cursor: pointer;
     outline: none;
+    overflow-y: hidden;
   }
   
   .main-button:active,
@@ -37,10 +38,12 @@
     height: 100vh;
     overflow: hidden;
   }
-  
+
   .Tap-content {
+    overflow-y: hidden;
     position: absolute;
     align-items: center;
+
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -73,6 +76,7 @@
   
   .robot-img {
     width: 80vw; /* Adjusted for larger size */
+    overflow-y: hidden;
     height: auto; /* Automatic height */
   }
   
@@ -84,6 +88,7 @@
     overflow: hidden; /* Ensures correct positioning of text */
     position: relative; /* For absolute positioning */
     animation: none;
+    overflow-y: hidden;
   }
   
   .main-button img {
@@ -222,6 +227,7 @@
   .lightnings {
     position: absolute;
     top: 50%;
+    overflow-y: hidden;
     left: -85%;
     width: 120%;
     height: 100%;
@@ -234,6 +240,7 @@
     position: absolute;
     width: 140%;
     top: 0%;
+    overflow-y: hidden;
     transform: translateY(-50%);
     pointer-events: none; /* Ensure it doesn't block clicks */
   }
@@ -241,10 +248,12 @@
   .lightning.right {
     right: 40%;
     left: 115%;
+    overflow-y: hidden;
   }
   
   .lightning.left {
     left: 15%;
+    overflow-y: hidden;
   }
 
 .Tap .open-icon{
@@ -288,9 +297,11 @@
 
   .robot-large {
     transform: scale(1.1); /* Збільшити на 20% */
+    overflow-y: hidden;
   }
 
   .robot-normal {
     transform: scale(1); /* Звичайний розмір */
+    overflow-y: hidden;
   }
   
