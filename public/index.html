@@ -4,7 +4,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no"/>
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
@@ -16,7 +16,7 @@
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -70,7 +70,6 @@
         overflow: hidden;
         height: 100vh;
       }
-
       .mobile-wrap {
         position: absolute;
         left: 0;
@@ -80,37 +79,34 @@
         overflow-x: hidden;
         overflow-y: auto;
       }
-
       .mobile-content {
         height: calc(100% + 1px);
       }
     </style>
   </head>
   <body>
-  <div id="root">
-       </div>
-  <div id="wrap">
-    <div id="content">
-    </div>
-  </div>
-  <script src="https://unpkg.com/@tma.js/sdk@2.5.0/dist/index.iife.js"></script>
-  <script>
-    (function() {
-      var { retrieveLaunchParams, postEvent } = window.tmajs.sdk;
-      var lp = retrieveLaunchParams();
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
 
-      // Some versions of Telegram don't need the classes above.
-      if (['macos', 'tdesktop', 'weba', 'web', 'webk'].includes(lp.platform)) {
-        return;
-      }
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
 
-      // Expand the application.
-      postEvent('web_app_expand');
-
-      document.body.classList.add('mobile-body');
-      document.getElementById('wrap').classList.add('mobile-wrap');
-      document.getElementById('content').classList.add('mobile-content');
-    })();
-  </script>
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
   </body>
+  <style>
+    body {
+        font-family: 'Big Shoulders Display', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #000;
+        color: #BCF8FA;
+        -webkit-user-select: none; /* Chrome, Safari, Opera */
+        -moz-user-select: none;    /* Firefox */
+        -ms-user-select: none;     /* Internet Explorer/Edge */
+        user-select: none;         /* Non-prefixed version */
+    }
+    </style>
 </html>
