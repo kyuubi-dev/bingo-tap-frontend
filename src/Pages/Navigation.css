@@ -17,10 +17,21 @@
     display: flex;
     justify-content: space-around;
     width: 90vw;
-    z-index: 9;
+    z-index: 2;
   }
-  
-  .round-button {
+
+.red-indicator {
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+    z-index: 10 !important;
+}
+
+.round-button {
     width: 15vw;
     height: 15vw;
     border: 2px solid transparent;
@@ -30,7 +41,8 @@
     background-image: url('/public/btn-bg.png');
     background-size: cover;
     background-position: center;
-  }
+  position: relative;
+}
   
   .round-button:nth-child(3) {
     background-image: url('/public/bg-tap-btn.png');

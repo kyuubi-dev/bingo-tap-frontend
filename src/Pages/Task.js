@@ -19,12 +19,9 @@ const Task = ({ telegramId, ws }) => {
     const [userLeague, setUserLeague] = useState('');
     const [selectedTab, setSelectedTab] = useState(defaultTab);
     const [tasksCompleted, setTasksCompleted] = useState(
-        JSON.parse(localStorage.getItem('tasksCompleted')) || {}
-    );
+        JSON.parse(localStorage.getItem('tasksCompleted')) || {});
     const [tasks, setTasks] = useState([]);
-    const [completedLeagues, setCompletedLeagues] = useState(
-        JSON.parse(localStorage.getItem('completedLeagues')) || {}
-    );
+    const [completedLeagues, setCompletedLeagues] = useState(JSON.parse(localStorage.getItem('completedLeagues')) || {});
     const [completionMessage, setCompletionMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true); // Loading state
     const [userData, setUserData] = useState([]);
@@ -42,7 +39,6 @@ const Task = ({ telegramId, ws }) => {
     useEffect(() => {
         const storedTasksCompleted = JSON.parse(localStorage.getItem('tasksCompleted')) || {};
         setTasksCompleted(storedTasksCompleted);
-
         const storedCompletedLeagues = JSON.parse(localStorage.getItem('completedLeagues')) || {};
         setCompletedLeagues(storedCompletedLeagues);
     }, []);
@@ -303,7 +299,6 @@ const Task = ({ telegramId, ws }) => {
 };
 
 const TaskItem = ({ task, onCompletion,xisCompleted }) => {
-    console.log(xisCompleted)
     const [isCompleted, setIsCompleted] = useState(xisCompleted);
     const handleCompletion = () => {
         if (!isCompleted) {
