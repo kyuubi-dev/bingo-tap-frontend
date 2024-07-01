@@ -82,7 +82,7 @@
 .modal-content .boost-icon{
     height: 80vw;
     width: 80vw;
-    margin-bottom: -30%;
+    margin-bottom: -20%;
     margin-top: -20%;
 }
 
@@ -97,4 +97,24 @@
     padding: 0; /* Убираем padding, если он не нужен */
     border: none; /* Убираем border, если он не нужен */
     cursor: pointer;
+}
+.auto-tap-timer{
+    font-size: 8vw;
+}
+.auto-tap-points{
+    font-size: 8vw;
+}
+.claim-points-button{
+    margin-top: 10%;
+    width: 80vw;
+    background-color:  rgba(14, 19, 86,1); /* Відповідно до кольору кнопки на зображенні */
+    border: none;
+    padding: 15px;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 8vw;
+    box-shadow: 0 0 5px #0ff, 0 0 10px #00f, 0 0 20px #0ff;
+    cursor: pointer;
+    font-weight: bold;
+    color: #BCF8FA;
 }

@@ -25,6 +25,40 @@ body {
   font-family: 'Big Shoulders Display', sans-serif;
   font-weight: 400; 
 }
+@keyframes neon {
+    0%, 100% {
+        text-shadow:
+                0 0 4px #4DB8FF,
+                0 0 10px #4DB8FF,
+                0 0 20px #4DB8FF,
+                0 0 40px #4DB8FF,
+                0 0 80px #4DB8FF,
+                0 0 90px #4DB8FF,
+                0 0 100px #4DB8FF,
+                0 0 150px #4DB8FF;
+        opacity: 1;
+    }
+    50% {
+        text-shadow:
+                0 0 2px #4DB8FF,
+                0 0 5px #4DB8FF,
+                0 0 10px #4DB8FF,
+                0 0 20px #4DB8FF,
+                0 0 40px #4DB8FF,
+                0 0 45px #4DB8FF,
+                0 0 50px #4DB8FF,
+                0 0 75px #4DB8FF;
+        opacity: 0.5;
+    }
+}
+
+.red-style {
+    color: #BCF8FA; /* Колір тексту */
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 400;
+    animation: neon 1.5s infinite alternate; /* Анімація миготіння */
+}
+
 
 .plus-one {
   position: absolute;

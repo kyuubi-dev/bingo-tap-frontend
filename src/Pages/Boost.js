@@ -87,7 +87,17 @@
                         return boost;
                     }));
                     setEnergy(data.energy);
-                    setAutoTapData(data.autoTapData || autoTapData);
+                    // Додаємо перевірку та оновлення стану для autoTapData
+                    if (data.autoTap) {
+                        setAutoTapData({
+                            active: data.autoTap.active,
+                            accumulatedPoints: data.autoTap.accumulatedPoints,
+                            timeLeft: data.autoTap.timeLeft,
+                            lastUpdate: data.autoTap.lastUpdate
+                        });
+                    } else {
+                        setAutoTapData(autoTapData); // Встановлюємо стан за замовчуванням, якщо дані не отримані
+                    }
                     setIsLoaded(true);
                 } else if (data.type === 'updateBalance' && data.telegram_id === telegramId) {
                     setUserBalance(data.newBalance);
@@ -115,18 +125,6 @@
                             }
                         }));
                     }
-                } else if (data.type === 'autoTapActivated' && data.telegram_id === telegramId) {
-                    setAutoTapData({
-                        active: data.active,
-                        accumulatedPoints: data.accumulatedPoints,
-                        timeLeft: data.timeLeft,
-                        lastUpdate: data.lastUpdate
-                    });
-                    console.log(`autoTapActivation - ${data.timeLeft}`);
-                    setMessage('AUTO TAP has been activated.');
-                }else if (data.type === 'autoTapUpdate' && data.telegram_id === telegramId) {
-                    setAutoTapData(data.autoTapData);
-                    localStorage.setItem('autoTapData', JSON.stringify(data.autoTapData));
                 } else if (data.type === 'error') {
                     setMessage(data.message);
                 }
@@ -152,7 +150,7 @@
         const handleActivateAutoTap = () => {
             const autoTapPrice = 200000;
 
-            if (userBalance >= autoTapPrice) {
+            if (userBalance >= autoTapPrice || autoTapData.active==false) {
                 const now = Date.now();
                 const threeHoursLater = now + 3 * 60 * 60 * 1000; // 3 години
 
@@ -383,14 +381,12 @@
                 level,
                 description
             };
-
+            console.log(autoTapData.active);
             return (
                 <div className="boost-item" onClick={() => handleBoostClick(boost)}>
                     <img src={image} alt="icon" className="boost-icon" />
                     {isTapBot && autoTapData.active ? (
-                        <div className="tap-bot-timer">
-                            <button onClick={handleClaimPoints}>CHECK POINTS</button>
-                        </div>
+                        <div className="boost-text red-style">{text}</div>
                     ) : (
                         <>
                             <div className="boost-text blue-style">{text}</div>
@@ -444,7 +440,7 @@
                     />
                 </div>
                 {message && <CompletionMessage message={message} onClose={closeMessage} />}
-                {selectedBoost && <BoostModal boost={selectedBoost} onClose={handleModalClose} onBuy={handleBuyBoost} onActivateTG={handleActivateTapingGuru} onActiveFT={handleActivateFullTank} autoTapData={autoTapData} handleClaimPoints={handleClaimPoints} />}
+                {selectedBoost && <BoostModal boost={selectedBoost} onClose={handleModalClose} onBuy={handleBuyBoost} onActivateTG={handleActivateTapingGuru} onActiveFT={handleActivateFullTank} autoTapData={autoTapData} handleClaimPoints={handleClaimPoints} telegram_id={telegramId} ws={ws}/>}
             </div>
         );
     };
