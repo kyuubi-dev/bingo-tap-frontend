@@ -147,13 +147,13 @@ const Task = ({ telegramId, ws }) => {
     };
 
     const handleClaimLeague = async (league) => {
-        if (userBalance >= league.requiredPoints) {
+        const progress = userData.leagueProgress && userData.leagueProgress[league.name] ? userData.leagueProgress[league.name] : 0;
+
+        if (progress === 100 || userBalance >= league.requiredPoints) {
             const updatedCompletedLeagues = { ...completedLeagues, [league.name]: true };
             setCompletedLeagues(updatedCompletedLeagues);
-            console.log(updatedCompletedLeagues)
             localStorage.setItem('completedLeagues', JSON.stringify(updatedCompletedLeagues));
             const newBalance = userBalance + league.reward;
-            console.log(completedLeagues)
             setUserBalance(newBalance);
             setCompletionMessage(`League claimed: ${league.name}, reward - ${league.reward}`);
             try {
@@ -164,7 +164,6 @@ const Task = ({ telegramId, ws }) => {
             } catch (error) {
                 console.error('Ошибка при обновлении баланса на сервере:', error);
             }
-
         } else {
             setCompletionMessage(`Not enough points for league: ${league.name}`);
         }
