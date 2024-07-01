@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReconnectingWebSocket from 'reconnecting-websocket';
 import './Tap.css';
 import config from "../config";
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,7 +7,7 @@ import leagues from "./leaguaData";
 import axios from 'axios';
 import useSwipe from './useSwipe'; // Импортируем хук
 
-function Tap({ telegramId }) {
+function Tap({ telegramId , ws}) {
   const [maxEnergy, setMaxEnergy] = useState(1500);
   const [energy, setEnergy] = useState(1500);
   const [cachedBalance, setCachedBalance] = useState(0);
@@ -16,7 +15,6 @@ function Tap({ telegramId }) {
   const [userLeague, setUserLeague] = useState('');
   const [multitapLevel, setMultitapLevel] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
-  const ws = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const [tapingGuruActive, setTapingGuruActive] = useState(location.state?.tapingGuruActive || false); // додано для Taping Guru
@@ -25,24 +23,16 @@ function Tap({ telegramId }) {
   const energyInterval = useRef(null);
   const [rechargeSpeed, setRechargeSpeed] = useState(1);
   const tapingGuruTimeout = useRef(null);
-
   const tapRef = useRef(null); // Создаем реф для элемента, который будем отслеживать
   useSwipe(tapRef); // Применяем хук
 
   useEffect(() => {
-   
-    const url = `${config.wsBaseUrl}`;
-    ws.current = new ReconnectingWebSocket(url);
-
-    ws.current.onopen = () => {
-      console.log('WebSocket connection established');
-      ws.current.send(JSON.stringify({
+      ws.send(JSON.stringify({
         type: 'requestUserData',
         telegram_id: telegramId
       }));
-    };
 
-    ws.current.onmessage = (event) => {
+    ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
       if (data.type === 'userData') {
@@ -59,14 +49,6 @@ function Tap({ telegramId }) {
       } else if (data.type === 'error') {
         console.error(data.message);
       }
-    };
-
-    ws.current.onerror = (error) => {
-      console.error('WebSocket error', error);
-    };
-
-    return () => {
-      ws.current.close();
     };
   }, [telegramId]);
 
@@ -156,7 +138,7 @@ function Tap({ telegramId }) {
   const saveData = async () => {
     return new Promise((resolve, reject) => {
       if (cachedBalance !== userBalance || energy !== maxEnergy) {
-        ws.current.send(JSON.stringify({
+        ws.send(JSON.stringify({
           type: 'updateBalance',
           telegram_id: telegramId,
           newBalance: cachedBalance,
@@ -227,7 +209,7 @@ function Tap({ telegramId }) {
 
       if (newBalance - userBalance >= 50) {
         setUserBalance(newBalance);
-        ws.current.send(JSON.stringify({
+        ws.send(JSON.stringify({
           type: 'updateBalance',
           telegram_id: telegramId,
           newBalance: newBalance,

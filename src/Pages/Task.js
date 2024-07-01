@@ -8,8 +8,8 @@ import axios, {isCancel} from 'axios';
 import config from '../config';
 import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
 import leagues from './leaguaData';
-import ReconnectingWebSocket from "reconnecting-websocket";
-const Task = ({ telegramId }) => {
+
+const Task = ({ telegramId, ws }) => {
     const location = useLocation();
     const initialBalance = location.state?.userBalance || 0;
     const query = new URLSearchParams(location.search);
@@ -28,25 +28,16 @@ const Task = ({ telegramId }) => {
     const [completionMessage, setCompletionMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true); // Loading state
     const [userData, setUserData] = useState([]);
-    const ws = useRef(null);
     useEffect(() => {
-        ws.current = new ReconnectingWebSocket(config.wsBaseUrl);
+        ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
 
-        ws.current.onopen = () => {
-            console.log('WebSocket connection established');
-            ws.current.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
-        };
-
-        ws.current.onmessage = (event) => {
+        ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === 'userData') {
                 setUserData(data);
             }
         };
 
-        return () => {
-            ws.current.close();
-        };
     }, [telegramId]);
     useEffect(() => {
         const storedTasksCompleted = JSON.parse(localStorage.getItem('tasksCompleted')) || {};
