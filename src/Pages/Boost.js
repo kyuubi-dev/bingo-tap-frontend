@@ -95,14 +95,14 @@
                             timeLeft: data.autoTap.timeLeft,
                             lastUpdate: data.autoTap.lastUpdate
                         });
-                        if (data.autoTap.accumulatedPoints > 0 || data.autoTap.active==false) {
+                        if (data.autoTap.accumulatedPoints > 0 & data.autoTap.active==false) {
                             const updatedBalance = data.balance + data.autoTap.accumulatedPoints;
                             setUserBalance(updatedBalance);
                             setAutoTapData(prevData => ({
                                 ...prevData,
                                 accumulatedPoints: 0
                             }));
-                            setMessage(`Claimed ${data.autoTap.accumulatedPoints} points! AUTO TAP bot has finished its work! `);
+                            setMessage(`Claimed ${data.autoTap.accumulatedPoints} points!`);
                         }
                     } else {
                         setAutoTapData(autoTapData); // Встановлюємо стан за замовчуванням, якщо дані не отримані
@@ -164,16 +164,19 @@
                 const threeHoursLater = now + 3 * 60 * 60 * 1000; // 3 години
 
                 const updatedBalance = userBalance - autoTapPrice;
-                setUserBalance(updatedBalance);
+
                 ws.send(JSON.stringify({
                     type: 'purchaseBoost',
                     telegram_id: telegramId,
                     boostType: `AUTO TAP`,
                     price: autoTapPrice,
                 }));
-
+                setUserBalance(updatedBalance);
                 sendAutoTapActivation();
-
+                ws.send(JSON.stringify({
+                    type: 'requestUserData',
+                    telegram_id: telegramId
+                }));
                 setMessage('AUTO TAP purchased! Points will be added automatically for the next 3 hours.');
             } else {
                 setMessage('Insufficient balance for purchasing AUTO TAP.');
@@ -184,7 +187,7 @@
             if (autoTapData.accumulatedPoints > 0) {
                 const updatedBalance = userBalance + autoTapData.accumulatedPoints;
                 setUserBalance(updatedBalance);
-
+console.log(`${energy} `+ `${updatedBalance}`)
                 // Відправка оновленого балансу на сервер
                 ws.send(JSON.stringify({
                     type: 'updateBalance',

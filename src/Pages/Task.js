@@ -1,6 +1,6 @@
 // src/components/Task.js
 import './Task.css';
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, memo} from 'react';
 import './TextStyle.css';
 import { useLocation } from 'react-router-dom';
 import CompletionMessage from './ModelMessage';
@@ -81,7 +81,7 @@ const Task = ({ telegramId, ws }) => {
         };
 
         fetchUserBalance();
-
+        fetchTasks();
         const interval = setInterval(fetchUserBalance, 30000);
 
         return () => clearInterval(interval);
@@ -97,9 +97,6 @@ const Task = ({ telegramId, ws }) => {
         }
     };
 
-    useEffect(() => {
-        fetchTasks();
-    }, []);
 
     const handleTabClick = (tab) => {
         setSelectedTab(tab);
@@ -116,13 +113,10 @@ const Task = ({ telegramId, ws }) => {
             }
             return task;
         });
-        console.log(updatedTasks)
         setTasks(updatedTasks);
         const newBalance = userBalance + reward;
-        console.log(tasksCompleted)
         // Зберігання інформації про завершення у localStorage (необов'язково, залежить від вашої логіки)
         const updatedTasksCompleted = { ...tasksCompleted, [taskId]: true };
-        console.log(updatedTasksCompleted)
         setTasksCompleted(updatedTasksCompleted);
         localStorage.setItem('tasksCompleted', JSON.stringify(updatedTasksCompleted));
         // Update balance on server
@@ -130,7 +124,6 @@ const Task = ({ telegramId, ws }) => {
             await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
                 balance: newBalance
             });
-            console.log('Баланс успешно обновлен на сервере');
         } catch (error) {
             console.error('Ошибка при обновлении баланса на сервере:', error);
         }
@@ -156,7 +149,6 @@ const Task = ({ telegramId, ws }) => {
                 await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
                     balance: newBalance
                 });
-                console.log('Баланс успешно обновлен на сервере');
             } catch (error) {
                 console.error('Ошибка при обновлении баланса на сервере:', error);
             }
@@ -178,7 +170,6 @@ const Task = ({ telegramId, ws }) => {
                     await axios.put(`${config.apiBaseUrl}/update-league/${telegramId}`, {
                         league: league.name
                     });
-                    console.log('Лига успешно обновлена на сервере');
                     setCompletionMessage(`Congratulations! You have reached ${league.name} league!`);
                 } catch (error) {
                     console.error('Ошибка при обновлении лиги на сервере:', error);
@@ -298,7 +289,7 @@ const Task = ({ telegramId, ws }) => {
     );
 };
 
-const TaskItem = ({ task, onCompletion,xisCompleted }) => {
+const TaskItem = React.memo(({ task, onCompletion,xisCompleted })=> {
     const [isCompleted, setIsCompleted] = useState(xisCompleted);
     const handleCompletion = () => {
         if (!isCompleted) {
@@ -324,17 +315,16 @@ const TaskItem = ({ task, onCompletion,xisCompleted }) => {
             <img src='./tasks/open.png' className='open-icon' alt="Open"/>
         </button>
     </a>
-};
+});
 
 
 
 const LeagueItem = ({ league, completed, onClaim,leagueProgress }) => {
-    console.log(leagueProgress)
     const progress = leagueProgress && leagueProgress[league.name] ? leagueProgress[league.name] : 0;
 
     return (
         <div className={`task-item leagua ${completed ? 'completed' : ''}`}>
-            <img src={league.img} alt="icon" className="task-icon"/>
+            <img src={league.img} alt="icon" loading="lazy"  className="task-icon"/>
             <div className="task-text leagua blue-style">{league.name.toUpperCase()}</div>
             <div className="energy-container">
                 <div className="energy-bar" style={{width: `${progress}%`}}></div>
