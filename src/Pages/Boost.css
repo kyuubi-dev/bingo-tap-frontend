@@ -17,7 +17,6 @@ html, body {
 }
 
 .Boost {
-    position: relative;
     width: 100%;
     height: calc(100vh - 22vh); /* Обмеження висоти на 14vh знизу */
     max-height: calc(100vh - 22vh); /* Переконатися, що не перевищує цього ліміту */
