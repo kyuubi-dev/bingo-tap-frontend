@@ -156,7 +156,6 @@ const Task = ({ telegramId, ws }) => {
             console.log(completedLeagues)
             setUserBalance(newBalance);
             setCompletionMessage(`League claimed: ${league.name}, reward - ${league.reward}`);
-            updateLeague()
             try {
                 await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
                     balance: newBalance

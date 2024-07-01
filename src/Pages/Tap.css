@@ -24,7 +24,7 @@
   .round-button {
     cursor: pointer;
     outline: none;
-    overflow-y: hidden;
+    overflow-y: hidde n;
   }
   
   .main-button:active,
@@ -49,7 +49,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    z-index: 3; /* Ensure it is above the background but below the lightnings */
+      z-index: 3; /* Ensure it is above the background but below the lightnings */
   }
   
   .balance-display {
