@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  overflow: hidden;
+  position: fixed;
 }
 
 .App-logo {
