@@ -41,7 +41,7 @@ function App() {
             }
             return false;
         };
-
+        
         setIsMobile(checkIfMobile());
 
         const initializeTelegramWebApp = () => {
@@ -123,6 +123,19 @@ function App() {
         loadImagesForRoute(location.pathname);
     }, [location.pathname]);
 
+    useEffect(() => {
+        // Отключаем скроллинг и клики
+        document.body.style.overflow = 'hidden';
+        document.body.classList.add('no-click');
+
+        // Возвращаем начальное состояние при размонтировании компонента
+        return () => {
+            document.body.style.overflow = 'auto';
+            document.body.classList.remove('no-click');
+        };
+    }, []);
+
+    
     useEffect(() => {
         const url = `${config.wsBaseUrl}`;
         ws.current = new ReconnectingWebSocket(url);
