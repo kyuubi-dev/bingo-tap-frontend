@@ -11,7 +11,7 @@ import LoadingScreen from './Pages/LoadingScreen';
 import Stat from './Pages/Stat';
 import NotMobile from './Pages/NotMobile';
 import config from './config';
-
+import ReconnectingWebSocket from 'reconnecting-websocket';
 function App() {
     const [userBalance, setUserBalance] = useState(0);
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
@@ -123,6 +123,38 @@ function App() {
         loadImagesForRoute(location.pathname);
     }, [location.pathname]);
 
+    useEffect(() => {
+        const url = `${config.wsBaseUrl}`;
+        ws.current = new ReconnectingWebSocket(url);
+
+        ws.current.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        ws.current.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        ws.current.onerror = (error) => {
+            console.error('WebSocket error', error);
+        };
+
+        const handleUnload = () => {
+            if (ws.current) {
+                ws.current.close();
+            }
+        };
+
+        window.addEventListener('beforeunload', handleUnload);
+
+        return () => {
+            if (ws.current) {
+                ws.current.close();
+            }
+            window.removeEventListener('beforeunload', handleUnload);
+        };
+    }, []);
+
     if (!isLoaded || loadingImages) {
         return <LoadingScreen />;
     }
@@ -136,16 +168,17 @@ function App() {
             <BgImage />
             <Navigation />
             <Routes>
-                <Route path="/" element={<Tap telegramId={userId} />} />
-                <Route path="/team" element={<Team userId={userId} botName={botName} />} />
-                <Route path="/task" element={<Task telegramId={userId} />} />
+                <Route path="/" element={<Tap telegramId={874423521} ws={ws.current}/>} />
+                <Route path="/team" element={<Team userId={874423521} botName={botName} />} />
+                <Route path="/task" element={<Task telegramId={874423521} ws={ws.current} />} />
                 <Route
                     path="/boost"
                     element={
                         <Boost
-                            telegramId={userId}
+                            telegramId={874423521}
                             purchasedBoosts={purchasedBoosts}
                             setPurchasedBoosts={setPurchasedBoosts}
+                            ws={ws.current}
                         />
                     }
                 />

@@ -4,14 +4,13 @@
     import CompletionMessage from './ModelMessage';
     import boostsData from './boostData.js';  // Import boost data
     import boostLevels from './boostLevel.js';
-    import ReconnectingWebSocket from 'reconnecting-websocket';
     import config from "../config";
     import LoadingScreen from "./LoadingScreen";
     import BoostModal from './boostModal';
     import axios from "axios";
     import {useLocation, useNavigate} from "react-router-dom";  // Import the modal component
 
-    const Boost = ({ telegramId }) => {
+    const Boost = ({ telegramId,ws }) => {
         const [message, setMessage] = useState(null);
         const location = useLocation();
         const navigate = useNavigate();
@@ -35,9 +34,9 @@
         const [tapBotTimer, setTapBotTimer] = useState(0);
         const [lastTapBotTime, setLastTapBotTime] = useState(null);
         const [tapingGuruActive, setTapingGuruActive] = useState(false);
-        const ws = useRef(null);
         const [selectedBoost, setSelectedBoost] = useState(null);
         const [energy, setEnergy]=useState(0);
+        
         useEffect(() => {
             setIsLoaded(false);
             const initializeUserData = async () => {
@@ -53,30 +52,23 @@
 
                     setIsLoaded(true);
                     // Після збереження даних відкриваємо WebSocket
-                    openWebSocket();
+                    requestData();
                 } catch (error) {
                     console.error("Error saving balance:", error);
                 }
             };
 
             initializeUserData();
-        }, [telegramId]);
+        }, []);
 
-        const openWebSocket = () => {
-            const url = `${config.wsBaseUrl}`; // Insert the correct WebSocket URL
-            ws.current = new ReconnectingWebSocket(url);
-
-            ws.current.onopen = () => {
-                console.log('WebSocket connection established');
-                // Request user data upon connection
-                ws.current.send(JSON.stringify({
+        const requestData = () => {
+                ws.send(JSON.stringify({
                     type: 'requestUserData',
                     telegram_id: telegramId
                 }));
-
             };
 
-            ws.current.onmessage = (event) => {
+            ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 console.log('Received message:', data);
 
@@ -140,19 +132,6 @@
                 }
             };
 
-            ws.current.onerror = (error) => {
-                console.error('WebSocket error:', error);
-            };
-
-            ws.current.onclose = () => {
-                console.log('WebSocket connection closed');
-            };
-
-            return () => {
-                ws.current.close();
-            };
-        };
-
         useEffect(() => {
             const timer = setInterval(() => {
                 const now = Date.now();
@@ -179,7 +158,7 @@
 
                 const updatedBalance = userBalance - autoTapPrice;
                 setUserBalance(updatedBalance);
-                ws.current.send(JSON.stringify({
+                ws.send(JSON.stringify({
                     type: 'purchaseBoost',
                     telegram_id: telegramId,
                     boostType: `AUTO TAP`,
@@ -200,7 +179,7 @@
                 setUserBalance(updatedBalance);
 
                 // Відправка оновленого балансу на сервер
-                ws.current.send(JSON.stringify({
+                ws.send(JSON.stringify({
                     type: 'updateBalance',
                     telegram_id: telegramId,
                     newBalance: updatedBalance,
@@ -229,7 +208,7 @@
         };
 
         const sendAutoTapActivation = () => {
-            ws.current.send(JSON.stringify({
+            ws.send(JSON.stringify({
                 type: 'activateAutoTap',
                 telegram_id: telegramId
             }));
@@ -267,14 +246,14 @@
             setUserBalance((prevBalance) => prevBalance - price);
             setIsLoaded(false);
             try {
-                ws.current.send(JSON.stringify({
+                ws.send(JSON.stringify({
                     type: 'purchaseBoost',
                     telegram_id: telegramId,
                     boostType: boost.name,
                     price: price,
                 }));
 
-                ws.current.send(JSON.stringify({
+                ws.send(JSON.stringify({
                     type: 'requestUserData',
                     telegram_id: telegramId
                 }));
@@ -306,7 +285,7 @@
                         lastUpdate: prevBoosts["tapingGuru"].lastUpdate
                     }
                 }));
-                ws.current.send(JSON.stringify({
+                ws.send(JSON.stringify({
                     type: 'activateBoost',
                     telegram_id: telegramId,
                     boost: "tapingGuru"
@@ -336,12 +315,12 @@
                             lastUpdate: prevBoosts["fullTank"].lastUpdate
                         }
                     }));
-                    ws.current.send(JSON.stringify({
+                    ws.send(JSON.stringify({
                         type: 'activateBoost',
                         telegram_id: telegramId,
                         boost: "fullTank"
                     }));
-                    ws.current.send(JSON.stringify({
+                    ws.send(JSON.stringify({
                     type: 'maximizeEnergy',
                     telegram_id: telegramId
                 }));
