@@ -22,34 +22,12 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%; /* Limit height from bottom by 18vh */
-  max-height: calc(100vh - 18vh);
+  max-height: calc(100% - 12%);
   overflow-x: hidden !important;
   z-index: 2;
   overflow-y: hidden !important;
 }
 
-.Task::after {
-  content: '';
-  position: fixed;
-  bottom: 16vh; /* 16vh from the bottom */
-  left: 0;
-  width: 100%;
-  height: 8vh; /* Height of the blur */
-  background: rgba(0, 0, 0, 0.5);
-  pointer-events: none; /* Ensure element does not affect interactions */
-  z-index: 1; /* Position below content but above background */
-}
-.Task::before {
-  content: '';
-  position: fixed;
-  bottom: 12vh; /* 12vh from the bottom */
-  left: 0;
-  width: 100%;
-  height: 4vh; /* Height of the blur */
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
-  pointer-events: none; /* Ensure element does not affect interactions */
-  z-index: 1; /* Position below content but above background */
-}
 
 .header {
   display: flex;

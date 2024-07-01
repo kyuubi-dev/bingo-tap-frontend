@@ -19,7 +19,7 @@ html, body {
 .Boost {
     width: 100%;
     height: calc(100vh - 22vh); /* Обмеження висоти на 14vh знизу */
-    max-height: calc(100vh - 22vh); /* Переконатися, що не перевищує цього ліміту */
+    max-height: calc(100% - 12%); /* Переконатися, що не перевищує цього ліміту */
     display: grid;
     grid-auto-rows: 10% 6% 10% 5%;
     gap: 3%;
@@ -88,7 +88,6 @@ html, body {
 .boosts {
     display: flex;
     flex-wrap: wrap;
-
     padding-top: -10vw !important;
 }
 

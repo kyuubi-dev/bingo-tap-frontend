@@ -32,7 +32,7 @@
       Telegram.WebApp.ready(); // Повідомлення, що Mini App готовий до відображення
       Telegram.WebApp.expand(); // Розгортання Mini App на максимальну висоту
       Telegram.WebApp.enableClosingConfirmation(); // Включення діалогу підтвердження при закритті Mini App
-
+      Telegram.WebApp.isClosingConfirmationEnabled = true;
       // Постійне розгортання Mini App на максимальну висоту
       Telegram.WebApp.onEvent('viewportChanged', function(event) {
           if (!Telegram.WebApp.isExpanded) {
@@ -46,6 +46,9 @@
               Telegram.WebApp.expand();
           }
       }, 1000); // Перевірка кожну секунду
+
+      document.documentElement.addEventListener('touchstart', onTouchStart, { passive: false })
+      document.documentElement.addEventListener('touchmove', onTouchMove, { passive: false })
   </script>
 
     <style>
