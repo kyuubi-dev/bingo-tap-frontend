@@ -1,80 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <meta charset="utf-8" />
-  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Web site created using create-react-app" />
-  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>React App</title>
-  <style>
-    body, html {
-      overflow: hidden;
-      height: 100%;
-      width: 100%;
-      position: fixed;
-    }
-    iframe {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .mobile-body {
-      overflow: hidden;
-      height: 100vh;
-    }
-    .mobile-wrap {
-      position: absolute;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-    .mobile-content {
-      height: calc(100% + 1px);
-    }
-  </style>
-</head>
-<body>
-<div id="root"></div>
-<div id="wrap">
-  <div id="content"></div>
-</div>
-<script src="https://unpkg.com/@tma.js/sdk@2.5.0/dist/index.iife.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
-    Telegram.WebApp.enableClosingConfirmation();
-    Telegram.WebApp.isClosingConfirmationEnabled = true;
+  <head>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
 
-    // Перевірка і розгортання Mini App на максимальну висоту кожні 5 секунд
-    setInterval(function() {
-      if (!Telegram.WebApp.isExpanded) {
-        Telegram.WebApp.expand();
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+
+    <script>
+      Telegram.WebApp.ready(); // Повідомлення, що Mini App готовий до відображення
+      Telegram.WebApp.expand(); // Розгортання Mini App на максимальну висоту
+      Telegram.WebApp.enableClosingConfirmation(); // Включення діалогу підтвердження при закритті Mini App
+      Telegram.WebApp.isClosingConfirmationEnabled = true;
+      // Постійне розгортання Mini App на максимальну висоту
+      Telegram.WebApp.onEvent('viewportChanged', function(event) {
+          if (!Telegram.WebApp.isExpanded) {
+              Telegram.WebApp.expand();
+          }
+      });
+
+      // Перевірка і постійне розгортання
+      setInterval(function() {
+          if (!Telegram.WebApp.isExpanded) {
+              Telegram.WebApp.expand();
+          }
+      }, 1000); // Перевірка кожну секунду
+
+  </script>
+
+    <style>
+      body, html {
+        overflow: auto; /* Отключает прокрутку на всей странице */
+        height: 100%;
+        width: 100%;
+        position: fixed; /* Фиксирует положение страницы */
       }
-    }, 5000);
+      iframe {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+    <style>
+      .mobile-body {
+        overflow: hidden;
+        height: 100vh;
+      }
 
-    var { retrieveLaunchParams, postEvent } = window.tmajs.sdk;
-    var lp = retrieveLaunchParams();
+      .mobile-wrap {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
 
-    // Перевірка платформи і застосування класів
-    if (!['macos', 'tdesktop', 'weba', 'web', 'webk'].includes(lp.platform)) {
+      .mobile-content {
+        height: calc(100% + 1px);
+      }
+    </style>
+  </head>
+  <body>
+  <div id="root">
+       </div>
+  <div id="wrap">
+    <div id="content">
+    </div>
+  </div>
+  <script src="https://unpkg.com/@tma.js/sdk@2.5.0/dist/index.iife.js"></script>
+  <script>
+    (function() {
+      var { retrieveLaunchParams, postEvent } = window.tmajs.sdk;
+      var lp = retrieveLaunchParams();
+
+      // Some versions of Telegram don't need the classes above.
+      if (['macos', 'tdesktop', 'weba', 'web', 'webk'].includes(lp.platform)) {
+        return;
+      }
+
+      // Expand the application.
       postEvent('web_app_expand');
+
       document.body.classList.add('mobile-body');
       document.getElementById('wrap').classList.add('mobile-wrap');
       document.getElementById('content').classList.add('mobile-content');
-    }
-  });
-</script>
-</body>
+    })();
+  </script>
+  </body>
 </html>
