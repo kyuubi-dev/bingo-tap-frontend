@@ -134,7 +134,6 @@ function App() {
             document.body.classList.remove('no-click');
         };
     }, []);
-
     
     useEffect(() => {
         const url = `${config.wsBaseUrl}`;
