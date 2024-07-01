@@ -61,31 +61,37 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
 
     return (
         <div className="modal" onClick={handleOverlayClick}>
-            <div className="modal-content" onTouchStart={handleTouchStart}
+            <div className="modal-content"
+                 onTouchStart={handleTouchStart}
                  onTouchMove={handleTouchMove}
-                 onTouchEnd={handleTouchEnd}  style={{ transform: `translateY(${currentY}px)`}}>
+                 onTouchEnd={handleTouchEnd}
+                 style={{ transform: `translateY(${currentY}px)` }}>
                 <img src={boost.image} alt={boost.name} className="boost-icon" />
                 <h2 className="boost-name">{boost.name}</h2>
-                <p className="boost-price">Price: {boost.price}</p>
-                <p className="boost-description">{boost.description}</p>
 
-                {isAutoTap && autoTapData.active &&(
+                {isAutoTap && autoTapData.active ? (
                     <div className="auto-tap-info">
                         <div className="auto-tap-timer">Time left: {formatRemainingTime(autoTapData.timeLeft)}</div>
                         <div className="auto-tap-points">Accumulated points: {autoTapData.accumulatedPoints}</div>
                         <button className="claim-points-button" onClick={handleClaimPoints}>Claim Points</button>
                     </div>
+                ) : (
+                    <>
+                        <p className="boost-price">Price: {boost.price}</p>
+                        <p className="boost-description">{boost.description}</p>
+                        <button className="btn btn-buy blue-style" onClick={handleAction}>
+                            GET IT!
+                        </button>
+                    </>
                 )}
 
                 <div className="modal-buttons">
-                    <button className="btn btn-buy blue-style" onClick={handleAction}>
-                    GET IT!
-                        </button>
-                        <img src="/btns/delete.png" onClick={onClose} alt="Close" className="closeImg"/>
+                    <img src="/btns/delete.png" onClick={onClose} alt="Close" className="closeImg"/>
                 </div>
             </div>
         </div>
     );
+
 };
 
 export default BoostModal;
