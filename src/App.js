@@ -95,24 +95,19 @@ function App() {
     }, []);
 
     useEffect(() => {
-        setLoadingImages(true);
-
-        const loadImage = (src) => {
+        const loadImage = async (src) => {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.src = src;
                 img.onload = resolve;
-                img.onerror = () => {
-                    console.error(`Failed to load image: ${src}`);
-                    reject();
-                };
+                img.onerror = reject;
             });
         };
 
         const loadImagesForRoute = async (route) => {
             const sources = imageSources[route] || [];
             try {
-                await Promise.all(sources.map(src => loadImage(src)));
+                await Promise.all(sources.map(loadImage));
                 setLoadingImages(false);
             } catch (error) {
                 console.error('Error loading images:', error);
@@ -120,6 +115,7 @@ function App() {
             }
         };
 
+        setLoadingImages(true);
         loadImagesForRoute(location.pathname);
     }, [location.pathname]);
 
