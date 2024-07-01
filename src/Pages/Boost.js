@@ -95,6 +95,15 @@
                             timeLeft: data.autoTap.timeLeft,
                             lastUpdate: data.autoTap.lastUpdate
                         });
+                        if (data.autoTap.accumulatedPoints > 0 || data.autoTap.active==false) {
+                            const updatedBalance = data.balance + data.autoTap.accumulatedPoints;
+                            setUserBalance(updatedBalance);
+                            setAutoTapData(prevData => ({
+                                ...prevData,
+                                accumulatedPoints: 0
+                            }));
+                            setMessage(`Claimed ${data.autoTap.accumulatedPoints} points! AUTO TAP bot has finished its work! `);
+                        }
                     } else {
                         setAutoTapData(autoTapData); // Встановлюємо стан за замовчуванням, якщо дані не отримані
                     }
@@ -381,7 +390,6 @@
                 level,
                 description
             };
-            console.log(autoTapData.active);
             return (
                 <div className="boost-item" onClick={() => handleBoostClick(boost)}>
                     <img src={image} alt="icon" className="boost-icon" />
