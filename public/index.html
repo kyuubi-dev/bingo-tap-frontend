@@ -29,23 +29,24 @@
     <title>React App</title>
 
     <script>
-      Telegram.WebApp.ready(); // Повідомлення, що Mini App готовий до відображення
-      Telegram.WebApp.expand(); // Розгортання Mini App на максимальну висоту
-      Telegram.WebApp.enableClosingConfirmation(); // Включення діалогу підтвердження при закритті Mini App
-      Telegram.WebApp.isClosingConfirmationEnabled = true;
-      // Постійне розгортання Mini App на максимальну висоту
-      Telegram.WebApp.onEvent('viewportChanged', function(event) {
-          if (!Telegram.WebApp.isExpanded) {
-              Telegram.WebApp.expand();
-          }
-      });
+      const app = window.Telegram.WebApp;
+      app.ready()
+      app.expand()
+      app.isClosingConfirmationEnabled = true;
 
-      // Перевірка і постійне розгортання
-      setInterval(function() {
-          if (!Telegram.WebApp.isExpanded) {
-              Telegram.WebApp.expand();
-          }
-      }, 1000); // Перевірка кожну секунду
+      // Постійне розгортання Mini App на максимальну висоту
+      // Telegram.WebApp.onEvent('viewportChanged', function(event) {
+      //     if (!Telegram.WebApp.isExpanded) {
+      //         Telegram.WebApp.expand();
+      //     }
+      // });
+
+      // // Перевірка і постійне розгортання
+      // setInterval(function() {
+      //     if (!Telegram.WebApp.isExpanded) {
+      //         Telegram.WebApp.expand();
+      //     }
+      // }, 1000); // Перевірка кожну секунду
 
   </script>
 
