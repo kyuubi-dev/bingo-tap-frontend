@@ -67,8 +67,8 @@
   .tap-gold {
     display: flex;
     align-items: center;
-    margin-left: 100px;
-    margin-bottom: 10%;
+    align-content: center;
+    justify-content: flex-end
   }
   
   .gold-text {
