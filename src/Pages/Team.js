@@ -8,6 +8,7 @@ function Team({ userId, botName }) {
     const [copyButtonText, setCopyButtonText] = useState('COPY');
     const [referralBalance, setReferralBalance] = useState(0);
     const [referralCount, setReferralCount] = useState(0);
+    const [referrals, setReferrals] = useState([]);
 
     useEffect(() => {
         const fetchReferralData = async () => {
@@ -90,25 +91,36 @@ function Team({ userId, botName }) {
             </div>
             <div className="Team-section">
                 <div className="team-header blue-style">MY TEAM:</div>
+                {/* <div className='teams'>
+                    <TeamItem
+                        name="George Vladi"
+                        balance="10 000"
+                        leagua="Gold"
+                        bonus="50 000"
+                    />
+                    <TeamItem
+                        name="George Vladi"
+                        balance="10 000"
+                        leagua="Gold"
+                        bonus="50 000"
+                    />
+                    <TeamItem
+                        name="George Vladi"
+                        balance="10 000"
+                        leagua="Gold"
+                        bonus="50 000"
+                    />
+                </div> */}
                 <div className='teams'>
-                    <TeamItem
-                        name="George Vladi"
-                        balance="10 000"
-                        leagua="Gold"
-                        bonus="50 000"
-                    />
-                    <TeamItem
-                        name="George Vladi"
-                        balance="10 000"
-                        leagua="Gold"
-                        bonus="50 000"
-                    />
-                    <TeamItem
-                        name="George Vladi"
-                        balance="10 000"
-                        leagua="Gold"
-                        bonus="50 000"
-                    />
+                    {referrals.map((referral, index) => (
+                        <TeamItem
+                            key={index}
+                            name={`${referral}`}
+                            balance="10 000"
+                            leagua="Gold" 
+                            bonus="50 000"
+                        />
+                    ))}
                 </div>
             </div>
         </div>
