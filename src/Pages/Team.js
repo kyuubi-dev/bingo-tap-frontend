@@ -35,8 +35,27 @@ function Team({ userId, botName }) {
                 }, 2000);
             })
             .catch(err => {
-                console.error('Помилка копіювання: ', err);
+                console.error('Error copying: ', err);
             });
+    };
+
+    const handleClaimClick = async () => {
+        try {
+            // Get current user balance
+            const userBalanceResponse = await axios.get(`${config.apiBaseUrl}/eyJhbGciOiJIUzI1NiJ9/user-balance/${userId}`);
+            const currentBalance = userBalanceResponse.data.balance;
+
+            // Calculate new balance
+            const newBalance = currentBalance + referralBalance;
+
+            // Update user balance
+            await axios.put(`${config.apiBaseUrl}/eyJhbGciOiJIUzI1NiJ9/save-balance/${userId}`, { balance: newBalance });
+
+            // Reset referral balance
+            setReferralBalance(0);
+        } catch (error) {
+            console.error('Error claiming referral balance: ', error);
+        }
     };
 
     const inviteLink = `https://t.me/${botName}?start=ref_${userId}`;
@@ -53,9 +72,14 @@ function Team({ userId, botName }) {
                     <div className='ref-text blue-style'>REFERRALS</div>
                 </div>
             </div>
-            <div className="referral-total blue-style">
+            <div className="referral-total-container">
+                <div className="referral-total blue-style">
+                <button className="copy-button blue-style" onClick={handleClaimClick}>CLAIM</button>
                 {`+${referralBalance}`}
+                </div>
             </div>
+
+
             <div className="Invite-link">
                 <div className="invite-text blue-style">MY INVITE LINK:</div>
                 <a href={inviteLink} className="invite-url">{inviteLink}</a>
