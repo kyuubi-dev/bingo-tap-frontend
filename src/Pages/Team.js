@@ -53,7 +53,9 @@ function Team({ userId, botName }) {
                     <div className='ref-text blue-style'>REFERRALS</div>
                 </div>
             </div>
-            <div className="referral-total blue-style">{`+${referralBalance}`}</div>
+            <div className="referral-total blue-style">
+                {`+${referralBalance}`}
+            </div>
             <div className="Invite-link">
                 <div className="invite-text blue-style">MY INVITE LINK:</div>
                 <a href={inviteLink} className="invite-url">{inviteLink}</a>
