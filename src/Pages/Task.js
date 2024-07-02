@@ -320,8 +320,9 @@ const TaskItem = React.memo(({ task, onCompletion,xisCompleted })=> {
 
 
 const LeagueItem = ({ league, completed, onClaim,leagueProgress }) => {
-    const progress = leagueProgress && leagueProgress[league.name] ? leagueProgress[league.name] : 0;
-
+    const progressData = leagueProgress.find(item => item.league === league.name);
+    const progress = progressData ? progressData.progress : 0;
+    console.log(progress);
     return (
         <div className={`task-item leagua ${completed ? 'completed' : ''}`}>
             <img src={league.img} alt="icon" loading="lazy"  className="task-icon"/>
