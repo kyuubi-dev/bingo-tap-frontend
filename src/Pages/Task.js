@@ -162,22 +162,7 @@ const Task = ({ telegramId, ws }) => {
         return leagueData ? leagueData.img : './ranks/wood.png';
     };
 
-    const updateLeague = async () => {
-        for (const league of leagues) {
-            if (userPoints >= league.requiredPoints && userLeague !== league.name) {
-                setUserLeague(league.name);
-                try {
-                    await axios.put(`${config.apiBaseUrl}/update-league/${telegramId}`, {
-                        league: league.name
-                    });
-                    setCompletionMessage(`Congratulations! You have reached ${league.name} league!`);
-                } catch (error) {
-                    console.error('Ошибка при обновлении лиги на сервере:', error);
-                }
-                break; // Exit the loop once the appropriate league is found
-            }
-        }
-    };
+
 
     const renderContent = () => {
 

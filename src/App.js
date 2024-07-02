@@ -174,7 +174,7 @@ function App() {
     return (
         <div className="App">
             <BgImage />
-            <Navigation />
+            <Navigation telegramId={874423521}/>
             <Routes>
                 <Route path="/" element={<Tap telegramId={userId} ws={ws.current}/>} />
                 <Route path="/team" element={<Team userId={userId} botName={botName} />} />

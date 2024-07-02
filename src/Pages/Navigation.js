@@ -3,7 +3,7 @@ import './Navigation.css';
 import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import config from '../config';
-function Navigation() {
+function Navigation({telegramId}) {
   const [navButtonActive, setNavButtonActive] = useState({
     team: false,
     task: false,
@@ -12,7 +12,7 @@ function Navigation() {
     stat: false
   });
     const [hasActiveTasks, setHasActiveTasks] = useState(false);
-
+    const [hasActiveBoost, setHasActiveBoost] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
@@ -52,8 +52,17 @@ function Navigation() {
         console.log(activeTasks);
         setHasActiveTasks(activeTasks);
     };
-
+    const checkUserBoosts = async () => {
+        try {
+            const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
+            const userData = response.data;
+            setHasActiveBoost(userData.newChargesAdded);
+        } catch (error) {
+            console.error('Ошибка при проверке пользовательских бустов:', error);
+        }
+    };
     useEffect(() => {
+        checkUserBoosts();
         fetchTasks();
     }, []);
   return (
@@ -71,6 +80,7 @@ function Navigation() {
       </Link>
       <Link to="/boost" className="round-button" onClick={() => handleNavButtonClick('boost')}>
         <img src={navButtonActive.boost ? "/btns/boost_active.png" : "/btns/boost.png"} alt="Boost" />
+          {hasActiveBoost && <div className="red-indicator"></div>}
       </Link>
       <Link to="/stat" className="round-button" onClick={() => handleNavButtonClick('stat')}>
         <img src={navButtonActive.stat ? "/btns/stat_active.png" : "/btns/stat.png"} alt="Statistics" />
