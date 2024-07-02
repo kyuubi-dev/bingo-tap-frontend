@@ -13,11 +13,16 @@ function Team({ userId, botName }) {
     useEffect(() => {
         const fetchReferralData = async () => {
             try {
+                // Fetch user's referral balance and count
                 const balanceResponse = await axios.get(`${config.apiBaseUrl}/user-ref_balance/${userId}`);
                 setReferralBalance(balanceResponse.data.ref_balance);
                 
                 const countResponse = await axios.get(`${config.apiBaseUrl}/user-referral_count/${userId}`);
                 setReferralCount(countResponse.data.referral_count);
+
+                // Fetch user's referrals
+                const referralsResponse = await axios.get(`${config.apiBaseUrl}/user-referrals/${userId}`);
+                setReferrals(referralsResponse.data.referrals);
             } catch (error) {
                 console.error('Error fetching referral data: ', error);
             }
