@@ -44,20 +44,23 @@ function Team({ userId, botName }) {
             // Get current user balance
             const userBalanceResponse = await axios.get(`${config.apiBaseUrl}/user-balance/${userId}`);
             const currentBalance = userBalanceResponse.data.balance;
-
+    
             // Calculate new balance
             const newBalance = currentBalance + referralBalance;
-
+    
             // Update user balance
             await axios.put(`${config.apiBaseUrl}/save-balance/${userId}`, { balance: newBalance });
-
-            // Reset referral balance
+    
+            // Reset referral balance in the database
+            await axios.put(`${config.apiBaseUrl}/save-ref_balance/${userId}`, { ref_balance: 0 });
+    
+            // Reset referral balance in the state
             setReferralBalance(0);
         } catch (error) {
             console.error('Error claiming referral balance: ', error);
         }
     };
-
+    
     const inviteLink = `https://t.me/${botName}?start=ref_${userId}`;
 
     return (
