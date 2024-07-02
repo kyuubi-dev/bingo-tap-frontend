@@ -162,16 +162,16 @@ function App() {
     return (
         <div className="App">
             <BgImage />
-            <Navigation telegramId={874423521}/>
+            <Navigation telegramId={userId}/>
             <Routes>
-                <Route path="/" element={<Tap telegramId={874423521} ws={ws.current}/>} />
-                <Route path="/team" element={<Team userId={874423521} botName={botName} />} />
-                <Route path="/task" element={<Task telegramId={874423521} ws={ws.current} />} />
+                <Route path="/" element={<Tap telegramId={userId} ws={ws.current}/>} />
+                <Route path="/team" element={<Team userId={userId} botName={botName} />} />
+                <Route path="/task" element={<Task telegramId={userId} ws={ws.current} />} />
                 <Route
                     path="/boost"
                     element={
                         <Boost
-                            telegramId={874423521}
+                            telegramId={userId}
                             purchasedBoosts={purchasedBoosts}
                             setPurchasedBoosts={setPurchasedBoosts}
                             ws={ws.current}
