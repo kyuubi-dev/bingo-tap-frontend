@@ -13,7 +13,7 @@ function Team({ userId, botName }) {
         const fetchReferralData = async () => {
             try {
                 const balanceResponse = await axios.get(`${config.apiBaseUrl}/user-ref_balance/${userId}`);
-                setReferralBalance(balanceResponse.data.referral_balance);
+                setReferralBalance(balanceResponse.data.ref_balance);
                 
                 const countResponse = await axios.get(`${config.apiBaseUrl}/user-referral_count/${userId}`);
                 setReferralCount(countResponse.data.referral_count);
