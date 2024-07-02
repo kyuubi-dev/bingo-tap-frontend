@@ -51,15 +51,17 @@ body {
 .gold {
   display: flex;
   align-items: center;
-  justify-content: center;
   z-index: 2;
+  justify-content: center
 }
 
 .open-btn {
   background: transparent;
   border: none;
-  height: auto;
-  margin-left: -15px;
+  height: 100%;
+  width: 15%;
+  margin-left: -5%;
+  margin-top: 0.5%;
   z-index: 2;
 }
 
@@ -176,12 +178,8 @@ body {
   font-size: 14vw !important;
 }
 
-.open-btn {
-  width: 20%;
-}
-
 .open-btn img {
-  width: 80%;
+  width: 100%;
 }
 
 .tab {

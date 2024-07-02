@@ -68,11 +68,11 @@
     display: flex;
     align-items: center;
     align-content: center;
-    justify-content: flex-end
+    justify-content: center;
   }
   
   .gold-text {
-    font-size: 8vw !important;
+    font-size: 6vw !important;
   }
   
   .robot-img {
@@ -133,7 +133,7 @@
   }
   
   .rank-img {
-    width: 30%;
+    width: 20% !important;
   }
   
   @media (max-width: 768px) {
