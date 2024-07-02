@@ -26,7 +26,7 @@ function Team({ userId, botName }) {
     }, [userId]);
 
     const handleCopyClick = () => {
-        const inviteLink = `https://t.me/${botName}?start=${userId}`;
+        const inviteLink = `https://t.me/${botName}?start=ref_${userId}`;
         navigator.clipboard.writeText(inviteLink)
             .then(() => {
                 setCopyButtonText('COPIED');
