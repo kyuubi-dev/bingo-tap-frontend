@@ -11,6 +11,10 @@ function Navigation({telegramId}) {
     boost: false,
     stat: false
   });
+    const [dailyBoosts, setDailyBoosts] = useState({
+        "tapingGuru": { charges: 0, lastUpdate: Date.now() },
+        "fullTank": { charges: 0, lastUpdate: Date.now() },
+    });
     const [hasActiveTasks, setHasActiveTasks] = useState(false);
     const [hasActiveBoost, setHasActiveBoost] = useState(false);
     const location = useLocation();
@@ -52,15 +56,33 @@ function Navigation({telegramId}) {
         console.log(activeTasks);
         setHasActiveTasks(activeTasks);
     };
+
     const checkUserBoosts = async () => {
         try {
             const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
             const userData = response.data;
-            setHasActiveBoost(userData.newChargesAdded);
+
+            // Переконатися, що структура даних правильна
+            if (userData && userData.dailyBoosts) {
+                const boosts = ['tapingGuru', 'fullTank'];
+                let chargesAreThree = false;
+
+                boosts.forEach(boost => {
+                    if (userData.dailyBoosts[boost].charges === 3) {
+                        chargesAreThree = true;
+                    }
+                });
+
+                setHasActiveBoost(chargesAreThree);
+            } else {
+                console.warn('Недостатньо даних для перевірки бустів');
+                setHasActiveBoost(false);
+            }
         } catch (error) {
             console.error('Ошибка при проверке пользовательских бустов:', error);
         }
     };
+
     useEffect(() => {
         checkUserBoosts();
         fetchTasks();
