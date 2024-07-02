@@ -42,14 +42,14 @@ function Team({ userId, botName }) {
     const handleClaimClick = async () => {
         try {
             // Get current user balance
-            const userBalanceResponse = await axios.get(`${config.apiBaseUrl}/eyJhbGciOiJIUzI1NiJ9/user-balance/${userId}`);
+            const userBalanceResponse = await axios.get(`${config.apiBaseUrl}/user-balance/${userId}`);
             const currentBalance = userBalanceResponse.data.balance;
 
             // Calculate new balance
             const newBalance = currentBalance + referralBalance;
 
             // Update user balance
-            await axios.put(`${config.apiBaseUrl}/eyJhbGciOiJIUzI1NiJ9/save-balance/${userId}`, { balance: newBalance });
+            await axios.put(`${config.apiBaseUrl}/save-balance/${userId}`, { balance: newBalance });
 
             // Reset referral balance
             setReferralBalance(0);
