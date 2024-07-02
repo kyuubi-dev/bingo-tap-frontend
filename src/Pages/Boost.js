@@ -50,11 +50,37 @@
                         balance: cachedUserBalance
                     });
 
-                    setIsLoaded(true);
                     // Після збереження даних відкриваємо WebSocket
                     requestData();
+                    setIsLoaded(true);
+                    checkAutoTapStatus();
+
                 } catch (error) {
                     console.error("Error saving balance:", error);
+                }
+            };
+
+            const checkAutoTapStatus = () => {
+                const storedAutoTapData = JSON.parse(localStorage.getItem('autoTapData'));
+                if (storedAutoTapData && storedAutoTapData.accumulatedPoints > 0 && !storedAutoTapData.active) {
+                    const updatedBalance = userBalance + storedAutoTapData.accumulatedPoints;
+                    setUserBalance(updatedBalance);
+                    setAutoTapData(prevData => ({
+                        ...prevData,
+                        accumulatedPoints: 0
+                    }));
+                    setMessage(`Claimed ${storedAutoTapData.accumulatedPoints} points!`);
+                    try {
+                        axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
+                            balance: updatedBalance
+                        });
+                        localStorage.setItem('autoTapData', JSON.stringify({
+                            ...autoTapData,
+                            accumulatedPoints: 0
+                        }));
+                    } catch (error) {
+                        console.error('Ошибка при обновлении баланса на сервере:', error);
+                    }
                 }
             };
 
@@ -73,7 +99,6 @@
                 console.log('Received message:', data);
 
                 if (data.type === 'userData') {
-                    setIsLoaded(false);
                     setUserBalance(data.balance);
                     setDailyBoosts(data.dailyBoosts);
                     setBoosts(boosts.map(boost => {
@@ -95,23 +120,12 @@
                             timeLeft: data.autoTap.timeLeft,
                             lastUpdate: data.autoTap.lastUpdate
                         });
-                        if (data.autoTap.accumulatedPoints > 0 & data.autoTap.active==false) {
-                            const updatedBalance = data.balance + data.autoTap.accumulatedPoints;
-                            setUserBalance(updatedBalance);
-                            setAutoTapData(prevData => ({
-                                ...prevData,
-                                accumulatedPoints: 0
-                            }));
-                            setMessage(`Claimed ${data.autoTap.accumulatedPoints} points!`);
-                        }
                     } else {
                         setAutoTapData(autoTapData); // Встановлюємо стан за замовчуванням, якщо дані не отримані
                     }
-                    setIsLoaded(true);
                 } else if (data.type === 'updateBalance' && data.telegram_id === telegramId) {
                     setUserBalance(data.newBalance);
                 } else if (data.type === 'boostUpdate' && data.telegram_id === telegramId) {
-                    setIsLoaded(false);
                     setBoosts(boosts.map(boost => {
                         if (boost.name === 'MULTITAP') {
                             return { ...boost, level: data.boostLevels.multiTapLevel };
@@ -123,7 +137,6 @@
                         return boost;
                     }));
                     setUserBalance(data.balance);
-                    setIsLoaded(true);
                 } else if(data.type === 'boostActivated'){
                     if (data.telegram_id === telegramId) {
                         setDailyBoosts(prevBoosts => ({
