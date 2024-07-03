@@ -82,7 +82,7 @@ body {
 }
 
 .Invite-link {
-  margin-top: 30px;
+  margin-top: 20px;
   display: grid;
   grid-row: 3;
   grid-template-rows: 20px 20px;
@@ -108,7 +108,7 @@ body {
 }
 
 .invite-url {
-  font-size: 5vw; /* Використання vw для тексту */
+  font-size: 4vw; /* Використання vw для тексту */
   color: #15f7ff;
   text-decoration: none;
   grid-row: 2;
@@ -144,8 +144,7 @@ body {
 }
 
 .copy-button:active {
-  transform: scale(0.95); /* Додамо ефект натискання */
-  background-color: #1976D2; /* Трохи змінюємо колір для ефекту натискання */
+  background-color: #1976D2;
 }
 
 .teams {
