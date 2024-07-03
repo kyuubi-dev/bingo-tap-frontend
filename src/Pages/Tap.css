@@ -46,6 +46,7 @@
     position: absolute;
     align-items: center;
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
     top: 40%;
     left: 50%;
@@ -102,9 +103,9 @@
     position: relative;
     align-items: center;
     display: flex;
-    margin-left: 60px;
     justify-content: center;
-    width: auto;
+    width: 80px;
+    margin-right: 20px;
     font-size: 4vw;
   }
   
