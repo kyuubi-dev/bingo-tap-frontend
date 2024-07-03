@@ -8,7 +8,7 @@ function Team({ userId, botName }) {
     const [copyButtonText, setCopyButtonText] = useState('COPY');
     const [referralBalance, setReferralBalance] = useState(0);
     const [referralCount, setReferralCount] = useState(0);
-    const [referrals, setReferrals] = useState([]);
+    const [referralsData, setReferralsData] = useState([]);
 
     useEffect(() => {
         const fetchReferralData = async () => {
@@ -26,11 +26,11 @@ function Team({ userId, botName }) {
 
                 // Fetch detailed information for each referral
                 const referralDetails = await Promise.all(referralIds.map(async (referralId) => {
-                    const referralResponse = await axios.get(`${config.apiBaseUrl}/check-user/${referralId}`);
+                    const referralResponse = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${referralId}`);
                     return referralResponse.data;
                 }));
 
-                setReferrals(referralDetails);
+                setReferralsData(referralDetails);
             } catch (error) {
                 console.error('Error fetching referral data: ', error);
             }
@@ -104,12 +104,12 @@ function Team({ userId, botName }) {
             <div className="Team-section">
                 <div className="team-header blue-style">MY TEAM:</div>
                 <div className='teams'>
-                    {referrals.map((referral, index) => (
+                    {referralsData.map((referral, index) => (
                         <TeamItem
                             key={index}
-                            name={referral.username} // assuming the response contains user_username
-                            balance={referral.balance} // assuming the response contains userBalance
-                            leagua={referral.league} // assuming the response contains userLeague
+                            name={referral.username} // assuming the response contains username
+                            balance={referral.userBalance} // assuming the response contains userBalance
+                            leagua={referral.userLeague} // assuming the response contains userLeague
                             bonus="50000" // or some other logic to calculate bonus
                         />
                     ))}
