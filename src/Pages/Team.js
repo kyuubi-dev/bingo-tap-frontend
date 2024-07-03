@@ -3,6 +3,7 @@ import axios from 'axios';
 import './Team.css';
 import './TextStyle.css';
 import config from "../config";
+import leagues from "./leaguaData";
 
 function Team({ userId, botName }) {
     const [copyButtonText, setCopyButtonText] = useState('COPY');
@@ -53,6 +54,10 @@ function Team({ userId, botName }) {
             });
     };
 
+    const getLeagueImage = (league) => {
+        const leagueData = leagues.find(l => l.name.toUpperCase() === league.toUpperCase());
+        return leagueData ? leagueData.img : './ranks/wood.png';
+    };
     const handleClaimClick = async () => {
         try {
             // Get current user balance
@@ -111,6 +116,7 @@ function Team({ userId, botName }) {
                             balance={referral.userBalance}
                             leagua={referral.userLeague}
                             bonus="50000"
+                            getLeagueImage={getLeagueImage}
                         />
                     ))}
                 </div>
@@ -119,12 +125,12 @@ function Team({ userId, botName }) {
     );
 }
 
-const TeamItem = ({ name, balance, leagua, bonus }) => (
+const TeamItem = ({ name, balance, leagua, bonus , getLeagueImage }) => (
     <div className="team-member">
         <span className="name default-style">{name}</span>
         <div className='stat-inf'>
             <div className='Rank'>
-                <img src='./ranks/gold.png' className='rank-img' />
+                <img src={getLeagueImage(leagua)} className='rank-img' />
                 <span className="rank-text gold-style">{leagua}</span>
             </div>
             <div className='Point'>
