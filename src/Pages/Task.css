@@ -28,7 +28,24 @@ body {
   overflow-y: hidden !important;
 }
 
+.task-item.done {
+  border: 4px solid #90EE90; /* М'який зелений колір для бордюру */
+  box-shadow: 0 0 15px #90EE90; /* М'який зелений колір для тіні */
+  animation: smooth-blink 2s infinite; /* Плавна анімація мигання */
+}
 
+/* Анімація для плавного мигання */
+@keyframes smooth-blink {
+  0%, 100% {
+    box-shadow: 0 0 15px #90EE90; /* М'який зелений колір */
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(144, 238, 144, 0.5); /* Напівпрозорий м'який зелений колір */
+  }
+}
+.task-item.done .claim-button{
+  height: 100%;
+}
 .header {
   display: flex;
   justify-content: center;
