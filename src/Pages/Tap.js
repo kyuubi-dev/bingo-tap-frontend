@@ -6,7 +6,8 @@ import LoadingScreen from './LoadingScreen';
 import leagues from "./leaguaData";
 import axios from 'axios';
 import useSwipe from './useSwipe'; // Импортируем хук
-
+import BoostModal from './boostModal.js';
+import CompletionMessage from "./ModelMessage"; // Импортируем BoostModal
 function Tap({ telegramId , ws}) {
   const [maxEnergy, setMaxEnergy] = useState(1500);
   const [energy, setEnergy] = useState(1500);
@@ -24,6 +25,14 @@ function Tap({ telegramId , ws}) {
   const [rechargeSpeed, setRechargeSpeed] = useState(1);
   const tapingGuruTimeout = useRef(null);
   const tapRef = useRef(null); // Создаем реф для элемента, который будем отслеживать
+  const [autoTapData, setAutoTapData] = useState({
+    active: false,
+    accumulatedPoints: 0,
+    timeLeft: 0,
+    lastUpdate: null
+  });
+  const [showBoostModal, setShowBoostModal] = useState(false);
+  const [message, setMessage] = useState(null);
   useSwipe(tapRef); // Применяем хук
 
   useEffect(() => {
@@ -42,7 +51,18 @@ function Tap({ telegramId , ws}) {
         if (data.energyLimitLevel != null) setMaxEnergy(1000 + data.energyLimitLevel * 500);
         if (data.rechargingSpeed != null) setRechargeSpeed(data.rechargingSpeed);
         if (data.energy != null) setEnergy(data.energy);
+        if (data.autoTap) {
+          setAutoTapData({
+            active: data.autoTap.active,
+            accumulatedPoints: data.autoTap.accumulatedPoints,
+            timeLeft: data.autoTap.timeLeft,
+            lastUpdate: data.autoTap.lastUpdate
+          });
+        }
         setIsLoaded(true);
+        if (data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0) {
+          setShowBoostModal(true);
+        }
       } else if (data.type === 'balanceUpdate' && data.telegram_id === telegramId) {
         if (data.newBalance != null) { setUserBalance(data.newBalance); setCachedBalance(data.newBalance); }
         if (data.newEnergy != null) setEnergy(data.newEnergy);
@@ -267,17 +287,35 @@ function Tap({ telegramId , ws}) {
   if (!isLoaded) {
     return <LoadingScreen />;
   }
-  const createExplosionEffect = (element) => {
-    const rect = element.getBoundingClientRect();
-    const explosion = document.createElement('div');
-    explosion.className = 'explosion';
-    explosion.style.left = `${rect.left + rect.width / 2 - 50}px`; // Відцентрувати вибух
-    explosion.style.top = `${rect.top + rect.height / 2 - 50}px`; // Відцентрувати вибух
-    document.body.appendChild(explosion);
 
-    setTimeout(() => {
-      explosion.remove();
-    }, 2000); // Видалити вибух після анімації
+  const handleCloseModal = () => {
+    setShowBoostModal(false);
+  };
+  const handleClaimPoints = async () => {
+    if (autoTapData.accumulatedPoints > 0) {
+      const updatedBalance = userBalance + autoTapData.accumulatedPoints;
+      setUserBalance(updatedBalance);
+      // Відправка оновленого балансу на сервер
+      await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
+        balance: updatedBalance
+      });
+      setAutoTapData((prevData) => ({
+        ...prevData,
+        accumulatedPoints: 0
+      }));
+      localStorage.setItem('autoTapData', JSON.stringify({
+        ...autoTapData,
+        accumulatedPoints: 0
+      }));
+      await axios.put(`${config.apiBaseUrl}/reset-accumulated-points/${telegramId}`);
+      setMessage(`Claimed ${autoTapData.accumulatedPoints} points!`);
+    } else {
+      setMessage('No points to claim.');
+    }
+  };
+
+  const closeMessage = () => {
+    setMessage(null);
   };
   return (
       <div className="Tap" ref={tapRef}>
@@ -314,6 +352,16 @@ function Tap({ telegramId , ws}) {
             <div className="energy-bar" style={{ width: energyBarWidth }}></div>
           </div>
         </div>
+        {message && <CompletionMessage message={message} onClose={closeMessage} />}
+        {showBoostModal && (
+            <BoostModal
+                boost={{ name: 'AUTO TAP', price: 100, description: 'Auto Tap boost', image: '/path/to/image.png' }}
+                onClose={handleCloseModal}
+                autoTapData={autoTapData}
+
+                handleClaimPoints={handleClaimPoints}
+            />
+        )}
       </div>
   );
 }

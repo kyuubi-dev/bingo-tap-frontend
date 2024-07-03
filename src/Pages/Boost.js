@@ -210,6 +210,7 @@
                     ...autoTapData,
                     accumulatedPoints: 0
                 }));
+                await axios.put(`${config.apiBaseUrl}/reset-accumulated-points/${telegramId}`);
                 setMessage(`Claimed ${autoTapData.accumulatedPoints} points!`);
             } else {
                 setMessage('No points to claim.');
