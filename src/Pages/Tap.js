@@ -293,8 +293,8 @@ function Tap({ telegramId , ws}) {
   };
   const handleClaimPoints = async () => {
     if (autoTapData.accumulatedPoints > 0) {
-      const updatedBalance = userBalance + autoTapData.accumulatedPoints;
-      setUserBalance(updatedBalance);
+      const updatedBalance = cachedBalance + autoTapData.accumulatedPoints;
+      setCachedBalance(updatedBalance);
       // Відправка оновленого балансу на сервер
       await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
         balance: updatedBalance
@@ -308,6 +308,7 @@ function Tap({ telegramId , ws}) {
         accumulatedPoints: 0
       }));
       await axios.put(`${config.apiBaseUrl}/reset-accumulated-points/${telegramId}`);
+
       setMessage(`Claimed ${autoTapData.accumulatedPoints} points!`);
     } else {
       setMessage('No points to claim.');
@@ -358,7 +359,6 @@ function Tap({ telegramId , ws}) {
                 boost={{ name: 'AUTO TAP', price: 100, description: 'Auto Tap boost', image: '/path/to/image.png' }}
                 onClose={handleCloseModal}
                 autoTapData={autoTapData}
-
                 handleClaimPoints={handleClaimPoints}
             />
         )}
