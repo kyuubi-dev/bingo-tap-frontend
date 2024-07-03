@@ -22,7 +22,15 @@ function Team({ userId, botName }) {
 
                 // Fetch user's referrals
                 const referralsResponse = await axios.get(`${config.apiBaseUrl}/user-referrals/${userId}`);
-                setReferrals(referralsResponse.data.referrals);
+                const referralIds = referralsResponse.data.referrals;
+
+                // Fetch detailed information for each referral
+                const referralDetails = await Promise.all(referralIds.map(async (referralId) => {
+                    const referralResponse = await axios.get(`${config.apiBaseUrl}/check-user/${referralId}`);
+                    return referralResponse.data;
+                }));
+
+                setReferrals(referralDetails);
             } catch (error) {
                 console.error('Error fetching referral data: ', error);
             }
@@ -88,7 +96,6 @@ function Team({ userId, botName }) {
                 </div>
             </div>
 
-
             <div className="Invite-link">
                 <div className="invite-text blue-style">MY INVITE LINK:</div>
                 <a href={inviteLink} className="invite-url">{inviteLink}</a>
@@ -96,34 +103,14 @@ function Team({ userId, botName }) {
             </div>
             <div className="Team-section">
                 <div className="team-header blue-style">MY TEAM:</div>
-                {/* <div className='teams'>
-                    <TeamItem
-                        name="George Vladi"
-                        balance="10 000"
-                        leagua="Gold"
-                        bonus="50 000"
-                    />
-                    <TeamItem
-                        name="George Vladi"
-                        balance="10 000"
-                        leagua="Gold"
-                        bonus="50 000"
-                    />
-                    <TeamItem
-                        name="George Vladi"
-                        balance="10 000"
-                        leagua="Gold"
-                        bonus="50 000"
-                    />
-                </div> */}
                 <div className='teams'>
                     {referrals.map((referral, index) => (
                         <TeamItem
                             key={index}
-                            name={`${referral}`}
-                            balance="10 000"
-                            leagua="Gold" 
-                            bonus="50 000"
+                            name={referral.username} // assuming the response contains user_username
+                            balance={referral.balance} // assuming the response contains userBalance
+                            leagua={referral.league} // assuming the response contains userLeague
+                            bonus="50000" // or some other logic to calculate bonus
                         />
                     ))}
                 </div>
