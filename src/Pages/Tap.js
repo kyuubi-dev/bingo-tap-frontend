@@ -217,6 +217,10 @@ function Tap({ telegramId , ws}) {
 
   const handleTap = (clientX, clientY) => {
     if (energy > 0) {
+      if (multitapLevel > energy) {
+        console.log('Not enough energy to multitap');
+        return;
+      }
       const pointsEarned = tapingGuruActive ? multitapLevel * 5 : multitapLevel;
       const newBalance = cachedBalance + pointsEarned;
       setCachedBalance(newBalance);
