@@ -104,13 +104,13 @@ function Team({ userId, botName }) {
             <div className="Team-section">
                 <div className="team-header blue-style">MY TEAM:</div>
                 <div className='teams'>
-                    {referralsData.map((referral, index) => (
+                {referralsData.map((referral, index) => (
                         <TeamItem
                             key={index}
-                            name={referral.username} // assuming the response contains username
-                            balance={referral.userBalance} // assuming the response contains userBalance
-                            leagua={referral.userLeague} // assuming the response contains userLeague
-                            bonus="50000" // or some other logic to calculate bonus
+                            name={referral.username}
+                            balance={referral.userBalance}
+                            leagua={referral.userLeague}
+                            bonus="50000"
                         />
                     ))}
                 </div>
