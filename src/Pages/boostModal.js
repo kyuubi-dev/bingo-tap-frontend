@@ -65,8 +65,9 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
                  onTouchStart={handleTouchStart}
                  onTouchMove={handleTouchMove}
                  onTouchEnd={handleTouchEnd}
-                 style={{ transform: `translateY(${currentY}px)` }}>
-                <img src={boost.image} alt={boost.name} className="boost-icon" />
+                 style={{transform: `translateY(${currentY}px)`}}>
+                <img src={isAutoTap ? '/boost/click.png' : boost.image} alt={boost.name} className="boost-icon"/>
+
                 <h2 className="boost-name">{boost.name}</h2>
 
                 {isAutoTap && autoTapData.active ? (

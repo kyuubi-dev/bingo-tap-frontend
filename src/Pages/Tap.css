@@ -101,6 +101,8 @@
     align-items: center;
     display: flex;
     margin-left: 60px;
+    justify-content: center;
+    width: 45%;
     font-size: 4vw;
   }
   
