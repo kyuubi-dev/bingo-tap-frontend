@@ -109,8 +109,7 @@ function Team({ userId, botName }) {
                             key={index}
                             name={referral.username}
                             balance={referral.userBalance}
-                            // leagua={referral.userLeague}
-                            leagua="Gold"
+                            leagua={referral.userLeague}
                             bonus="50000"
                         />
                     ))}
