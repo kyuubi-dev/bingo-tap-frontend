@@ -6,11 +6,13 @@ import { useLocation } from 'react-router-dom';
 import CompletionMessage from './ModelMessage';
 import axios, {isCancel} from 'axios';
 import config from '../config';
+import { useNavigate } from 'react-router-dom';
 import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
 import leagues from './leaguaData';
 
 const Task = ({ telegramId, ws }) => {
     const location = useLocation();
+    const navigate = useNavigate();
     const initialBalance = location.state?.userBalance || 0;
     const query = new URLSearchParams(location.search);
     const defaultTab = query.get('tab') || 'special';
@@ -21,10 +23,14 @@ const Task = ({ telegramId, ws }) => {
     const [tasksCompleted, setTasksCompleted] = useState(
         JSON.parse(localStorage.getItem('tasksCompleted')) || {});
     const [tasks, setTasks] = useState([]);
+    const [referralTasksCompleted, setReferralTasksCompleted] = useState(
+        JSON.parse(localStorage.getItem('referralTasksCompleted')) || {}
+    );
     const [completedLeagues, setCompletedLeagues] = useState(JSON.parse(localStorage.getItem('completedLeagues')) || {});
     const [completionMessage, setCompletionMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true); // Loading state
     const [userData, setUserData] = useState([]);
+    const [referralCount, setReferralCount] = useState(0);
     useEffect(() => {
         ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
 
@@ -32,6 +38,7 @@ const Task = ({ telegramId, ws }) => {
             const data = JSON.parse(event.data);
             if (data.type === 'userData') {
                 setUserData(data);
+                setReferralCount(data.referral_count)
             }
         };
 
@@ -41,6 +48,9 @@ const Task = ({ telegramId, ws }) => {
         setTasksCompleted(storedTasksCompleted);
         const storedCompletedLeagues = JSON.parse(localStorage.getItem('completedLeagues')) || {};
         setCompletedLeagues(storedCompletedLeagues);
+        const storedReferralTasksCompleted = JSON.parse(localStorage.getItem('referralTasksCompleted')) || {};
+        setReferralTasksCompleted(storedReferralTasksCompleted);
+
     }, []);
 
     useEffect(() => {
@@ -162,7 +172,27 @@ const Task = ({ telegramId, ws }) => {
         return leagueData ? leagueData.img : './ranks/wood.png';
     };
 
+    const handleReferralTaskCompletion = async (taskId, reward) => {
+        // Оновлюємо стан виконаних реферальних завдань
+        const updatedReferralTasksCompleted = { ...referralTasksCompleted, [taskId]: true };
+        setReferralTasksCompleted(updatedReferralTasksCompleted);
+        localStorage.setItem('referralTasksCompleted', JSON.stringify(updatedReferralTasksCompleted));
 
+        // Оновлюємо баланс користувача
+        const newBalance = userBalance + reward;
+        setUserBalance(newBalance);
+        setCompletionMessage(`Referral task completed, reward - ${reward}`);
+
+        // Оновлюємо баланс на сервері
+        try {
+            await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
+                balance: newBalance
+            });
+            console.log('Balance updated successfully');
+        } catch (error) {
+            console.error('Error updating balance on the server:', error);
+        }
+    };
 
     const renderContent = () => {
 
@@ -200,12 +230,18 @@ const Task = ({ telegramId, ws }) => {
             case 'ref-tasks':
                 return (
                     <div className="tasks">
-                        <InviteFriendItem text="INVITE 3 FRIENDS" reward="50 000" image='./tasks/people1.png' />
-                        <InviteFriendItem text="INVITE 10 FRIENDS" reward="100 000" image='./tasks/people2.png'/>
-                        <InviteFriendItem text="INVITE 25 FRIENDS" reward="500 000" image='./tasks/people3.png'/>
-                        <InviteFriendItem text="INVITE 100 FRIENDS" reward="1 000 000" image='./tasks/people3.png' />
-                        <InviteFriendItem text="INVITE 1000 FRIENDS" reward="5 000 000" image='./tasks/people3.png'/>
-                        <InviteFriendItem text="INVITE 10 000 FRIENDS" reward="10 000 000" image='./tasks/people3.png'/>
+                        <InviteFriendItem text="INVITE 3 FRIENDS" reward="50 000" navigate={navigate} image='./tasks/people1.png'   requiredReferrals={3}   referralCount={referralCount}
+                                          onClaim={() => handleReferralTaskCompletion('invite3', 50000) }
+                                          xisCompleted={referralTasksCompleted['invite3'] || false}/>
+                        <InviteFriendItem text="INVITE 10 FRIENDS" reward="100 000" navigate={navigate} image='./tasks/people2.png'   referralCount={referralCount}    requiredReferrals={10}
+                                          onClaim={() => handleReferralTaskCompletion('invite10', 100000)}
+                                          xisCompleted={referralTasksCompleted['invite10'] || false}/>
+                        <InviteFriendItem text="INVITE 25 FRIENDS" reward="500 000" navigate={navigate} image='./tasks/people3.png'   referralCount={referralCount}      requiredReferrals={25}
+                                          onClaim={() => handleReferralTaskCompletion('invite25', 500000)}
+                                          xisCompleted={referralTasksCompleted['invite25'] || false}/>
+                        <InviteFriendItem text="INVITE 100 FRIENDS" reward="1 000 000" navigate={navigate} image='./tasks/people3.png'    referralCount={referralCount}  requiredReferrals={100}
+                                          onClaim={() => handleReferralTaskCompletion('invite100', 1000000)}
+                                          xisCompleted={referralTasksCompleted['invite100'] || false}/>
                     </div>
                 );
             default:
@@ -330,18 +366,40 @@ const LeagueItem = ({ league, completed, onClaim,leagueProgress }) => {
     );
 };
 
-const InviteFriendItem = ({text, reward, image}) => (
-    <div className="task-item">
-        <img src={image} alt="icon" className="task-icon"/>
-        <div className="task-text blue-style">{text}</div>
-        <div className="task-reward">
-            <img src='./coin.png' alt="coin" className="reward-icon"/>
-            <span className='gold-style'>{reward}</span>
+const InviteFriendItem = memo(({ text, reward, image, referralCount, navigate, requiredReferrals, onClaim, xisCompleted }) => {
+    const handleClick = () => {
+        if (!xisCompleted && referralCount < requiredReferrals) {
+            navigate('/team'); // Використання navigate для навігації
+        } else if (referralCount >= requiredReferrals && !xisCompleted) {
+            onClaim();
+        }
+    };
+
+    return (
+        <div className={`task-item ${xisCompleted ? 'completed' : ''}${referralCount >= requiredReferrals ? 'done' : ''}`}
+             onClick={handleClick}
+             style={{ pointerEvents: xisCompleted ? 'none' : 'auto', opacity: xisCompleted ? 0.5 : 1 }}>
+            <img src={image} alt="icon" className="task-icon" />
+            <div className="task-text blue-style">{text}</div>
+            <div className="task-reward">
+                <img src='./coin.png' alt="coin" className="reward-icon" />
+                <span className='gold-style'>{reward}</span>
+            </div>
+            {referralCount >= requiredReferrals && !xisCompleted ? (
+                <button
+                    className='claim-button blue-style'
+                    onClick={onClaim}
+                >
+                    Claim
+                </button>
+            ) : (
+                <button className='open-btn'>
+                    <img src='./tasks/open.png' className='open-icon' alt="Open" />
+                </button>
+            )}
         </div>
-        <button className='open-btn'>
-            <img src='./tasks/open.png' className='open-icon' alt="Open"/>
-        </button>
-    </div>
-);
+    );
+});
+
 
 export default Task;

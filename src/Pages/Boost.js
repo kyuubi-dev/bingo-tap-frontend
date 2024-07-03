@@ -29,10 +29,6 @@
 
         const [boosts, setBoosts] = useState(boostsData);  // Set initial boost list from file
         const [isLoaded, setIsLoaded] = useState(false);
-        const [tapBotActive, setTapBotActive] = useState(false);
-        const [tapBotPoints, setTapBotPoints] = useState(0);
-        const [tapBotTimer, setTapBotTimer] = useState(0);
-        const [lastTapBotTime, setLastTapBotTime] = useState(null);
         const [tapingGuruActive, setTapingGuruActive] = useState(false);
         const [selectedBoost, setSelectedBoost] = useState(null);
         const [energy, setEnergy]=useState(0);
@@ -147,6 +143,8 @@
                             }
                         }));
                     }
+                } else if (data.type === 'energyMaximized') {
+                    setEnergy(data.energy);
                 } else if (data.type === 'error') {
                     setMessage(data.message);
                 }
@@ -196,18 +194,14 @@
             }
         };
 
-        const handleClaimPoints = () => {
+        const handleClaimPoints = async () => {
             if (autoTapData.accumulatedPoints > 0) {
                 const updatedBalance = userBalance + autoTapData.accumulatedPoints;
                 setUserBalance(updatedBalance);
-console.log(`${energy} `+ `${updatedBalance}`)
                 // Відправка оновленого балансу на сервер
-                ws.send(JSON.stringify({
-                    type: 'updateBalance',
-                    telegram_id: telegramId,
-                    newBalance: updatedBalance,
-                    energy:energy
-                }));
+                await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
+                    balance: updatedBalance
+                });
                 setAutoTapData((prevData) => ({
                     ...prevData,
                     accumulatedPoints: 0
@@ -327,9 +321,10 @@ console.log(`${energy} `+ `${updatedBalance}`)
             }
         };
 
-
-        const handleActivateFullTank = () => {
-                if (dailyBoosts["fullTank"].charges > 0 ) {
+        const handleActivateFullTank = async () => {
+            if (dailyBoosts["fullTank"].charges > 0) {
+                try {
+                    // Оновлюємо стан перед відправкою запитів
                     setTapingGuruActive(true);
                     setDailyBoosts((prevBoosts) => ({
                         ...prevBoosts,
@@ -338,20 +333,39 @@ console.log(`${energy} `+ `${updatedBalance}`)
                             lastUpdate: prevBoosts["fullTank"].lastUpdate
                         }
                     }));
-                    ws.send(JSON.stringify({
-                        type: 'activateBoost',
-                        telegram_id: telegramId,
-                        boost: "fullTank"
-                    }));
-                    ws.send(JSON.stringify({
-                    type: 'maximizeEnergy',
-                    telegram_id: telegramId
-                }));
+
+                    // Відправка першого запиту
+                        ws.send(JSON.stringify({
+                            type: 'activateBoost',
+                            telegram_id: telegramId,
+                            boost: "fullTank"
+                        }))
+
+                    console.log('activateBoost request sent successfully');
+
+                    const response = await axios.put(`${config.apiBaseUrl}/maximize-energy/${telegramId}`);
+                    return response.data;
+
                     navigate('/');
-                } else {
-                    setMessage('No Full Tank boosts left.');
+
+                } catch (error) {
+                    // Відновлюємо стан у разі помилки
+                    console.error('Error sending request:', error);
+                    setTapingGuruActive(false);
+                    setDailyBoosts((prevBoosts) => ({
+                        ...prevBoosts,
+                        "fullTank": {
+                            charges: prevBoosts["fullTank"].charges + 1,
+                            lastUpdate: prevBoosts["fullTank"].lastUpdate
+                        }
+                    }));
+                    setMessage('Error activating Full Tank boost. Please try again.');
                 }
+            } else {
+                setMessage('No Full Tank boosts left.');
             }
+        };
+
 
         if (!isLoaded) {
             return <LoadingScreen />;

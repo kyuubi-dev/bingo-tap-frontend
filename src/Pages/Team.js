@@ -9,7 +9,7 @@ function Team({ userId, botName }) {
         const inviteLink = `https://t.me/${botName}?start=${userId}`;
         navigator.clipboard.writeText(inviteLink)
             .then(() => {
-                setCopySuccess('Посилання скопійовано!');
+                setCopySuccess('Link copied!');
                 setTimeout(() => {
                     setCopySuccess('');
                 }, 2000);
