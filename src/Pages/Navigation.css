@@ -26,14 +26,14 @@
   background-color: red;
   border-radius: 50%;
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5px;
+  right: 8px;
     z-index: 10 !important;
 }
 
 .round-button {
-    width: 15vw;
-    height: 15vw;
+    width: 18vw;
+    height: 18vw;
     border: 2px solid transparent;
     border-radius: 50%;
     background-color: transparent;
