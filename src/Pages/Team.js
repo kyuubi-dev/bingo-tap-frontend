@@ -43,7 +43,9 @@ function Team({ userId, botName }) {
         const inviteLink = `https://t.me/${botName}?start=ref_${userId}`;
         navigator.clipboard.writeText(inviteLink)
             .then(() => {
+
                 setCopyButtonText('COPIED');
+
                 setTimeout(() => {
                     setCopyButtonText('COPY');
                 }, 2000);
