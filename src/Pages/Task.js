@@ -44,6 +44,7 @@ const Task = ({ telegramId, ws }) => {
 
     }, [telegramId]);
     useEffect(() => {
+
         const storedTasksCompleted = JSON.parse(localStorage.getItem('tasksCompleted')) || {};
         setTasksCompleted(storedTasksCompleted);
         const storedCompletedLeagues = JSON.parse(localStorage.getItem('completedLeagues')) || {};
@@ -100,7 +101,12 @@ const Task = ({ telegramId, ws }) => {
     const fetchTasks = async () => {
         try {
             const response = await axios.get(`${config.apiBaseUrl}/tasks`);
-            const tasksData = response.data;
+            const tasksData = response.data.map(task => {
+                if (task.task_id === 10) {
+                    return { ...task, isCompleted: true };
+                }
+                return task;
+            });
             setTasks(tasksData);
         } catch (error) {
             console.error('Ошибка при получении задач:', error);
@@ -259,10 +265,6 @@ const Task = ({ telegramId, ws }) => {
 
     return (
         <div className="Task">
-            <div className='lightnings f-tab'>
-                <img src='/16.png' className='lightning f-tab right' alt="Lightning Right"/>
-                <img src='/17.png' className='lightning f-tab left' alt="Lightning Left"/>
-            </div>
             <header className="header">
                 <div className="balance-display-task">
                     <img src="/coin.png" alt="Coin" className="coin-icon"/>

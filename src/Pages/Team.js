@@ -84,10 +84,7 @@ function Team({ userId, botName }) {
 
     return (
         <div className="Team">
-            <div className='lightnings f-tab'>
-                <img src='/16.png' className='lightning f-tab right' alt="Lightning Right"/>
-                <img src='/17.png' className='lightning f-tab left' alt="Lightning Left"/>
-            </div>
+
             <div className="Header">
                 <div className='Referral'>
                     <span className="referral-count blue-style">{referralCount}</span>

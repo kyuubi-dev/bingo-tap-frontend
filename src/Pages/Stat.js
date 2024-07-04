@@ -30,10 +30,6 @@ const Stat = () => {
 
     return(
         <h1 className="Stat">
-            <div className='lightnings'>
-                <img src='/16.png' className='lightning f-tab right' alt="Lightning Right"/>
-                <img src='/17.png' className='lightning f-tab left' alt="Lightning Left"/>
-            </div>
             <div className="statistics-content">
                 <div className="stat-item">
                     <div className="stat-text">

@@ -352,10 +352,7 @@
     return (
         <div className="Tap" >
           <div className="Tap-content">
-            <div className='lightnings'>
-              <img src='/16.png' className='lightning right' alt="Lightning Right" />
-              <img src='/17.png' className='lightning left' alt="Lightning Left" />
-            </div>
+
             <div className="balance-display">
               <img src="/coin.png" alt="Coin" className="coin-icon" />
               <span className="balance-amount blue-style">{cachedBalance}</span>

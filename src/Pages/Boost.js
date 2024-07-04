@@ -447,10 +447,6 @@ const Boost = ({ telegramId,ws }) => {
 
     return (
         <div className='Boost'>
-            <div className='lightnings f-tab'>
-                <img src='/16.png' className='lightning f-tab right' alt="Lightning Right" />
-                <img src='/17.png' className='lightning f-tab left' alt="Lightning Left" />
-            </div>
             <header className="header">
                 <div className="balance-display-task">
                     <img src="/coin.png" alt="Coin" className="coin-icon" />
