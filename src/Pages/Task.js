@@ -44,7 +44,6 @@ const Task = ({ telegramId, ws }) => {
 
     }, [telegramId]);
     useEffect(() => {
-
         const storedTasksCompleted = JSON.parse(localStorage.getItem('tasksCompleted')) || {};
         setTasksCompleted(storedTasksCompleted);
         const storedCompletedLeagues = JSON.parse(localStorage.getItem('completedLeagues')) || {};
@@ -101,10 +100,9 @@ const Task = ({ telegramId, ws }) => {
     const fetchTasks = async () => {
         try {
             const response = await axios.get(`${config.apiBaseUrl}/tasks`);
+            console.log(response)
             const tasksData = response.data.map(task => {
-                if (task.task_id === 10) {
-                    return { ...task, isCompleted: true };
-                }
+
                 return task;
             });
             setTasks(tasksData);
@@ -131,6 +129,7 @@ const Task = ({ telegramId, ws }) => {
         });
         setTasks(updatedTasks);
         const newBalance = userBalance + reward;
+        setUserBalance(newBalance);
         // Зберігання інформації про завершення у localStorage (необов'язково, залежить від вашої логіки)
         const updatedTasksCompleted = { ...tasksCompleted, [taskId]: true };
         setTasksCompleted(updatedTasksCompleted);
@@ -143,8 +142,7 @@ const Task = ({ telegramId, ws }) => {
         } catch (error) {
             console.error('Ошибка при обновлении баланса на сервере:', error);
         }
-
-        // Check and update league if necessary
+        setCompletionMessage(`YOU SUCCESSFULLY ENDED TASK! REWARD: ${reward}`);
     };
 
     const handleCompletionMessageClose = () => {
@@ -212,6 +210,7 @@ const Task = ({ telegramId, ws }) => {
                                 task={task}
                                 onCompletion={() => handleTaskCompletion(task.task_id, task.reward)}
                                 xisCompleted={tasksCompleted[task.task_id] || false}
+                                url={task.url} // Pass the URL to TaskItem
                             />
                         ))}
                     </div>
@@ -312,10 +311,15 @@ const Task = ({ telegramId, ws }) => {
     );
 };
 
-const TaskItem = React.memo(({ task, onCompletion,xisCompleted })=> {
+const TaskItem = React.memo(({ task, onCompletion,xisCompleted, url })=> {
     const [isCompleted, setIsCompleted] = useState(xisCompleted);
     const handleCompletion = () => {
         if (!isCompleted) {
+            if (url) {
+                window.open(url, '_blank');
+            } else {
+                onCompletion();
+            }
             setIsCompleted(true); // Встановлюємо прапорець завершення, коли завдання виконано
             onCompletion && onCompletion(); // Викликаємо функцію зовнішнього завершення, якщо вона є
         }
@@ -326,7 +330,7 @@ const TaskItem = React.memo(({ task, onCompletion,xisCompleted })=> {
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleCompletion}
-        style={{ pointerEvents: isCompleted ? 'none' : 'auto', opacity: isCompleted ? 0.5 : 1 }}
+        style={{ pointerEvents: isCompleted || task.task_id === 10 ? 'none' : 'auto', opacity: isCompleted || task.task_id === 10 ? 0.5 : 1 }}
     >
         <img src='./tasks/task.png' alt="icon" className="task-icon"/>
         <div className="task-text blue-style">{isCompleted ? `${task.task_name} - COMPLETED` : task.task_name}</div>
