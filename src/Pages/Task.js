@@ -142,6 +142,8 @@ const Task = ({ telegramId, ws }) => {
         } catch (error) {
             console.error('Ошибка при обновлении баланса на сервере:', error);
         }
+        ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
+
         setCompletionMessage(`YOU SUCCESSFULLY ENDED TASK! REWARD: ${reward}`);
     };
 
