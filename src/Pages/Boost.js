@@ -235,10 +235,7 @@ const Boost = ({ telegramId,ws }) => {
 
 
     const handleBuyBoost = async (boost) => {
-        if (!boost || boost.level === undefined) {
-            setMessage('Invalid boost data.');
-            return;
-        }
+
         if (boost.name === "AUTO TAP") {
             handleActivateAutoTap();
             return;
