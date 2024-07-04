@@ -33,7 +33,20 @@
     });
     const [showBoostModal, setShowBoostModal] = useState(false);
     const [message, setMessage] = useState(null);
+    const energyRef = useRef(energy);
+    const balanceRef = useRef(cachedBalance);
+    const tapingGuruActiveRef = useRef(tapingGuruActive);
     useSwipe(tapRef); // Применяем хук
+    useEffect(() => {
+      energyRef.current = energy;
+    }, [energy]);
+
+    useEffect(() => {
+      balanceRef.current = cachedBalance;
+    }, [cachedBalance]);
+    useEffect(() => {
+      tapingGuruActiveRef.current = tapingGuruActive;
+    }, [tapingGuruActive]);
 
     useEffect(() => {
         ws.send(JSON.stringify({
@@ -221,8 +234,8 @@
           console.log('Not enough energy to multitap');
           return;
         }
-        const pointsEarned = tapingGuruActive ? multitapLevel * 5 : multitapLevel;
-        const newBalance = cachedBalance + pointsEarned;
+        const pointsEarned = tapingGuruActiveRef.current ? multitapLevel * 5 : multitapLevel;
+        const newBalance = balanceRef.current + pointsEarned;
         setCachedBalance(newBalance);
         if (!tapingGuruActive) {
           setEnergy((prevEnergy) => {
@@ -232,14 +245,7 @@
         }
 
         if (newBalance - userBalance >= 100) {
-          setUserBalance(newBalance);
-          ws.send(JSON.stringify({
-            type: 'updateBalance',
-            telegram_id: telegramId,
-            newBalance: newBalance,
-            newEnergy: energy
-          }));
-          updateUserLeague(telegramId);
+          updateBalance(newBalance);
         }
 
         animatePlusOne(clientX, clientY, `+${pointsEarned}`);
@@ -251,8 +257,22 @@
         console.log('Not enough energy to tap');
       }
     };
-
-
+    const debounce = (func, wait) => {
+      let timeout;
+      return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    };
+    const updateBalance = debounce((newBalance) => {
+      ws.send(JSON.stringify({
+        type: 'updateBalance',
+        telegram_id: telegramId,
+        newBalance: newBalance,
+        newEnergy: energyRef.current
+      }));
+      updateUserLeague(telegramId);
+    }, 500);
 
     const animatePlusOne = (startX, startY, text) => {
       const coinElement = document.querySelector('.balance-display img');
@@ -342,7 +362,6 @@
             </div>
             <button
                 className="main-button"
-                onClick={handleEvent}
                 onTouchStart={handleEvent}
             >
               <img src={tapingGuruActive ? "/btns/2.png" : "/btns/1.png"} alt="Start"
