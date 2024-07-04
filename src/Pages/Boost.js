@@ -171,7 +171,7 @@ const Boost = ({ telegramId,ws }) => {
     const handleActivateAutoTap = () => {
         const autoTapPrice = 200000;
 
-        if (userBalance >= autoTapPrice || autoTapData.active==false) {
+        if (userBalance >= autoTapPrice && autoTapData.active==false) {
             const now = Date.now();
             const threeHoursLater = now + 3 * 60 * 60 * 1000; // 3 години
 
