@@ -36,7 +36,6 @@
     const energyRef = useRef(energy);
     const balanceRef = useRef(cachedBalance);
     const tapingGuruActiveRef = useRef(tapingGuruActive);
-    useSwipe(tapRef); // Применяем хук
     useEffect(() => {
       energyRef.current = energy;
     }, [energy]);
@@ -234,28 +233,33 @@
           console.log('Not enough energy to multitap');
           return;
         }
-        const pointsEarned = tapingGuruActiveRef.current ? multitapLevel * 5 : multitapLevel;
-        const newBalance = balanceRef.current + pointsEarned;
-        setCachedBalance(newBalance);
+        const pointsEarned = calculatePointsEarned();
         if (!tapingGuruActive) {
           setEnergy((prevEnergy) => {
             const newEnergy = prevEnergy - pointsEarned;
-            return newEnergy >= 0 ? newEnergy : 0; // перевірка, щоб енергія не була від'ємною
+            return newEnergy >= 0 ? newEnergy : 0; // Ensure energy doesn't go negative
           });
         }
+        animatePlusOne(clientX, clientY, `+${pointsEarned}`, () => {
+          const newBalance = balanceRef.current + pointsEarned;
+          console.log(newBalance)
+          console.log(balanceRef.current)
+          setCachedBalance(newBalance);
 
-        if (newBalance - userBalance >= 100) {
-          updateBalance(newBalance);
-        }
-
-        animatePlusOne(clientX, clientY, `+${pointsEarned}`);
-
+          if (newBalance - userBalance >= 100) {
+            updateBalance(newBalance);
+          }
+        });
         if (navigator.vibrate) {
           navigator.vibrate(50);
         }
       } else {
         console.log('Not enough energy to tap');
       }
+    };
+    const calculatePointsEarned = () => {
+      const pointsEarned = tapingGuruActiveRef.current ? multitapLevel * 5 : multitapLevel;
+      return pointsEarned;
     };
     const debounce = (func, wait) => {
       let timeout;
@@ -274,7 +278,7 @@
       updateUserLeague(telegramId);
     }, 500);
 
-    const animatePlusOne = (startX, startY, text) => {
+    const animatePlusOne = (startX, startY, text, callback) => {
       const coinElement = document.querySelector('.balance-display img');
       const coinRect = coinElement.getBoundingClientRect();
       const endX = coinRect.left + coinRect.width / 2;
@@ -294,6 +298,9 @@
 
       setTimeout(() => {
         plusOne.remove();
+        if (callback) {
+          callback();
+        }
       }, 500);
     };
 
@@ -343,7 +350,7 @@
       setMessage(null);
     };
     return (
-        <div className="Tap" ref={tapRef}>
+        <div className="Tap" >
           <div className="Tap-content">
             <div className='lightnings'>
               <img src='/16.png' className='lightning right' alt="Lightning Right" />
