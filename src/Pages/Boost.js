@@ -348,9 +348,11 @@ const Boost = ({ telegramId,ws }) => {
                 console.log('activateBoost request sent successfully');
 
                 const response = await axios.put(`${config.apiBaseUrl}/maximize-energy/${telegramId}`);
+                // Перенаправлення після успішного запиту
+                navigate('/', { state: { tapingGuruActive: false } });
+
                 return response.data;
 
-                navigate('/');
 
             } catch (error) {
                 // Відновлюємо стан у разі помилки
