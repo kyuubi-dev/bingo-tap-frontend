@@ -48,7 +48,7 @@ function App() {
             if (window.Telegram && window.Telegram.WebApp) {
                 const webAppData = window.Telegram.WebApp.initDataUnsafe;
                 const user = webAppData.user;
-                const botName = "Bingo_kyuubi_test_bot";
+                const botName = "mantis_tap_bot";
                 
                 const urlParams = new URLSearchParams(window.location.search);
                 const refererId = urlParams.get('r');
