@@ -78,6 +78,8 @@ function App() {
                     if (userData.userExists) {
                         setUserBalance(userData.userBalance);
                     } else {
+                        // Очистка локального хранилища для новых пользователей
+                        localStorage.clear();
                         await axios.post(`${config.apiBaseUrl}/create-user`, {
                             username: username,
                             telegram_id: id
