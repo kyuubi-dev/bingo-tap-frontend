@@ -370,6 +370,7 @@
             <button
                 className="main-button"
                 onTouchStart={handleEvent}
+                onClick={handleEvent}
             >
               <img src={tapingGuruActive ? "/btns/2.png" : "/btns/1.png"} alt="Start"
                    className={`robot-img ${tapingGuruActive ? 'robot-large' : 'robot-normal'}`}
