@@ -1,4 +1,4 @@
-  import React, { useState, useEffect, useRef } from 'react';
+  import React, { useState, useEffect,useCallback, useRef } from 'react';
   import './Tap.css';
   import config from "../config";
   import { useNavigate, useLocation } from 'react-router-dom';
@@ -200,21 +200,7 @@
     }, [tapingBalance, energy]);
 
 
-    const handleEvent = (event) => {
-      if (!isLoaded) {
-        console.log('Data not loaded yet');
-        return;
-      }
 
-      if (event.type === 'touchstart') {
-        for (let i = 0; i < event.touches.length; i++) {
-          const touch = event.touches[i];
-          const clientX = touch.clientX;
-          const clientY = touch.clientY;
-          handleTap(clientX, clientY);
-        }
-      }
-    };
     const updateUserLeague = async (telegramId) => {
       try {
 
@@ -232,7 +218,7 @@
       }
     };
 
-    const handleTap = (clientX, clientY) => {
+    const handleTap = useCallback((clientX, clientY) => {
       if (energy > 0) {
         if (multitapLevel > energy) {
           console.log('Not enough energy to multitap');
@@ -262,7 +248,17 @@
       } else {
         console.log('Not enough energy to tap');
       }
-    };
+    }, [energy, multitapLevel, tapingGuruActive]);
+    const handleEvent = useCallback((event) => {
+      if (!isLoaded) {
+        console.log('Data not loaded yet');
+        return;
+      }
+
+      if (event.type === 'pointerdown') {
+        handleTap(event.clientX, event.clientY);
+      }
+    }, [isLoaded, handleTap]);
     const calculatePointsEarned = () => {
       const pointsEarned = tapingGuruActiveRef.current ? multitapLevel * 5 : multitapLevel;
       return pointsEarned;
@@ -378,8 +374,7 @@
             </div>
             <button
                 className="main-button"
-                onTouchStart={handleEvent}
-                onClick={handleEvent}
+                onPointerDown={handleEvent}
             >
               <img src={tapingGuruActive ? "/btns/2.png" : "/btns/1.png"} alt="Start"
                    className={`robot-img ${tapingGuruActive ? 'robot-large' : 'robot-normal'}`}
