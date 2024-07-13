@@ -74,12 +74,13 @@ function Team({ userId, botName }) {
             // Get current user balance
             const userBalanceResponse = await axios.get(`${config.apiBaseUrl}/user-balance/${userId}`);
             const currentBalance = userBalanceResponse.data.balance;
-    
+            console.log(currentBalance)
             // Calculate new balance
             const newBalance = currentBalance + referralBalance;
-    
+            console.log(newBalance)
             // Update user balance
-            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${userId}`, { total_balance: newBalance });
+            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${userId}`,
+                {  total_balance: newBalance });
     
             // Reset referral balance in the database
             await axios.put(`${config.apiBaseUrl}/save-ref_balance/${userId}`, { ref_balance: 0 });
