@@ -49,14 +49,15 @@
     }, [tapingGuruActive]);
     useEffect(() => {
       tapingBalanceRef.current = tapingBalance;
-      if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand(); // Залишає додаток відкритим і розширює його на весь екран
-        disableVerticalSwipes(tg);
-      }
     }, [tapingBalance]);
-
+  useEffect(()=>{
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand(); // Залишає додаток відкритим і розширює його на весь екран
+      disableVerticalSwipes(tg);
+    }
+  },[]);
     const disableVerticalSwipes = (tg) => {
       if (tg.isVerticalSwipesEnabled !== undefined) {
         tg.isVerticalSwipesEnabled = false; // Вимикає вертикальні свайпи
