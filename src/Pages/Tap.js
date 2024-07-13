@@ -49,6 +49,11 @@
     }, [tapingGuruActive]);
     useEffect(() => {
       tapingBalanceRef.current = tapingBalance;
+      if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand(); // Залишає додаток відкритим і розширює його на весь екран
+      }
     }, [tapingBalance]);
 
 
