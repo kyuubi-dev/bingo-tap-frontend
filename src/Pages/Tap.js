@@ -53,6 +53,7 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand(); // Залишає додаток відкритим і розширює його на весь екран
+        tg.isVerticalSwipesEnabled = false;
       }
     }, [tapingBalance]);
 
