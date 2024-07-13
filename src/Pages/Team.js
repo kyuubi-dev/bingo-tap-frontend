@@ -79,7 +79,7 @@ function Team({ userId, botName }) {
             const newBalance = currentBalance + referralBalance;
     
             // Update user balance
-            await axios.put(`${config.apiBaseUrl}/save-balance/${userId}`, { balance: newBalance });
+            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${userId}`, { total_balance: newBalance });
     
             // Reset referral balance in the database
             await axios.put(`${config.apiBaseUrl}/save-ref_balance/${userId}`, { ref_balance: 0 });
@@ -123,7 +123,7 @@ function Team({ userId, botName }) {
                             name={referral.username}
                             balance={referral.userTotalBalance}
                             leagua={referral.userLeague}
-                            bonus="50000"
+                            bonus="5000"
                             getLeagueImage={getLeagueImage}
                         />
                     ))}
