@@ -179,30 +179,49 @@ const Boost = ({ telegramId,ws }) => {
         return () => clearInterval(timer);
     }, []);
 
-    const handleActivateAutoTap = () => {
+    const handleActivateAutoTap = async () => {
         const autoTapPrice = 200000;
 
-        if (userBalance >= autoTapPrice && autoTapData.active==false) {
-            const now = Date.now();
-            const threeHoursLater = now + 3 * 60 * 60 * 1000; // 3 години
+        if (userBalance >= autoTapPrice && !autoTapData.active) {
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/purchase-boost`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        telegram_id: telegramId,
+                        boostType: 'AUTO TAP',  // Вибір типу буста
+                        price: autoTapPrice
+                    })
+                });
 
-            const updatedBalance = userBalance - autoTapPrice;
+                if (response.ok) {
+                    const data = await response.json();
+                    const updatedBalance = data.newBalance;
 
+                    // Оновлення балансу користувача
+                    setUserBalance(updatedBalance);
 
-            ws.send(JSON.stringify({
-                type: 'purchaseBoost',
-                telegram_id: telegramId,
-                boostType: `AUTO TAP`,
-                price: autoTapPrice,
-            }));
-            setUserBalance(updatedBalance);
-            sendAutoTapActivation();
-            requestData();
-            setMessage('AUTO TAP purchased! Points will be added automatically for the next 3 hours.');
+                    // Виклик функції для активації AUTO TAP
+                    sendAutoTapActivation();
+
+                    // Додаткові дії після успішної покупки
+                    requestData();
+                    setMessage('AUTO TAP purchased! Points will be added automatically for the next 3 hours.');
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Error purchasing boost');
+                }
+            } catch (error) {
+                console.error('Error purchasing AUTO TAP boost:', error);
+                setMessage('Error purchasing AUTO TAP.');
+            }
         } else {
             setMessage('Insufficient balance for purchasing AUTO TAP.');
         }
     };
+
 
     const handleClaimPoints = async () => {
         if (autoTapData.accumulatedPoints > 0) {
