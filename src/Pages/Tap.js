@@ -188,12 +188,10 @@
 
     const saveData = async () => {
       if (userBalance !== 0 || tapingBalance !== 0) {
-        ws.send(JSON.stringify({
-          type: 'updateBalance',
-          telegram_id: telegramId,
-          newBalance: userBalance,
-          newEnergy: energy
-        }));
+        console.log(energy)
+        await axios.put(`${config.apiBaseUrl}/save-energy/${telegramId}`,{
+          newEnergy: energyRef.current
+        });
         await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
           taping_balance: tapingBalanceRef.current // відправляємо поточний натапаний баланс
         });
