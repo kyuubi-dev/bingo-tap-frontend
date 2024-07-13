@@ -347,6 +347,10 @@ const TaskItem = React.memo(({ task, onCompletion,xisCompleted, url })=> {
 
 
 const LeagueItem = ({ league, completed, onClaim,leagueProgress }) => {
+    if (!leagueProgress || !Array.isArray(leagueProgress)) {
+        console.error('leagueProgress is undefined or not an array');
+        return null; // или верните что-то другое, в зависимости от вашей логики
+    }
     const progressData = leagueProgress.find(item => item.league === league.name);
     const progress = progressData ? progressData.progress : 0;
     console.log(progress);
