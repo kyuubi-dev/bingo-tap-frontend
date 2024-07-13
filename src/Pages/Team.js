@@ -12,6 +12,17 @@ function Team({ userId, botName }) {
     const [referralsData, setReferralsData] = useState([]);
 
     useEffect(() => {
+        const initializeUserData = async () => {
+            // Отримання даних користувача, які зберігаються локально
+            const cachedUserBalance = localStorage.getItem('userBalance');
+            const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
+            await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${userId}`, {
+                taping_balance: cachedTapingUserBalance
+            });
+            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${userId}`, {
+                total_balance: cachedUserBalance
+            });
+        };
         const fetchReferralData = async () => {
             try {
                 // Fetch user's referral balance and count
@@ -36,7 +47,7 @@ function Team({ userId, botName }) {
                 console.error('Error fetching referral data: ', error);
             }
         };
-
+        initializeUserData();
         fetchReferralData();
     }, [userId]);
 
@@ -110,7 +121,7 @@ function Team({ userId, botName }) {
                         <TeamItem
                             key={index}
                             name={referral.username}
-                            balance={referral.userBalance}
+                            balance={referral.userTotalBalance}
                             leagua={referral.userLeague}
                             bonus="50000"
                             getLeagueImage={getLeagueImage}

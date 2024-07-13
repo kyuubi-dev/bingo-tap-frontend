@@ -9,7 +9,7 @@ import config from '../config';
 import { useNavigate } from 'react-router-dom';
 import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
 import leagues from './leaguaData';
-
+import tasksData from './tasksData.js'; // Import the tasks array
 const Task = ({ telegramId, ws }) => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -28,21 +28,29 @@ const Task = ({ telegramId, ws }) => {
     );
     const [completedLeagues, setCompletedLeagues] = useState(JSON.parse(localStorage.getItem('completedLeagues')) || {});
     const [completionMessage, setCompletionMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(true); // Loading state
+    const [isLoading, setIsLoading] = useState(false); // Loading state
     const [userData, setUserData] = useState([]);
     const [referralCount, setReferralCount] = useState(0);
-    useEffect(() => {
-        ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
 
+    const handleRequestData = () => {
+
+        ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
+            console.log('Received data from server:', data); // Add logging
             if (data.type === 'userData') {
                 setUserData(data);
-                setReferralCount(data.referral_count)
+                setReferralCount(data.referral_count); // Use data directly
+                if (data.userTotalBalance != null) {
+                    console.log('Setting user balance:', data.userTotalBalance); // Add logging
+                    setUserBalance(data.userTotalBalance);
+                }
+                if (data.league != null) setUserLeague(data.league);     // Use data directly
             }
         };
-
-    }, [telegramId]);
+        fetchTasks();
+        setIsLoading(true);
+    };
     useEffect(() => {
         const storedTasksCompleted = JSON.parse(localStorage.getItem('tasksCompleted')) || {};
         setTasksCompleted(storedTasksCompleted);
@@ -50,21 +58,30 @@ const Task = ({ telegramId, ws }) => {
         setCompletedLeagues(storedCompletedLeagues);
         const storedReferralTasksCompleted = JSON.parse(localStorage.getItem('referralTasksCompleted')) || {};
         setReferralTasksCompleted(storedReferralTasksCompleted);
-
     }, []);
 
     useEffect(() => {
         const initializeUserData = async () => {
             // Отримання даних користувача, які зберігаються локально
             const cachedUserBalance = localStorage.getItem('userBalance');
-
-            if (cachedUserBalance) {
-                setUserBalance(parseInt(cachedUserBalance));
+            const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
+            if (cachedUserBalance !== null) {
+                setUserBalance(Number(cachedUserBalance));
+            } else {
+                setUserBalance(0);
             }
-            await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
-                balance: cachedUserBalance
+            if (cachedUserBalance) {
+                setUserBalance(cachedUserBalance);
+            }
+            console.log(cachedTapingUserBalance)
+            await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
+                taping_balance: cachedTapingUserBalance !== null ? Number(cachedTapingUserBalance) : 0
             });
-            setIsLoading(true);
+
+            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+                total_balance: cachedUserBalance !== null ? Number(cachedUserBalance) : 0
+            });
+            handleRequestData();
         };
 
         initializeUserData();
@@ -74,38 +91,13 @@ const Task = ({ telegramId, ws }) => {
         setSelectedTab(defaultTab);
     }, [defaultTab]);
 
-    useEffect(() => {
-        const fetchUserBalance = async () => {
-            try {
-                const response = await axios.get(`${config.apiBaseUrl}/check-user?telegram_id=${telegramId}`);
-                const userData = response.data;
-                if (userData.userExists) {
-                    setUserBalance(userData.userBalance);
-                    setUserLeague(userData.userLeague);
-                }
-                setIsLoading(false); // Set loading to false after data is fetched
-            } catch (error) {
-                console.error('Ошибка при загрузке данных пользователя:', error);
-                setIsLoading(false); // Ensure loading state is reset in case of error
-            }
-        };
-
-        fetchUserBalance();
-        fetchTasks();
-        const interval = setInterval(fetchUserBalance, 30000);
-
-        return () => clearInterval(interval);
-    }, [telegramId]);
-
     const fetchTasks = async () => {
         try {
-            const response = await axios.get(`${config.apiBaseUrl}/tasks`);
-            console.log(response)
-            const tasksData = response.data.map(task => {
-
+            const tasks = tasksData.map(task => {
                 return task;
             });
-            setTasks(tasksData);
+            setTasks(tasks);
+
         } catch (error) {
             console.error('Ошибка при получении задач:', error);
         }
@@ -136,8 +128,8 @@ const Task = ({ telegramId, ws }) => {
         localStorage.setItem('tasksCompleted', JSON.stringify(updatedTasksCompleted));
         // Update balance on server
         try {
-            await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
-                balance: newBalance
+            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+                total_balance: newBalance
             });
         } catch (error) {
             console.error('Ошибка при обновлении баланса на сервере:', error);
@@ -162,8 +154,8 @@ const Task = ({ telegramId, ws }) => {
             setUserBalance(newBalance);
             setCompletionMessage(`League claimed: ${league.name}, reward - ${league.reward}`);
             try {
-                await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
-                    balance: newBalance
+                await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+                    total_balance: newBalance
                 });
             } catch (error) {
                 console.error('Ошибка при обновлении баланса на сервере:', error);
@@ -174,9 +166,15 @@ const Task = ({ telegramId, ws }) => {
     };
 
     const getLeagueImage = (league) => {
+        if (!league || typeof league !== 'string') {
+            return './ranks/wood.png'; // Default image if league is undefined or not a string
+        }
+
         const leagueData = leagues.find(l => l.name.toUpperCase() === league.toUpperCase());
         return leagueData ? leagueData.img : './ranks/wood.png';
     };
+
+
 
     const handleReferralTaskCompletion = async (taskId, reward) => {
         // Оновлюємо стан виконаних реферальних завдань
@@ -188,11 +186,10 @@ const Task = ({ telegramId, ws }) => {
         const newBalance = userBalance + reward;
         setUserBalance(newBalance);
         setCompletionMessage(`Referral task completed, reward - ${reward}`);
-
         // Оновлюємо баланс на сервері
         try {
-            await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
-                balance: newBalance
+            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+                total_balance: newBalance
             });
             console.log('Balance updated successfully');
         } catch (error) {
@@ -258,7 +255,7 @@ const Task = ({ telegramId, ws }) => {
 
 
 
-    if (isLoading) {
+    if (!isLoading) {
         return <LoadingScreen />;
     }
 
@@ -315,9 +312,10 @@ const Task = ({ telegramId, ws }) => {
 
 const TaskItem = React.memo(({ task, onCompletion,xisCompleted, url })=> {
     const [isCompleted, setIsCompleted] = useState(xisCompleted);
-    const handleCompletion = () => {
+    const handleCompletion = (event) => {
         if (!isCompleted) {
             if (url) {
+                event.preventDefault(); // Prevent default navigation behavior
                 window.open(url, '_blank');
             } else {
                 onCompletion();
@@ -366,7 +364,6 @@ const LeagueItem = ({ league, completed, onClaim,leagueProgress }) => {
             <button
                 className="claim-button blue-style"
                 onClick={onClaim}
-                disabled={completed}
             >
                 {completed ? 'CLAIMED' : 'CLAIM'}
             </button>
@@ -382,29 +379,26 @@ const InviteFriendItem = memo(({ text, reward, image, referralCount, navigate, r
             onClaim();
         }
     };
-
+    const isClaimable = referralCount >= requiredReferrals && !xisCompleted;
     return (
-        <div className={`task-item ${xisCompleted ? 'completed' : ''}${referralCount >= requiredReferrals ? 'done' : ''}`}
-             onClick={handleClick}
-             style={{ pointerEvents: xisCompleted ? 'none' : 'auto', opacity: xisCompleted ? 0.5 : 1 }}>
-            <img src={image} alt="icon" className="task-icon" />
+        <div
+            className={`task-item ${xisCompleted ? 'completed' : ''}${referralCount >= requiredReferrals ? 'done' : ''}`}
+            onClick={handleClick}
+            style={{pointerEvents: xisCompleted ? 'none' : 'auto', opacity: xisCompleted ? 0.5 : 1}}>
+            <img src={image} alt="icon" className="task-icon"/>
             <div className="task-text blue-style">{text}</div>
             <div className="task-reward">
-                <img src='./coin.png' alt="coin" className="reward-icon" />
+                <img src='./coin.png' alt="coin" className="reward-icon"/>
                 <span className='gold-style'>{reward}</span>
             </div>
-            {referralCount >= requiredReferrals && !xisCompleted ? (
-                <button
-                    className='claim-button blue-style'
-                    onClick={onClaim}
-                >
-                    Claim
-                </button>
-            ) : (
-                <button className='open-btn'>
-                    <img src='./tasks/open.png' className='open-icon' alt="Open" />
-                </button>
-            )}
+            <button
+                className='claim-button inv blue-style'
+                onClick={isClaimable ? onClaim : null}
+                disabled={!isClaimable}
+                style={{opacity: isClaimable ? 1 : 0.5}}
+            >
+                Claim
+            </button>
         </div>
     );
 });

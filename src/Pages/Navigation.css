@@ -30,7 +30,9 @@
   right: 10px;
     z-index: 10 !important;
 }
-
+.hidden {
+    visibility: hidden;
+}
 .round-button {
     width: 18vw;
     height: 18vw;

@@ -34,23 +34,31 @@ const Boost = ({ telegramId,ws }) => {
     const [energy, setEnergy]=useState(0);
 
     useEffect(() => {
-        setIsLoaded(false);
         const initializeUserData = async () => {
             const cachedUserBalance = localStorage.getItem('userBalance');
+            const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
+            console.log('Cached user balance:', cachedUserBalance);
+            console.log('CachedTaping user balance:', cachedTapingUserBalance);
+            if (cachedUserBalance !== null) {
+                setUserBalance(Number(cachedUserBalance));
+            } else {
+                setUserBalance(0);
+            }
             if (cachedUserBalance) {
-                setUserBalance(parseInt(cachedUserBalance, 10));
+                setUserBalance(cachedUserBalance);
             }
 
             try {
-                await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
-                    balance: cachedUserBalance
+                await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
+                    taping_balance: parseInt(cachedTapingUserBalance, 10)
                 });
-
+                await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+                    total_balance: parseInt(cachedUserBalance, 10)
+                });
                 // Після збереження даних відкриваємо WebSocket
                 requestData();
-                setIsLoaded(true);
                 checkAutoTapStatus();
-
+                setIsLoaded(true);
             } catch (error) {
                 console.error("Error saving balance:", error);
             }
@@ -67,7 +75,7 @@ const Boost = ({ telegramId,ws }) => {
                 }));
                 setMessage(`Claimed ${storedAutoTapData.accumulatedPoints} points!`);
                 try {
-                    axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
+                    axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
                         balance: updatedBalance
                     });
                     localStorage.setItem('autoTapData', JSON.stringify({
@@ -80,8 +88,11 @@ const Boost = ({ telegramId,ws }) => {
             }
         };
 
-        initializeUserData();
-    }, []);
+        initializeUserData()
+
+    }, [telegramId]);
+
+
 
     const requestData = () => {
         ws.send(JSON.stringify({
@@ -94,9 +105,11 @@ const Boost = ({ telegramId,ws }) => {
         const data = JSON.parse(event.data);
         console.log('Received message:', data);
 
-
         if (data.type === 'userData') {
-            setUserBalance(data.balance);
+            if (data.userTotalBalance != null) {
+                console.log('Setting user balance:', data.userTotalBalance); // Add logging
+                setUserBalance(data.userTotalBalance);
+            }
             setDailyBoosts(data.dailyBoosts);
             setBoosts(boosts.map(boost => {
                 if (boost.name === 'MULTITAP') {
@@ -120,8 +133,6 @@ const Boost = ({ telegramId,ws }) => {
             } else {
                 setAutoTapData(autoTapData); // Встановлюємо стан за замовчуванням, якщо дані не отримані
             }
-        } else if (data.type === 'updateBalance' && data.telegram_id === telegramId) {
-            setUserBalance(data.newBalance);
         } else if (data.type === 'boostUpdate') {
             setBoosts(boosts.map(boost => {
                 if (boost.name === 'MULTITAP') {
@@ -133,7 +144,7 @@ const Boost = ({ telegramId,ws }) => {
                 }
                 return boost;
             }));
-            setUserBalance(data.userBalance);
+            setUserBalance(data.userTotalBalance);
         } else if(data.type === 'boostActivated'){
             if (data.telegram_id === telegramId) {
                 setDailyBoosts(prevBoosts => ({
@@ -198,8 +209,8 @@ const Boost = ({ telegramId,ws }) => {
             const updatedBalance = userBalance + autoTapData.accumulatedPoints;
             setUserBalance(updatedBalance);
             // Відправка оновленого балансу на сервер
-            await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
-                balance: updatedBalance
+            await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
+                taping_balance: updatedBalance
             });
             setAutoTapData((prevData) => ({
                 ...prevData,
@@ -283,7 +294,7 @@ const Boost = ({ telegramId,ws }) => {
     };
 
 
-    const handleModalClose = (event) => {
+    const handleModalClose = () => {
         setSelectedBoost(null);
     };
 

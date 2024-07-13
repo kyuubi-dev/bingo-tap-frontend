@@ -3,7 +3,7 @@ import axios from 'axios';
 import "./Stat.css";
 import config from "../config";
 import LoadingScreen from "./LoadingScreen";
-const Stat = () => {
+const Stat = ({telegramId}) => {
     const [stats, setStats] = useState({
         totalShareBalance: 0,
         totalPlayers: 0,
@@ -11,6 +11,20 @@ const Stat = () => {
         onlinePlayers: 0
     });
     const [isLoading,setIsLoading]=useState(false);
+    useEffect(() => {
+        const initializeUserData = async () => {
+            const cachedUserBalance = localStorage.getItem('userBalance');
+            const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
+
+            await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
+                taping_balance: cachedTapingUserBalance
+            });
+            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+                total_balance: cachedUserBalance
+            });
+        };
+        initializeUserData();
+    },[]);
     useEffect(() => {
         const fetchStats = async () => {
             try {

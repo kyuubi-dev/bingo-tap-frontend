@@ -74,11 +74,11 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
                     <div className="auto-tap-info">
                         <div className="auto-tap-timer">Time left: {formatRemainingTime(autoTapData.timeLeft)}</div>
                         <div className="auto-tap-points">Accumulated points: {autoTapData.accumulatedPoints}</div>
-                        <button className="claim-points-button" onClick={handleClaimPoints}>Claim Points</button>
+                        <button className="claim-points-button blue-style" onClick={handleClaimPoints}>Claim Points</button>
                     </div>
                 ) : (
                     <>
-                        <p className="boost-price">Price: {boost.price}</p>
+                        <p className="boost-price">Price: {isAutoTap ? 200000 : boost.price}</p>
                         <p className="boost-description">{boost.description}</p>
                         <button className="btn btn-buy blue-style" onClick={handleAction}>
                             GET IT!
@@ -87,7 +87,7 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
                 )}
 
                 <div className="modal-buttons">
-                    <img src="/btns/delete.png" onClick={onClose} alt="Close" className="closeImg"/>
+                <img src="/btns/delete.png" onClick={onClose} alt="Close" className="closeImg"/>
                 </div>
             </div>
         </div>

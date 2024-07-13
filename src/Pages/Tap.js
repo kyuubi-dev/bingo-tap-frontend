@@ -8,10 +8,9 @@
   import useSwipe from './useSwipe'; // Импортируем хук
   import BoostModal from './boostModal.js';
   import CompletionMessage from "./ModelMessage"; // Импортируем BoostModal
-  function Tap({ telegramId , ws}) {
+  function Tap({ telegramId , ws,setShowBoostModal  }) {
     const [maxEnergy, setMaxEnergy] = useState(1500);
     const [energy, setEnergy] = useState(1500);
-    const [cachedBalance, setCachedBalance] = useState(0);
     const [userBalance, setUserBalance] = useState(0);
     const [userLeague, setUserLeague] = useState('');
     const [multitapLevel, setMultitapLevel] = useState(1);
@@ -31,21 +30,27 @@
       timeLeft: 0,
       lastUpdate: null
     });
-    const [showBoostModal, setShowBoostModal] = useState(false);
+    const [showBoostModal, setShowBoostModalLocal] = useState(false);
     const [message, setMessage] = useState(null);
     const energyRef = useRef(energy);
-    const balanceRef = useRef(cachedBalance);
+    const balanceRef = useRef(userBalance);
     const tapingGuruActiveRef = useRef(tapingGuruActive);
+    const [tapingBalance, setTapingBalance] = useState(0);
+    const tapingBalanceRef = useRef(0);
     useEffect(() => {
       energyRef.current = energy;
     }, [energy]);
 
     useEffect(() => {
-      balanceRef.current = cachedBalance;
-    }, [cachedBalance]);
+      balanceRef.current = userBalance;
+    }, [userBalance]);
     useEffect(() => {
       tapingGuruActiveRef.current = tapingGuruActive;
     }, [tapingGuruActive]);
+    useEffect(() => {
+      tapingBalanceRef.current = tapingBalance;
+    }, [tapingBalance]);
+
 
     useEffect(() => {
         ws.send(JSON.stringify({
@@ -55,9 +60,14 @@
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-
         if (data.type === 'userData') {
-          if (data.balance != null) { setUserBalance(data.balance); setCachedBalance(data.balance); }
+          if (data.userTotalBalance != null) {
+            console.log('Setting user balance:', data.userTotalBalance); // Add logging
+            setUserBalance(data.userTotalBalance);
+          }
+          if (data.userTapingBalance != null) {
+            setTapingBalance(data.userTapingBalance);
+          }
           if (data.league != null) setUserLeague(data.league);
           if (data.multiTapLevel != null) setMultitapLevel(data.multiTapLevel);
           if (data.energyLimitLevel != null) setMaxEnergy(1000 + data.energyLimitLevel * 500);
@@ -70,14 +80,12 @@
               timeLeft: data.autoTap.timeLeft,
               lastUpdate: data.autoTap.lastUpdate
             });
-          }
+          };
           setIsLoaded(true);
           if (data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0) {
             setShowBoostModal(true);
+            setShowBoostModalLocal(true)
           }
-        } else if (data.type === 'balanceUpdate' && data.telegram_id === telegramId) {
-          if (data.newBalance != null) { setUserBalance(data.newBalance); setCachedBalance(data.newBalance); }
-          if (data.newEnergy != null) setEnergy(data.newEnergy);
         } else if (data.type === 'error') {
           console.error(data.message);
         }
@@ -95,14 +103,13 @@
       }, 750);
 
       const handleUnload = async () => {
-        if (cachedBalance !== userBalance || energy !== maxEnergy) {
           try {
             await saveData();
             console.log('Balance and energy saved successfully');
           } catch (error) {
             console.error('Error saving balance and energy:', error);
           }
-        }
+
       };
 
       window.addEventListener('beforeunload', handleUnload);
@@ -113,7 +120,7 @@
         window.removeEventListener('beforeunload', handleUnload);
         window.removeEventListener('unload', handleUnload);
       };
-    }, [cachedBalance, userBalance,energy,maxEnergy, rechargeSpeed, telegramId]);
+    }, [tapingBalance, userBalance,energy,maxEnergy, rechargeSpeed, telegramId]);
 
     useEffect(() => {
       if (tapingGuruActive) {
@@ -130,7 +137,9 @@
 
     useEffect(() => {
       const saveDataOnRouteChange = async () => {
-        if (cachedBalance !== userBalance || energy !== maxEnergy) {
+        if (isLoaded && (userBalance !== 0 || tapingBalance !== 0)) {
+          console.log(userBalance)
+          console.log(tapingBalance)
           try {
             await saveData();
             console.log('Balance and energy saved successfully');
@@ -145,19 +154,18 @@
       return () => {
         saveDataOnRouteChange();
       };
-    }, [location]);
+    }, [location, isLoaded]);
+
 
     // Save balance on route change
     useEffect(() => {
       const saveBalanceOnRouteChange = async () => {
-        if (cachedBalance !== userBalance) {
           try {
             await saveData();
             console.log('Balance saved successfully');
           } catch (error) {
             console.error('Error saving balance:', error);
           }
-        }
       };
 
       saveBalanceOnRouteChange();
@@ -168,31 +176,28 @@
     }, [location]);
 
     const saveData = async () => {
-      return new Promise((resolve, reject) => {
-        if (cachedBalance !== userBalance || energy !== maxEnergy) {
-          ws.send(JSON.stringify({
-            type: 'updateBalance',
-            telegram_id: telegramId,
-            newBalance: cachedBalance,
-            newEnergy: energy
-          }), (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          });
-        } else {
-          resolve();
-        }
-      });
+      if (userBalance !== 0 || tapingBalance !== 0) {
+        ws.send(JSON.stringify({
+          type: 'updateBalance',
+          telegram_id: telegramId,
+          newBalance: userBalance,
+          newEnergy: energy
+        }));
+        await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
+          taping_balance: tapingBalanceRef.current // відправляємо поточний натапаний баланс
+        });
+        console.log("saveData() successfully "+userBalance + " taping balance while saveData() " + tapingBalanceRef.current)
+      }
     };
 
     useEffect(() => {
+      console.log("userBalance -" + userBalance);
+      console.log("userTapingBalance -" + tapingBalance);
       // Збереження балансу та енергії в локальне сховище при їх зміні
-      localStorage.setItem('userBalance', cachedBalance.toString());
-      localStorage.setItem('energy', energy.toString());
-    }, [cachedBalance, energy]);
+      localStorage.setItem('userBalance', userBalance !== null ? userBalance : 0);
+      localStorage.setItem('userTapingBalance', tapingBalance !== null ? tapingBalance : 0);
+      localStorage.setItem('energy', energy !== null ? energy : 0);
+    }, [tapingBalance, energy]);
 
 
     const handleEvent = (event) => {
@@ -242,10 +247,11 @@
         }
         animatePlusOne(clientX, clientY, `+${pointsEarned}`, () => {
           const newBalance = balanceRef.current + pointsEarned;
+          const newTapingBalance = tapingBalanceRef.current + pointsEarned;
           console.log(newBalance)
           console.log(balanceRef.current)
-          setCachedBalance(newBalance);
-
+          setUserBalance(newBalance);
+          setTapingBalance(newTapingBalance);
           if (newBalance - userBalance >= 100) {
             updateBalance(newBalance);
           }
@@ -321,14 +327,20 @@
 
     const handleCloseModal = () => {
       setShowBoostModal(false);
+      setShowBoostModalLocal(false)
     };
     const handleClaimPoints = async () => {
       if (autoTapData.accumulatedPoints > 0) {
-        const updatedBalance = cachedBalance + autoTapData.accumulatedPoints;
-        setCachedBalance(updatedBalance);
+        const updatedBalance = userBalance + autoTapData.accumulatedPoints;
+        const updatedTapingBalance = tapingBalance + autoTapData.accumulatedPoints;
+        setUserBalance(updatedBalance);
+        setTapingBalance(updatedTapingBalance);
         // Відправка оновленого балансу на сервер
-        await axios.put(`${config.apiBaseUrl}/save-balance/${telegramId}`, {
-          balance: updatedBalance
+        await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
+          taping_balance: updatedTapingBalance
+        });
+        await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+          total_balance: updatedBalance
         });
         setAutoTapData((prevData) => ({
           ...prevData,
@@ -355,7 +367,7 @@
 
             <div className="balance-display">
               <img src="/coin.png" alt="Coin" className="coin-icon" />
-              <span className="balance-amount blue-style">{cachedBalance}</span>
+              <span className="balance-amount blue-style">{userBalance}</span>
             </div>
             <div className="tap-gold" onClick={handleGoldButtonClick}>
               <img src={getLeagueImage(userLeague)} className='rank-img' alt="Gold Rank" />

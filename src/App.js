@@ -13,7 +13,6 @@ import NotMobile from './Pages/NotMobile';
 import config from './config';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 function App() {
-    const [userBalance, setUserBalance] = useState(0);
     const [purchasedBoosts, setPurchasedBoosts] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
     const [userId, setUserId] = useState(null);
@@ -23,7 +22,7 @@ function App() {
     const [loadingImages, setLoadingImages] = useState(true);
     const location = useLocation();
     const ws = useRef(null);
-
+    const [showBoostModal, setShowBoostModal] = useState(false);
     const imageSources = {
         '/': ['./btns/robotv2.png','./btns/1.png','./btns/2.png', './coin.png', '/16.png', '/17.png', './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png', './boost/power.png', './tasks/open.png', "./btns/robot-boost.png",'./ranks/master.png','./ranks/wood.png','./ranks/grandmaster.png','./ranks/bronze.png'],
         '/task': ['/16.png', '/17.png', '/coin.png', './tasks/open.png', './tasks/people1.png', './tasks/people2.png', './tasks/people3.png', './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png','./ranks/master.png','./ranks/wood.png','./ranks/grandmaster.png','./ranks/bronze.png'],
@@ -76,7 +75,6 @@ function App() {
                     const userData = checkUserResponse.data;
 
                     if (userData.userExists) {
-                        setUserBalance(userData.userBalance);
                     } else {
                         // Очистка локального хранилища для новых пользователей
                         localStorage.clear();
@@ -84,7 +82,6 @@ function App() {
                             username: username,
                             telegram_id: id
                         });
-                        setUserBalance(0);
                     }
                 }
                 setIsLoaded(true);
@@ -173,29 +170,29 @@ function App() {
         return <NotMobile />;
     }
 
-    return (
-        <div className="App">
-            <BgImage />
-            <Navigation telegramId={userId}/>
-            <Routes>
-                <Route path="/" element={<Tap telegramId={userId} ws={ws.current}/>} />
-                <Route path="/team" element={<Team userId={userId} botName={botName} />} />
-                <Route path="/task" element={<Task telegramId={userId} ws={ws.current} />} />
-                <Route
-                    path="/boost"
-                    element={
-                        <Boost
-                            telegramId={userId}
-                            purchasedBoosts={purchasedBoosts}
-                            setPurchasedBoosts={setPurchasedBoosts}
-                            ws={ws.current}
-                        />
-                    }
-                />
-                <Route path='/stat' element={<Stat />} />
-            </Routes>
-        </div>
-    );
+        return (
+            <div className="App">
+                <BgImage />
+                <Navigation telegramId={userId}  showBoostModal={showBoostModal}/>
+                <Routes>
+                    <Route path="/" element={<Tap telegramId={userId} ws={ws.current}   setShowBoostModal={setShowBoostModal} />} />
+                    <Route path="/team" element={<Team userId={userId} botName={botName} />} />
+                    <Route path="/task" element={<Task telegramId={userId} ws={ws.current} />} />
+                    <Route
+                        path="/boost"
+                        element={
+                            <Boost
+                                telegramId={userId}
+                                purchasedBoosts={purchasedBoosts}
+                                setPurchasedBoosts={setPurchasedBoosts}
+                                ws={ws.current}
+                            />
+                        }
+                    />
+                    <Route path='/stat' element={<Stat telegramId={userId}/>} />
+                </Routes>
+            </div>
+        );
 }
 
 function AppWrapper() {
