@@ -188,14 +188,45 @@
 
     const saveData = async () => {
       if (userBalance !== 0 || tapingBalance !== 0) {
-        console.log(energy)
-        await axios.put(`${config.apiBaseUrl}/save-energy/${telegramId}`,{
-          newEnergy: energyRef.current
-        });
-        await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
-          taping_balance: tapingBalanceRef.current // відправляємо поточний натапаний баланс
-        });
-        console.log("saveData() successfully "+userBalance + " taping balance while saveData() " + tapingBalanceRef.current)
+        try {
+          // Отримання даних для кожного запиту
+          const energyData = JSON.stringify({ newEnergy: energyRef.current });
+          const tapingBalanceData = JSON.stringify({ taping_balance: tapingBalanceRef.current });
+          const totalBalanceData = JSON.stringify({ total_balance: balanceRef.current });
+
+          // Надсилання PUT запитів
+          await Promise.all([
+            fetch(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: energyData,
+              keepalive: true
+            }),
+            fetch(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: tapingBalanceData,
+              keepalive: true
+            }),
+            fetch(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: totalBalanceData,
+              keepalive: true
+            })
+          ]);
+
+          console.log(balanceRef.current);
+          console.log("saveData() successfully " + userBalance + " taping balance while saveData() " + tapingBalanceRef.current);
+        } catch (error) {
+          console.error('Error saving data:', error);
+        }
       }
     };
 
