@@ -257,52 +257,6 @@
         console.error('Update league error:', error);
       }
     };
-
-    const handleTap = useCallback((clientX, clientY) => {
-      if (energy > 0) {
-        if (multitapLevel > energy) {
-          console.log('Not enough energy to multitap');
-          return;
-        }
-        const pointsEarned = calculatePointsEarned();
-        if (!tapingGuruActive) {
-          setEnergy((prevEnergy) => {
-            const newEnergy = prevEnergy - pointsEarned;
-            return newEnergy >= 0 ? newEnergy : 0; // Ensure energy doesn't go negative
-          });
-        }
-        animatePlusOne(clientX, clientY, `+${pointsEarned}`, () => {
-          const newBalance = balanceRef.current + pointsEarned;
-          const newTapingBalance = tapingBalanceRef.current + pointsEarned;
-          console.log(newBalance)
-          console.log(balanceRef.current)
-          setUserBalance(newBalance);
-          setTapingBalance(newTapingBalance);
-          if (newBalance - userBalance >= 100) {
-            updateBalance(newBalance);
-          }
-        });
-        if (navigator.vibrate) {
-          navigator.vibrate(50);
-        }
-      } else {
-        console.log('Not enough energy to tap');
-      }
-    }, [energy, multitapLevel, tapingGuruActive]);
-    const handleEvent = useCallback((event) => {
-      if (!isLoaded) {
-        console.log('Data not loaded yet');
-        return;
-      }
-
-      if (event.type === 'pointerdown') {
-        handleTap(event.clientX, event.clientY);
-      }
-    }, [isLoaded, handleTap]);
-    const calculatePointsEarned = () => {
-      const pointsEarned = tapingGuruActiveRef.current ? multitapLevel * 5 : multitapLevel;
-      return pointsEarned;
-    };
     const debounce = (func, wait) => {
       let timeout;
       return (...args) => {
@@ -319,6 +273,53 @@
       }));
       updateUserLeague(telegramId);
     }, 500);
+    const calculatePointsEarned = () => {
+      const pointsEarned = tapingGuruActiveRef.current ? multitapLevel * 5 : multitapLevel;
+      return pointsEarned;
+    };
+    const handleTap = useCallback((clientX, clientY) => {
+      if (energyRef.current > 0) {
+        if (multitapLevel > energyRef.current) {
+          console.log('Not enough energy to multitap');
+          return;
+        }
+        const pointsEarned = calculatePointsEarned();
+        if (!tapingGuruActive) {
+          setEnergy((prevEnergy) => {
+            const newEnergy = prevEnergy - pointsEarned;
+            return newEnergy >= 0 ? newEnergy : 0; // Ensure energy doesn't go negative
+          });
+        }
+        animatePlusOne(clientX, clientY, `+${pointsEarned}`, () => {
+          const newBalance = balanceRef.current + pointsEarned;
+          const newTapingBalance = tapingBalanceRef.current + pointsEarned;
+          balanceRef.current = newBalance;
+          tapingBalanceRef.current = newTapingBalance;
+          console.log(newBalance)
+          console.log(balanceRef.current)
+          setUserBalance(newBalance);
+          setTapingBalance(newTapingBalance);
+          if (newBalance - userBalance >= 100) {
+            updateBalance(newBalance);
+          }
+        });
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      } else {
+        console.log('Not enough energy to tap');
+      }
+    }, [calculatePointsEarned, multitapLevel, tapingGuruActive, userBalance, updateBalance]);
+    const handleEvent = useCallback((event) => {
+      if (!isLoaded) {
+        console.log('Data not loaded yet');
+        return;
+      }
+
+      if (event.type === 'pointerdown') {
+        handleTap(event.clientX, event.clientY);
+      }
+    }, [handleTap]);
 
     const animatePlusOne = (startX, startY, text, callback) => {
       const coinElement = document.querySelector('.balance-display img');
