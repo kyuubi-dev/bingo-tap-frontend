@@ -53,11 +53,15 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand(); // Залишає додаток відкритим і розширює його на весь екран
-        tg.isVerticalSwipesEnabled = false;
+        disableVerticalSwipes(tg);
       }
     }, [tapingBalance]);
 
-
+    const disableVerticalSwipes = (tg) => {
+      if (tg.isVerticalSwipesEnabled !== undefined) {
+        tg.isVerticalSwipesEnabled = false; // Вимикає вертикальні свайпи
+      }
+    };
     useEffect(() => {
         ws.send(JSON.stringify({
           type: 'requestUserData',
