@@ -41,7 +41,15 @@ const Stat = ({telegramId}) => {
     if (!isLoading) {
         return <LoadingScreen />;
     }
-
+    const formatBalance = (balance) => {
+        if (balance >= 1_000_000_000) {
+            return (balance / 1_000_000_000).toFixed(1) + ' B';
+        } else if (balance >= 1_000_000) {
+            return (balance / 1_000_000).toFixed(1) + ' M';
+        } else {
+            return balance.toLocaleString(); // To add commas for thousands
+        }
+    };
     return(
         <h1 className="Stat">
             <div className="statistics-content">
@@ -50,7 +58,7 @@ const Stat = ({telegramId}) => {
                         <div className="stat-title gold-style">TOTAL SHARE BALANCE:</div>
                         <div className="shared-balance">
                             <img src='./coin.png' alt="coin" className="shared-balance-icon"/>
-                            <span className="team-header stat blue-style">{stats.totalShareBalance}</span>
+                            <span className="team-header stat blue-style">{formatBalance(stats.totalShareBalance)}</span>
                         </div>
                     </div>
                 </div>
