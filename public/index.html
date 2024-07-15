@@ -33,6 +33,7 @@
       app.ready()
       app.expand()
       app.isClosingConfirmationEnabled = false;
+      app.isSwipeEnabled = false; // Пример: отключение свайпов, если метод доступен в 7.7
 
       Telegram.WebApp.onEvent('viewportChanged', function(event) {
           if (!Telegram.WebApp.isExpanded) {

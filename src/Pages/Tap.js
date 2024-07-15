@@ -355,7 +355,7 @@
     };
 
     const handleGoldButtonClick = () => {
-      navigate('/task?tab=leagues');
+      navigate('/league-progress');
     };
 
     if (!isLoaded) {
@@ -398,13 +398,22 @@
     const closeMessage = () => {
       setMessage(null);
     };
+    const formatBalance = (balance) => {
+      if (balance >= 1_000_000_000) {
+        return (balance / 1_000_000_000).toFixed(1) + ' B';
+      } else if (balance >= 1_000_000) {
+        return (balance / 1_000_000).toFixed(1) + ' M';
+      } else {
+        return balance.toLocaleString(); // To add commas for thousands
+      }
+    };
     return (
         <div className="Tap" >
           <div className="Tap-content">
 
             <div className="balance-display">
               <img src="/coin.png" alt="Coin" className="coin-icon" />
-              <span className="balance-amount blue-style">{userBalance}</span>
+              <span className="balance-amount blue-style">{formatBalance(userBalance)}</span>
             </div>
             <div className="tap-gold" onClick={handleGoldButtonClick}>
               <img src={getLeagueImage(userLeague)} className='rank-img' alt="Gold Rank" />

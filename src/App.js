@@ -10,6 +10,7 @@ import Boost from './Pages/Boost';
 import LoadingScreen from './Pages/LoadingScreen';
 import Stat from './Pages/Stat';
 import NotMobile from './Pages/NotMobile';
+import LeagueProgress from './Pages/RequriedLeaguesPage';
 import config from './config';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 function App() {
@@ -26,7 +27,11 @@ function App() {
     const imageSources = {
         '/': ['./btns/robotv2.png','./btns/1.png','./btns/2.png', './coin.png', '/16.png', '/17.png', './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png', './boost/power.png', './tasks/open.png', "./btns/robot-boost.png",'./ranks/master.png','./ranks/wood.png','./ranks/grandmaster.png','./ranks/bronze.png'],
         '/task': ['/16.png', '/17.png', '/coin.png', './tasks/open.png', './tasks/people1.png', './tasks/people2.png', './tasks/people3.png', './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png','./ranks/master.png','./ranks/wood.png','./ranks/grandmaster.png','./ranks/bronze.png'],
-        '/boost': ['/16.png', '/17.png', '/coin.png', '/boost/fire.b.png', '/boost/power.png']
+        '/boost': ['/16.png', '/17.png', '/coin.png', '/boost/fire.b.png', '/boost/power.png'],
+        '/league-progress': [
+            './ranks/blue.png', './ranks/gold.png', './ranks/neon.png', './ranks/green.png',
+            './ranks/master.png', './ranks/wood.png', './ranks/grandmaster.png', './ranks/bronze.png'
+        ]
     };
 
     useEffect(() => {
@@ -190,6 +195,7 @@ function App() {
                         }
                     />
                     <Route path='/stat' element={<Stat telegramId={userId}/>} />
+                    <Route path="/league-progress" element={<LeagueProgress telegramId={userId} ws={ws.current}/>} />
                 </Routes>
             </div>
         );

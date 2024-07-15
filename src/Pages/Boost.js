@@ -69,6 +69,7 @@ const Boost = ({ telegramId,ws }) => {
             if (storedAutoTapData && storedAutoTapData.accumulatedPoints > 0 && !storedAutoTapData.active) {
                 const updatedBalance = userBalance + storedAutoTapData.accumulatedPoints;
                 setUserBalance(updatedBalance);
+                localStorage.setItem('userBalance', updatedBalance);
                 setAutoTapData(prevData => ({
                     ...prevData,
                     accumulatedPoints: 0
@@ -202,6 +203,7 @@ const Boost = ({ telegramId,ws }) => {
 
                     // Оновлення балансу користувача
                     setUserBalance(updatedBalance);
+                    localStorage.setItem('userBalance', updatedBalance);
 
                     // Виклик функції для активації AUTO TAP
                     sendAutoTapActivation();
@@ -227,6 +229,8 @@ const Boost = ({ telegramId,ws }) => {
         if (autoTapData.accumulatedPoints > 0) {
             const updatedBalance = userBalance + autoTapData.accumulatedPoints;
             setUserBalance(updatedBalance);
+            localStorage.setItem('userBalance', updatedBalance);
+
             // Відправка оновленого балансу на сервер
             await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
                 taping_balance: updatedBalance
@@ -297,6 +301,8 @@ const Boost = ({ telegramId,ws }) => {
 
             if (response.data.success) {
                 setUserBalance(updatedBalance);
+                localStorage.setItem('userBalance', updatedBalance);
+
                 setMessage('Boost purchased successfully!');
                 requestData()
             } else {
@@ -474,13 +480,21 @@ const Boost = ({ telegramId,ws }) => {
         );
     };
 
-
+    const formatBalance = (balance) => {
+        if (balance >= 1_000_000_000) {
+            return (balance / 1_000_000_000).toFixed(1) + ' B';
+        } else if (balance >= 1_000_000) {
+            return (balance / 1_000_000).toFixed(1) + ' M';
+        } else {
+            return balance.toLocaleString(); // To add commas for thousands
+        }
+    };
     return (
         <div className='Boost'>
             <header className="header">
                 <div className="balance-display-task">
                     <img src="/coin.png" alt="Coin" className="coin-icon" />
-                    <span className="balance-amount blue-style">{userBalance}</span>
+                    <span className="balance-amount blue-style">{formatBalance(userBalance)}</span>
                 </div>
             </header>
             <div className="dayli-boost-text gold-style">YOUR DAILY BOOSTERS:</div>

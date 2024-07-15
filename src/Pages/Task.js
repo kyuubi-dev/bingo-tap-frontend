@@ -31,7 +31,7 @@ const Task = ({ telegramId, ws }) => {
     const [isLoading, setIsLoading] = useState(false); // Loading state
     const [userData, setUserData] = useState([]);
     const [referralCount, setReferralCount] = useState(0);
-
+    const [tapingBalance,setTapingBalance] = useState(0);
     const handleRequestData = () => {
 
         ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
@@ -74,6 +74,7 @@ const Task = ({ telegramId, ws }) => {
                 setUserBalance(cachedUserBalance);
             }
             console.log(cachedTapingUserBalance)
+            setTapingBalance(cachedTapingUserBalance);
             await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
                 taping_balance: cachedTapingUserBalance !== null ? Number(cachedTapingUserBalance) : 0
             });
@@ -122,6 +123,7 @@ const Task = ({ telegramId, ws }) => {
         setTasks(updatedTasks);
         const newBalance = userBalance + reward;
         setUserBalance(newBalance);
+        localStorage.setItem('userBalance', newBalance);
         // Зберігання інформації про завершення у localStorage (необов'язково, залежить від вашої логіки)
         const updatedTasksCompleted = { ...tasksCompleted, [taskId]: true };
         setTasksCompleted(updatedTasksCompleted);
@@ -146,12 +148,13 @@ const Task = ({ telegramId, ws }) => {
     const handleClaimLeague = async (league) => {
         const progress = userData.leagueProgress && userData.leagueProgress[league.name] ? userData.leagueProgress[league.name] : 0;
 
-        if (progress === 100 || userBalance >= league.requiredPoints) {
+        if (progress === 100 || tapingBalance >= league.requiredPoints) {
             const updatedCompletedLeagues = { ...completedLeagues, [league.name]: true };
             setCompletedLeagues(updatedCompletedLeagues);
             localStorage.setItem('completedLeagues', JSON.stringify(updatedCompletedLeagues));
             const newBalance = userBalance + league.reward;
             setUserBalance(newBalance);
+            localStorage.setItem('userBalance', newBalance);
             setCompletionMessage(`League claimed: ${league.name}, reward - ${league.reward}`);
             try {
                 await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
@@ -185,6 +188,7 @@ const Task = ({ telegramId, ws }) => {
         // Оновлюємо баланс користувача
         const newBalance = userBalance + reward;
         setUserBalance(newBalance);
+        localStorage.setItem('userBalance', newBalance);
         setCompletionMessage(`Referral task completed, reward - ${reward}`);
         // Оновлюємо баланс на сервері
         try {
@@ -260,13 +264,21 @@ const Task = ({ telegramId, ws }) => {
     }
 
 
-
+    const formatBalance = (balance) => {
+        if (balance >= 1_000_000_000) {
+            return (balance / 1_000_000_000).toFixed(1) + ' B';
+        } else if (balance >= 1_000_000) {
+            return (balance / 1_000_000).toFixed(1) + ' M';
+        } else {
+            return balance.toLocaleString(); // To add commas for thousands
+        }
+    };
     return (
         <div className="Task">
             <header className="header">
                 <div className="balance-display-task">
                     <img src="/coin.png" alt="Coin" className="coin-icon"/>
-                    <span className="blue-style">{userBalance}</span>
+                    <span className="blue-style">{formatBalance(userBalance)}</span>
                 </div>
                 <div className="gold" onClick={handleGoldButtonClick}>
                     <img src={getLeagueImage(userLeague)} className='rank-img' alt="User Rank"/>

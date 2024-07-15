@@ -1,0 +1,75 @@
+.league-container {
+    text-align: center;
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.league-image {
+    width: 200px;
+    height: 200px;
+    margin: 20px 0;
+}
+
+.progress-bar-container {
+    position: relative;
+    height: 20px;
+    background-color: #555;
+    border-radius: 10px;
+    margin: 20px auto;
+    width: 80%;
+    overflow: hidden; /* Prevent overflow */
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #15959f;
+    border-radius: 10px;
+    transition: width 0.3s ease-in-out;
+
+}
+
+.navigation-buttons {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+}
+
+.nav-button {
+    padding: 10px 20px;
+    background-color: rgba(0,0,0,0);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #2b2b2b;
+    position: absolute;
+    top: 50%;
+}
+
+.prev-button {
+    left: -30px;
+}
+
+.next-button {
+    top:4px;
+    right: 20px;
+}
+.next-button-img {
+
+    width: 19.5px;
+    height: auto;
+}
+
+.nav-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.nav-button:hover:not(:disabled) {
+    background-color: rgba(0,0,0,0);
+}
