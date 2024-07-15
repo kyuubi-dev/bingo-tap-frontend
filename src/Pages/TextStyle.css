@@ -11,7 +11,12 @@ body {
   font-family: 'Big Shoulders Display';
   font-weight: 400; /* Regular */
 }
+.white-style {
+    color: #ffffff;
 
+    font-family: 'Big Shoulders Display';
+    font-weight: 400; /* Regular */
+}
 .default-style {
   color: #15f7ff;
   font-family: 'Big Shoulders Display', sans-serif;

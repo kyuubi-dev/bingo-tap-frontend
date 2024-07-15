@@ -71,7 +71,7 @@ const LeagueProgress = ({ telegramId, ws }) => {
                 alt={`${currentLeague.name} League`}
                 className="league-image"
             />
-            <p className="blue-style league-description">Your number of clicks determines the league you enter.</p>
+            <p className="white-style league-description">Your number of clicks determines the league you enter.</p>
             <div className="progress-bar-container">
                 <div className="progress-bar"
                      style={{width: `${progress}%`}}></div>
