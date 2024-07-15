@@ -64,14 +64,14 @@ const LeagueProgress = ({ telegramId, ws }) => {
 
     return (
         <div className="league-container">
-            <h2>{currentLeague.name} League</h2>
+            <h2 className="gold-style">{currentLeague.name} LEAGUE</h2>
             <img
                 key={currentLeague.img}
                 src={currentLeague.img}
                 alt={`${currentLeague.name} League`}
                 className="league-image"
             />
-            <p>Your number of clicks determines the league you enter.</p>
+            <p className="blue-style">Your number of clicks determines the league you enter.</p>
             <div className="progress-bar-container">
                 <div className="progress-bar"
                      style={{width: `${progress}%`}}></div>
