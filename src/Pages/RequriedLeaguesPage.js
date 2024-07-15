@@ -76,7 +76,9 @@ const LeagueProgress = ({ telegramId, ws }) => {
                 <div className="progress-bar"
                      style={{width: `${progress}%`}}></div>
             </div>
-            <p>{formatBalance(userBalance)} / {requiredPointsForCurrentLeague}</p>
+            <p className=" progress-bar-balance-display">
+                {currentLeague.name === userLeague ? `${formatBalance(userBalance)} / ${requiredPointsForCurrentLeague}` : `From ${requiredPointsForCurrentLeague} `}
+            </p>
             <div className="navigation-buttons">
                 <button onClick={handlePrevClick} disabled={currentLeagueIndex === 0}
                         className="nav-button prev-button">

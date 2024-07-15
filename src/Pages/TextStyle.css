@@ -71,7 +71,7 @@ body {
   font-weight: bold;
   color: #15f7ff;
   z-index: 1000;
-  transition: transform 1s, opacity 1s;
+  transition: transform 1.5s, opacity 1.5s;
 }
 
 .blue-style {

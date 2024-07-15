@@ -10,7 +10,9 @@
     width: 75vw;
     height: 75vw;
 }
-
+.progress-bar-balance-display{
+    font-size: 6vw;
+}
 .currentLeaguestyle{
     font-weight: bold;
     font-size: 10vw;

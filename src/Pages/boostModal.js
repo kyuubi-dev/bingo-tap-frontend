@@ -22,6 +22,7 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
         } else {
             onBuy(boost);
         }
+        onClose();
     };
 
     // Format the remaining time into hours and minutes

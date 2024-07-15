@@ -39,6 +39,8 @@ const Boost = ({ telegramId,ws }) => {
             const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
             console.log('Cached user balance:', cachedUserBalance);
             console.log('CachedTaping user balance:', cachedTapingUserBalance);
+            const energy=localStorage.getItem('energy');
+            console.log(energy)
             if (cachedUserBalance !== null) {
                 setUserBalance(Number(cachedUserBalance));
             } else {
@@ -55,6 +57,7 @@ const Boost = ({ telegramId,ws }) => {
                 await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
                     total_balance: parseInt(cachedUserBalance, 10)
                 });
+
                 // Після збереження даних відкриваємо WebSocket
                 requestData();
                 checkAutoTapStatus();
@@ -245,6 +248,7 @@ const Boost = ({ telegramId,ws }) => {
             }));
             await axios.put(`${config.apiBaseUrl}/reset-accumulated-points/${telegramId}`);
             setMessage(`Claimed ${autoTapData.accumulatedPoints} points!`);
+            setSelectedBoost(null);
         } else {
             setMessage('No points to claim.');
         }
