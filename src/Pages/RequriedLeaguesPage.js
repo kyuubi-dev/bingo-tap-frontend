@@ -61,6 +61,8 @@ const LeagueProgress = ({ telegramId, ws }) => {
             return balance.toLocaleString(); // To add commas for thousands
         }
     };
+    const userLeagueIndex = leagues.findIndex(league => league.name === userLeague);
+    const nextUserLeagueIndex = userLeagueIndex + 1;
 
     return (
         <div className="league-container">
@@ -77,7 +79,7 @@ const LeagueProgress = ({ telegramId, ws }) => {
                      style={{width: `${progress}%`}}></div>
             </div>
             <p className=" progress-bar-balance-display">
-                {currentLeague.name === userLeague ? `${formatBalance(userBalance)} / ${requiredPointsForCurrentLeague}` : `From ${requiredPointsForCurrentLeague} `}
+                {currentLeagueIndex === nextUserLeagueIndex ? `${formatBalance(userBalance)} / ${requiredPointsForCurrentLeague}` : `From ${requiredPointsForCurrentLeague} `}
             </p>
             <div className="navigation-buttons">
                 <button onClick={handlePrevClick} disabled={currentLeagueIndex === 0}
