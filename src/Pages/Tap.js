@@ -304,7 +304,7 @@
           }
         });
 
-          window.Telegram.WebApp.impactOccurred('heavy'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
+          window.Telegram.WebApp.impactOccurred('light'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
 
       } else {
         console.log('Not enough energy to tap');
