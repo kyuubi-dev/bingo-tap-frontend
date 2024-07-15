@@ -303,8 +303,10 @@
             updateBalance(newBalance);
           }
         });
-        if (navigator.vibrate) {
-          navigator.vibrate(50);
+
+
+        if (window.Telegram.WebApp.impactOccurred) {
+          window.Telegram.WebApp.impactOccurred('soft'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
         }
       } else {
         console.log('Not enough energy to tap');
