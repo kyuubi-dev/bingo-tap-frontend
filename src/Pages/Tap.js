@@ -37,6 +37,7 @@
     const tapingGuruActiveRef = useRef(tapingGuruActive);
     const [tapingBalance, setTapingBalance] = useState(0);
     const tapingBalanceRef = useRef(0);
+    window.Telegram.WebApp.disableVerticalSwipes()
     useEffect(() => {
       energyRef.current = energy;
     }, [energy]);
