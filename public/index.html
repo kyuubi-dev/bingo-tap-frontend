@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="./telegram-web-app.js"></script>
+  <script src="/telegram-web-app.js"></script>
   <meta charset="utf-8" />
   <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no"/>
@@ -16,7 +16,6 @@
     app.expand();
     app.isClosingConfirmationEnabled = false;
     app.isSwipeEnabled = false;
-    if(app.isVersionAtLeast("7.7"))
     console.log("Telegram WebApp version: " + app.version);
 
     Telegram.WebApp.onEvent('viewportChanged', function(event) {
