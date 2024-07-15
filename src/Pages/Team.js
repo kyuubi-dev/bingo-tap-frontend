@@ -81,7 +81,7 @@ function Team({ userId, botName }) {
             // Update user balance
             await axios.put(`${config.apiBaseUrl}/save-totalBalance/${userId}`,
                 {  total_balance: newBalance });
-    
+            localStorage.setItem('userBalance', newBalance);
             // Reset referral balance in the database
             await axios.put(`${config.apiBaseUrl}/save-ref_balance/${userId}`, { ref_balance: 0 });
     
