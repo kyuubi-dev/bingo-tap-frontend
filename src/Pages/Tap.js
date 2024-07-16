@@ -117,7 +117,12 @@
         }
         await saveData();
       };
-
+// Оновлювати енергію кожні 5 секунд
+      const saveEnergyInterval = setInterval(() => {
+        if (energyRef.current !== maxEnergy) {
+          saveEnergy();
+        }
+      }, 5000); // 5 секунд
       window.Telegram.WebApp.onEvent('backButtonClicked', handleUnload);
 // Якщо ви хочете також обробляти подію при мінімізації додатка
       window.Telegram.WebApp.onEvent('mainButtonClicked', handleUnload);
@@ -131,6 +136,7 @@
       window.Telegram.WebApp.onEvent('web_app_minimize', handleUnload);
       return () => {
         clearInterval(energyInterval.current);
+        clearInterval(saveEnergyInterval);
         window.removeEventListener('beforeunload', handleUnload);
         window.removeEventListener('unload', handleUnload);
         window.Telegram.WebApp.offEvent('backButtonClicked', handleUnload);
