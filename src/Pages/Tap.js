@@ -125,6 +125,10 @@
       window.addEventListener('beforeunload', handleUnload);
       window.addEventListener('unload', handleUnload);
 
+      window.Telegram.WebApp.onEvent('web_app_close', handleUnload);
+
+// Якщо ви хочете також обробляти подію при мінімізації додатка
+      window.Telegram.WebApp.onEvent('web_app_minimize', handleUnload);
       return () => {
         clearInterval(energyInterval.current);
         window.removeEventListener('beforeunload', handleUnload);
@@ -132,6 +136,8 @@
         window.Telegram.WebApp.offEvent('backButtonClicked', handleUnload);
         window.Telegram.WebApp.offEvent('mainButtonClicked', handleUnload);
         window.Telegram.WebApp.offEvent('popupClosed', handleUnload);
+        window.Telegram.WebApp.offEvent('web_app_close', handleUnload);
+        window.Telegram.WebApp.offEvent('web_app_minimize', handleUnload);
       };
     }, [tapingBalance, userBalance,energy,maxEnergy, rechargeSpeed, telegramId]);
 
