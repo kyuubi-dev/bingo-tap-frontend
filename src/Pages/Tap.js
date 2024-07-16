@@ -112,14 +112,19 @@
       }, 750);
 
       const handleUnload = async () => {
+        if (energy !== maxEnergy) {
           try {
             await saveData();
             console.log('Balance and energy saved successfully');
           } catch (error) {
             console.error('Error saving balance and energy:', error);
           }
-
+        }
       };
+
+      Telegram.WebApp.onEvent('web_app_close', handleUnload);
+// Якщо ви хочете також обробляти подію при мінімізації додатка
+      Telegram.WebApp.onEvent('web_app_minimize', handleUnload);
 
       window.addEventListener('beforeunload', handleUnload);
       window.addEventListener('unload', handleUnload);
@@ -128,6 +133,8 @@
         clearInterval(energyInterval.current);
         window.removeEventListener('beforeunload', handleUnload);
         window.removeEventListener('unload', handleUnload);
+        Telegram.WebApp.offEvent('web_app_close', handleUnload);
+        Telegram.WebApp.offEvent('web_app_minimize', handleUnload);
       };
     }, [tapingBalance, userBalance,energy,maxEnergy, rechargeSpeed, telegramId]);
 
@@ -146,7 +153,7 @@
 
     useEffect(() => {
       const saveDataOnRouteChange = async () => {
-        if (isLoaded && (userBalance !== 0 || tapingBalance !== 0)) {
+        if (isLoaded &&  energy !== maxEnergy) {
           console.log(userBalance)
           console.log(tapingBalance)
           try {
