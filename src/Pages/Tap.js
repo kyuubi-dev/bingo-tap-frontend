@@ -112,20 +112,16 @@
       }, 750);
 
       const handleUnload = async () => {
-        if (energy !== maxEnergy) {
-          try {
-            await saveData();
-            console.log('Balance and energy saved successfully');
-          } catch (error) {
-            console.error('Error saving balance and energy:', error);
-          }
+        if (energyRef.current !== maxEnergy) {
+          await saveEnergy();
         }
+        await saveData();
       };
 
-      Telegram.WebApp.onEvent('backButtonClicked', handleUnload);
+      window.Telegram.WebApp.onEvent('backButtonClicked', handleUnload);
 // Якщо ви хочете також обробляти подію при мінімізації додатка
-      Telegram.WebApp.onEvent('mainButtonClicked', handleUnload);
-      Telegram.WebApp.onEvent('popupClosed', handleUnload);
+      window.Telegram.WebApp.onEvent('mainButtonClicked', handleUnload);
+      window.Telegram.WebApp.onEvent('popupClosed', handleUnload);
       window.addEventListener('beforeunload', handleUnload);
       window.addEventListener('unload', handleUnload);
 
@@ -133,9 +129,9 @@
         clearInterval(energyInterval.current);
         window.removeEventListener('beforeunload', handleUnload);
         window.removeEventListener('unload', handleUnload);
-        Telegram.WebApp.offEvent('backButtonClicked', handleUnload);
-        Telegram.WebApp.offEvent('mainButtonClicked', handleUnload);
-        Telegram.WebApp.offEvent('popupClosed', handleUnload);
+        window.Telegram.WebApp.offEvent('backButtonClicked', handleUnload);
+        window.Telegram.WebApp.offEvent('mainButtonClicked', handleUnload);
+        window.Telegram.WebApp.offEvent('popupClosed', handleUnload);
       };
     }, [tapingBalance, userBalance,energy,maxEnergy, rechargeSpeed, telegramId]);
 
@@ -191,7 +187,24 @@
         saveBalanceOnRouteChange();
       };
     }, [location]);
+    const saveEnergy = async () => {
+      try {
+        const energyData = JSON.stringify({ newEnergy: energyRef.current });
 
+        await fetch(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: energyData,
+          keepalive: true
+        });
+
+        console.log(`Energy saved: ${energyData}`);
+      } catch (error) {
+        console.error('Error saving energy:', error);
+      }
+    };
     const saveData = async () => {
       if (userBalance !== 0 || tapingBalance !== 0) {
         try {
