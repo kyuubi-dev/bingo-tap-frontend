@@ -14,7 +14,7 @@
     const [userBalance, setUserBalance] = useState(0);
     const [userLeague, setUserLeague] = useState('');
     const [multitapLevel, setMultitapLevel] = useState(1);
-    const [isLoaded, setIsLoaded] = useState(true);
+    const [isLoaded, setIsLoaded] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const [tapingGuruActive, setTapingGuruActive] = useState(location.state?.tapingGuruActive || false); // додано для Taping Guru
@@ -67,7 +67,7 @@
           type: 'requestUserData',
           telegram_id: telegramId
         }));
-
+      setIsLoaded(true);
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'userData') {
@@ -112,38 +112,23 @@
       }, 750);
 
       const handleUnload = async () => {
-        if (energyRef.current !== maxEnergy) {
-          await saveEnergy();
+        if (energy !== maxEnergy) {
+          try {
+            await saveData();
+            console.log('Balance and energy saved successfully');
+          } catch (error) {
+            console.error('Error saving balance and energy:', error);
+          }
         }
-        await saveData();
       };
-// Оновлювати енергію кожні 5 секунд
-      const saveEnergyInterval = setInterval(() => {
-        if (energyRef.current !== maxEnergy) {
-          saveEnergy();
-        }
-      }, 5000); // 5 секунд
-      window.Telegram.WebApp.onEvent('backButtonClicked', handleUnload);
-// Якщо ви хочете також обробляти подію при мінімізації додатка
-      window.Telegram.WebApp.onEvent('mainButtonClicked', handleUnload);
-      window.Telegram.WebApp.onEvent('popupClosed', handleUnload);
+
       window.addEventListener('beforeunload', handleUnload);
       window.addEventListener('unload', handleUnload);
 
-      window.Telegram.WebApp.onEvent('web_app_close', handleUnload);
-
-// Якщо ви хочете також обробляти подію при мінімізації додатка
-      window.Telegram.WebApp.onEvent('web_app_minimize', handleUnload);
       return () => {
         clearInterval(energyInterval.current);
-        clearInterval(saveEnergyInterval);
         window.removeEventListener('beforeunload', handleUnload);
         window.removeEventListener('unload', handleUnload);
-        window.Telegram.WebApp.offEvent('backButtonClicked', handleUnload);
-        window.Telegram.WebApp.offEvent('mainButtonClicked', handleUnload);
-        window.Telegram.WebApp.offEvent('popupClosed', handleUnload);
-        window.Telegram.WebApp.offEvent('web_app_close', handleUnload);
-        window.Telegram.WebApp.offEvent('web_app_minimize', handleUnload);
       };
     }, [tapingBalance, userBalance,energy,maxEnergy, rechargeSpeed, telegramId]);
 
@@ -199,24 +184,7 @@
         saveBalanceOnRouteChange();
       };
     }, [location]);
-    const saveEnergy = async () => {
-      try {
-        const energyData = JSON.stringify({ newEnergy: energyRef.current });
 
-        await fetch(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: energyData,
-          keepalive: true
-        });
-
-        console.log(`Energy saved: ${energyData}`);
-      } catch (error) {
-        console.error('Error saving energy:', error);
-      }
-    };
     const saveData = async () => {
       if (userBalance !== 0 || tapingBalance !== 0) {
         try {
