@@ -122,10 +122,10 @@
         }
       };
 
-      Telegram.WebApp.onEvent('web_app_close', handleUnload);
+      Telegram.WebApp.onEvent('backButtonClicked', handleUnload);
 // Якщо ви хочете також обробляти подію при мінімізації додатка
-      Telegram.WebApp.onEvent('web_app_minimize', handleUnload);
-
+      Telegram.WebApp.onEvent('mainButtonClicked', handleUnload);
+      Telegram.WebApp.onEvent('popupClosed', handleUnload);
       window.addEventListener('beforeunload', handleUnload);
       window.addEventListener('unload', handleUnload);
 
@@ -133,8 +133,9 @@
         clearInterval(energyInterval.current);
         window.removeEventListener('beforeunload', handleUnload);
         window.removeEventListener('unload', handleUnload);
-        Telegram.WebApp.offEvent('web_app_close', handleUnload);
-        Telegram.WebApp.offEvent('web_app_minimize', handleUnload);
+        Telegram.WebApp.offEvent('backButtonClicked', handleUnload);
+        Telegram.WebApp.offEvent('mainButtonClicked', handleUnload);
+        Telegram.WebApp.offEvent('popupClosed', handleUnload);
       };
     }, [tapingBalance, userBalance,energy,maxEnergy, rechargeSpeed, telegramId]);
 
