@@ -14,7 +14,7 @@
     const [userBalance, setUserBalance] = useState(0);
     const [userLeague, setUserLeague] = useState('');
     const [multitapLevel, setMultitapLevel] = useState(1);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
     const [tapingGuruActive, setTapingGuruActive] = useState(location.state?.tapingGuruActive || false); // додано для Taping Guru
@@ -54,8 +54,6 @@
   useEffect(()=>{
     if (window.Telegram && window.Telegram.WebApp) {
       const tg = window.Telegram.WebApp;
-      tg.ready();
-      tg.expand(); // Залишає додаток відкритим і розширює його на весь екран
       disableVerticalSwipes(tg);
     }
   },[]);
@@ -93,10 +91,9 @@
               lastUpdate: data.autoTap.lastUpdate
             });
           };
-          setIsLoaded(true);
-          if (data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0) {
-            setShowBoostModal(true);
-            setShowBoostModalLocal(true)
+          if (data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0 && data.autoTap.timeLeft === 0) {
+              setShowBoostModal(true);
+              setShowBoostModalLocal(true);
           }
         } else if (data.type === 'error') {
           console.error(data.message);
@@ -195,6 +192,7 @@
           const tapingBalanceData = JSON.stringify({ taping_balance: tapingBalanceRef.current });
           const totalBalanceData = JSON.stringify({ total_balance: balanceRef.current });
 
+          console.log(`Saved energy - ${energyData}`)
           // Надсилання PUT запитів
           await Promise.all([
             fetch(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
@@ -304,7 +302,7 @@
             updateBalance(newBalance);
           }
         });
-
+          if (window.Telegram.WebApp.impactOccurred)
           window.Telegram.WebApp.impactOccurred('light'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
 
       } else {
@@ -390,7 +388,6 @@
         }));
         await axios.put(`${config.apiBaseUrl}/reset-accumulated-points/${telegramId}`);
 
-        setMessage(`Claimed ${autoTapData.accumulatedPoints} points!`);
         setShowBoostModal(false);
         setShowBoostModalLocal(false)
       } else {

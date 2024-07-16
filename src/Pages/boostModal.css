@@ -47,10 +47,19 @@
 
 
 /* Додаткові стилі для елементів модального вікна */
-.modal-content .boost-price,.modal-content .boost-description,.modal-content .boost-timer {
+.modal-content .boost-price,.modal-content ,.modal-content .boost-timer {
     font-size: 8vw;
     margin: 10px 0;
 }
+
+.boost-description{
+    position: relative;
+    font-size: 6.5vw;
+    margin: 10px ;
+    width: 80%;
+    left: 8% !important;
+}
+
 .boost-name{
     font-size: 10vw;
 }

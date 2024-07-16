@@ -24,23 +24,59 @@ const Boost = ({ telegramId,ws }) => {
         active: false,
         accumulatedPoints: 0,
         timeLeft: 0,
-        lastUpdate: null
+        lastUpdate: null,
+        cycleEnded: true
     });
-
+    const [energy, setEnergy] = useState(0);
     const [boosts, setBoosts] = useState(boostsData);  // Set initial boost list from file
     const [isLoaded, setIsLoaded] = useState(false);
     const [tapingGuruActive, setTapingGuruActive] = useState(false);
     const [selectedBoost, setSelectedBoost] = useState(null);
-    const [energy, setEnergy]=useState(0);
+    const checkAutoTapStatus = () => {
+        const storedAutoTapData = autoTapData;
+        const now = Date.now();
+        if (storedAutoTapData && storedAutoTapData.active) {
+            const timeElapsed = now - storedAutoTapData.lastUpdate;
 
+            if (timeElapsed >= storedAutoTapData.timeLeft) {
+                // Auto Tap time has ended
+                setAutoTapData(prevData => ({
+                    ...prevData,
+                    active: false,
+                    accumulatedPoints: 0,
+                    timeLeft: 0
+                }));
+                localStorage.setItem('autoTapData', JSON.stringify({
+                    ...storedAutoTapData,
+                    active: false,
+                    accumulatedPoints: 0,
+                    timeLeft: 0
+                }));
+                // Activate new AutoTap cycle
+                sendAutoTapActivation();
+
+                requestData();
+            } else {
+                // Update state with existing data
+                setAutoTapData({
+                    active: storedAutoTapData.active,
+                    accumulatedPoints: storedAutoTapData.accumulatedPoints,
+                    timeLeft: storedAutoTapData.timeLeft - timeElapsed,
+                    lastUpdate: storedAutoTapData.lastUpdate
+                });
+                const remainingTime = timeElapsed;
+                setTimeout(() => {
+                    requestData();
+                }, remainingTime);
+            }
+        }
+    }
     useEffect(() => {
         const initializeUserData = async () => {
             const cachedUserBalance = localStorage.getItem('userBalance');
             const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
             console.log('Cached user balance:', cachedUserBalance);
             console.log('CachedTaping user balance:', cachedTapingUserBalance);
-            const energy=localStorage.getItem('energy');
-            console.log(energy)
             if (cachedUserBalance !== null) {
                 setUserBalance(Number(cachedUserBalance));
             } else {
@@ -61,110 +97,109 @@ const Boost = ({ telegramId,ws }) => {
                 // Після збереження даних відкриваємо WebSocket
                 requestData();
                 checkAutoTapStatus();
-                setIsLoaded(true);
             } catch (error) {
                 console.error("Error saving balance:", error);
             }
         };
 
-        const checkAutoTapStatus = () => {
-            const storedAutoTapData = JSON.parse(localStorage.getItem('autoTapData'));
-            if (storedAutoTapData && storedAutoTapData.accumulatedPoints > 0 && !storedAutoTapData.active) {
-                const updatedBalance = userBalance + storedAutoTapData.accumulatedPoints;
-                setUserBalance(updatedBalance);
-                localStorage.setItem('userBalance', updatedBalance);
-                setAutoTapData(prevData => ({
-                    ...prevData,
-                    accumulatedPoints: 0
-                }));
-                setMessage(`Claimed ${storedAutoTapData.accumulatedPoints} points!`);
-                try {
-                    axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
-                        balance: updatedBalance
-                    });
-                    localStorage.setItem('autoTapData', JSON.stringify({
-                        ...autoTapData,
-                        accumulatedPoints: 0
-                    }));
-                } catch (error) {
-                    console.error('Ошибка при обновлении баланса на сервере:', error);
-                }
-            }
-        };
 
-        initializeUserData()
-
-    }, [telegramId]);
+        initializeUserData();
+        setIsLoaded(true);
+        },[telegramId]);
 
 
 
     const requestData = () => {
-        ws.send(JSON.stringify({
-            type: 'requestUserData',
-            telegram_id: telegramId
-        }));
-    };
+        setIsLoaded(false);
 
-    ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log('Received message:', data);
+        return new Promise((resolve, reject) => {
+            ws.send(JSON.stringify({
+                type: 'requestUserData',
+                telegram_id: telegramId
+            }));
 
-        if (data.type === 'userData') {
-            if (data.userTotalBalance != null) {
-                console.log('Setting user balance:', data.userTotalBalance); // Add logging
-                setUserBalance(data.userTotalBalance);
-            }
-            setDailyBoosts(data.dailyBoosts);
-            setBoosts(boosts.map(boost => {
-                if (boost.name === 'MULTITAP') {
-                    return { ...boost, level: data.multiTapLevel } ;
-                } else if (boost.name === 'ENERGY LIMIT') {
-                    return { ...boost, level: data.energyLimitLevel };
-                } else if (boost.name === 'RECHARGE SPEED') {
-                    return { ...boost, level: data.rechargingSpeed };
-                }
-                return boost;
-            }));
-            setEnergy(data.energy);
-            // Додаємо перевірку та оновлення стану для autoTapData
-            if (data.autoTap) {
-                setAutoTapData({
-                    active: data.autoTap.active,
-                    accumulatedPoints: data.autoTap.accumulatedPoints,
-                    timeLeft: data.autoTap.timeLeft,
-                    lastUpdate: data.autoTap.lastUpdate
-                });
-            } else {
-                setAutoTapData(autoTapData); // Встановлюємо стан за замовчуванням, якщо дані не отримані
-            }
-        } else if (data.type === 'boostUpdate') {
-            setBoosts(boosts.map(boost => {
-                if (boost.name === 'MULTITAP') {
-                    return { ...boost, level: data.boostLevels.multiTapLevel };
-                } else if (boost.name === 'ENERGY LIMIT') {
-                    return { ...boost, level: data.boostLevels.energyLimitLevel };
-                } else if (boost.name === 'RECHARGE SPEED') {
-                    return { ...boost, level: data.boostLevels.rechargingSpeed };
-                }
-                return boost;
-            }));
-            setUserBalance(data.userTotalBalance);
-        } else if(data.type === 'boostActivated'){
-            if (data.telegram_id === telegramId) {
-                setDailyBoosts(prevBoosts => ({
-                    ...prevBoosts,
-                    [data.boost]: {
-                        ...prevBoosts[data.boost],
-                        charges: data.chargesLeft
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log('Received message:', data);
+
+                if (data.type === 'userData') {
+                    setIsLoaded(false);
+                    if (data.userTotalBalance != null) {
+                        console.log('Setting user balance:', data.userTotalBalance);
+                        setUserBalance(data.userTotalBalance);
                     }
-                }));
-            }
-        } else if (data.type === 'energyMaximized') {
-            setEnergy(data.energy);
-        } else if (data.type === 'error') {
-            setMessage(data.message);
-        }
+                    setDailyBoosts(data.dailyBoosts);
+                    setBoosts(boosts.map(boost => {
+                        if (boost.name === 'MULTITAP') {
+                            return { ...boost, level: data.multiTapLevel };
+                        } else if (boost.name === 'ENERGY LIMIT') {
+                            return { ...boost, level: data.energyLimitLevel };
+                        } else if (boost.name === 'RECHARGE SPEED') {
+                            return { ...boost, level: data.rechargingSpeed };
+                        }
+                        return boost;
+                    }));
+                    setEnergy(data.energy);
+
+                    if (data.autoTap) {
+                        setAutoTapData({
+                            active: data.autoTap.active,
+                            accumulatedPoints: data.autoTap.accumulatedPoints,
+                            timeLeft: data.autoTap.timeLeft,
+                            lastUpdate: data.autoTap.lastUpdate,
+                            cycleEnded: data.autoTap.cycleEnded
+                        });
+                    } else {
+                        setAutoTapData(autoTapData);
+                    }
+
+                    setIsLoaded(true);
+                    resolve();  // Оповіщуємо, що дані були успішно отримані
+                } else if (data.type === 'boostUpdate') {
+                    setBoosts(boosts.map(boost => {
+                        if (boost.name === 'MULTITAP') {
+                            return { ...boost, level: data.boostLevels.multiTapLevel };
+                        } else if (boost.name === 'ENERGY LIMIT') {
+                            return { ...boost, level: data.boostLevels.energyLimitLevel };
+                        } else if (boost.name === 'RECHARGE SPEED') {
+                            return { ...boost, level: data.boostLevels.rechargingSpeed };
+                        }
+                        return boost;
+                    }));
+                    setUserBalance(data.userTotalBalance);
+                    resolve();  // Оповіщуємо, що дані були успішно отримані
+                } else if(data.type === 'boostActivated'){
+                    if (data.telegram_id === telegramId) {
+                        setDailyBoosts(prevBoosts => ({
+                            ...prevBoosts,
+                            [data.boost]: {
+                                ...prevBoosts[data.boost],
+                                charges: data.chargesLeft
+                            }
+                        }));
+                    }
+                    resolve();  // Оповіщуємо, що дані були успішно отримані
+                } else if (data.type === 'energyMaximized') {
+                    setEnergy(data.energy);
+                    resolve();  // Оповіщуємо, що дані були успішно отримані
+                } else if (data.type === 'error') {
+                    setMessage(data.message);
+                    reject(data.message);  // Оповіщуємо, що сталася помилка
+                }
+            };
+        });
     };
+
+    // Function to save auto tap data to the server
+        const saveAutoTapData = async () => {
+            try {
+                await axios.put(`${config.apiBaseUrl}/save-auto-tap-data/${telegramId}`, autoTapData);
+                console.log('AUTO TAP data saved successfully.');
+            } catch (error) {
+                console.error('Error saving AUTO TAP data:', error);
+            }
+        };
+
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -195,7 +230,7 @@ const Boost = ({ telegramId,ws }) => {
                     },
                     body: JSON.stringify({
                         telegram_id: telegramId,
-                        boostType: 'AUTO TAP',  // Вибір типу буста
+                        boostType: 'AUTO TAP',  // Type of the boost
                         price: autoTapPrice
                     })
                 });
@@ -204,16 +239,32 @@ const Boost = ({ telegramId,ws }) => {
                     const data = await response.json();
                     const updatedBalance = data.newBalance;
 
-                    // Оновлення балансу користувача
+                    // Update user's balance
                     setUserBalance(updatedBalance);
                     localStorage.setItem('userBalance', updatedBalance);
 
-                    // Виклик функції для активації AUTO TAP
+                    // Activate AUTO TAP
+                    const now = Date.now();
+                    const duration = 3 * 60 * 60 * 1000; // 3 hours
+                    setAutoTapData({
+                        active: true,
+                        accumulatedPoints: 0,
+                        timeLeft: duration,
+                        lastUpdate: now,
+                        cycleEnded: false
+                    });
+                    localStorage.setItem('autoTapData', JSON.stringify({
+                        active: true,
+                        accumulatedPoints: 0,
+                        timeLeft: duration,
+                        lastUpdate: now,
+                        cycleEnded: false
+                    }));
+
+                    // Notify server
                     sendAutoTapActivation();
 
-                    // Додаткові дії після успішної покупки
-                    requestData();
-                    setMessage('AUTO TAP purchased! Points will be added automatically for the next 3 hours.');
+                    setMessage('AUTO TAP purchased and activated! Points will be added automatically for the next 3 hours.');
                 } else {
                     const errorData = await response.json();
                     throw new Error(errorData.message || 'Error purchasing boost');
@@ -222,22 +273,21 @@ const Boost = ({ telegramId,ws }) => {
                 console.error('Error purchasing AUTO TAP boost:', error);
                 setMessage('Error purchasing AUTO TAP.');
             }
+        } else if (autoTapData.active) {
+            setMessage('AUTO TAP is already active.');
         } else {
             setMessage('Insufficient balance for purchasing AUTO TAP.');
         }
     };
 
 
+
     const handleClaimPoints = async () => {
-        if (autoTapData.accumulatedPoints > 0) {
+        if (autoTapData.accumulatedPoints >= 0) {
             const updatedBalance = userBalance + autoTapData.accumulatedPoints;
             setUserBalance(updatedBalance);
             localStorage.setItem('userBalance', updatedBalance);
 
-            // Відправка оновленого балансу на сервер
-            await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
-                taping_balance: updatedBalance
-            });
             setAutoTapData((prevData) => ({
                 ...prevData,
                 accumulatedPoints: 0
@@ -247,8 +297,15 @@ const Boost = ({ telegramId,ws }) => {
                 accumulatedPoints: 0
             }));
             await axios.put(`${config.apiBaseUrl}/reset-accumulated-points/${telegramId}`);
+
             setMessage(`Claimed ${autoTapData.accumulatedPoints} points!`);
             setSelectedBoost(null);
+
+            sendAutoTapActivation();
+            requestData();
+            checkAutoTapStatus();
+            saveAutoTapData();
+
         } else {
             setMessage('No points to claim.');
         }
@@ -258,8 +315,19 @@ const Boost = ({ telegramId,ws }) => {
         setSelectedBoost(boost);
     };
 
-    const handleBoostClick = (boost) => {
-        setSelectedBoost(boost);
+    const handleBoostClick = async (boost) => {
+        try {
+            // Виклик асинхронної функції для отримання даних та очікування завершення
+            if (boost.name === 'AUTO TAP') {
+                // Виклик асинхронної функції для отримання даних та очікування завершення
+                await requestData();
+            }
+            // Після отримання та обробки даних оновлюємо стан
+            setSelectedBoost(boost);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            // Обробка помилки
+        }
     };
 
     const sendAutoTapActivation = async () => {
@@ -294,7 +362,6 @@ const Boost = ({ telegramId,ws }) => {
 
         const updatedBalance = userBalance - price;
 
-        setIsLoaded(false);
 
         try {
             const response = await axios.post(`${config.apiBaseUrl}/purchase-boost`, {
@@ -316,7 +383,6 @@ const Boost = ({ telegramId,ws }) => {
             console.error('Error purchasing boost:', error);
             setMessage('Error purchasing boost. Please try again.');
         } finally {
-            setIsLoaded(true);
         }
 
         setSelectedBoost(null);
@@ -503,7 +569,7 @@ const Boost = ({ telegramId,ws }) => {
             </header>
             <div className="dayli-boost-text gold-style">YOUR DAILY BOOSTERS:</div>
             <div className="daily-boosts">
-                <DailyBoostItem text="tapingGuru" txt="TAPING GURU" reward="3" image='/boost/fire.b.png' description="+5 points per click for 1 min" />
+                <DailyBoostItem text="tapingGuru" txt="TAPING GURU" reward="3" image='/boost/fire.b.png' description="x5 points per click for 20 sec" />
                 <DailyBoostItem text="fullTank" txt="FULL TANK" reward="3" image='/boost/power.png'  description="Set full for yours energy"/>
             </div>
             <div className="boosters-text gold-style">BOOSTERS:</div>
@@ -522,12 +588,23 @@ const Boost = ({ telegramId,ws }) => {
                     text="AUTO TAP"
                     price={200000}
                     image='/boost/click.png'
-                    description="Auto click by 3 hours"
+                    description="Auto Tap Bot will mining coins for you every 3 hours. Just don`t forget claim accamulated coins!"
                 />
             </div>
             {message && <CompletionMessage message={message} onClose={closeMessage} />}
-            {selectedBoost && <BoostModal boost={selectedBoost} onClose={handleModalClose} onBuy={handleBuyBoost} onActivateTG={handleActivateTapingGuru} onActiveFT={handleActivateFullTank} autoTapData={autoTapData} handleClaimPoints={handleClaimPoints} telegram_id={telegramId} ws={ws}/>}
-        </div>
+            {selectedBoost &&
+                <BoostModal
+                    boost={selectedBoost}
+                    onClose={handleModalClose}
+                    onBuy={handleBuyBoost}
+                    onActivateTG={handleActivateTapingGuru}
+                    onActiveFT={handleActivateFullTank}
+                    autoTapData={autoTapData}
+                    handleClaimPoints={handleClaimPoints}
+                    telegram_id={telegramId}
+                    ws={ws}
+                />}
+            </div>
     );
 };
 

@@ -4,11 +4,30 @@ import './boostModal.css'; // Ensure you have the appropriate styles
 const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapData, handleClaimPoints }) => {
     const [startY, setStartY] = useState(null);
     const [currentY, setCurrentY] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(autoTapData.timeLeft);
     useEffect(() => {
         const modal = document.querySelector('.modal');
         modal.classList.add('active');
         return () => modal.classList.remove('active');
     }, []);
+
+    useEffect(() => {
+        if (autoTapData.active && autoTapData.timeLeft > 0) {
+            const timer = setInterval(() => {
+                setTimeLeft((prevTimeLeft) => {
+                    const newTimeLeft = Math.max(prevTimeLeft - 1000, 0);
+                    if (newTimeLeft === 0) {
+                        onClose();
+                        clearInterval(timer);
+                    }
+                    return newTimeLeft;
+                });
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+    }, [autoTapData.active, autoTapData.timeLeft]);
+
+
     if (!boost) return null;
     const isTapingGuru = boost.name === 'TAPING GURU';
     const isFullTank = boost.name === 'FULL TANK';
@@ -25,12 +44,14 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
         onClose();
     };
 
-    // Format the remaining time into hours and minutes
+    // Format the remaining time into hours, minutes, and seconds
     const formatRemainingTime = (milliseconds) => {
         const hours = Math.floor(milliseconds / (1000 * 60 * 60));
         const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
-        return `${hours}h ${minutes}m`;
+        const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
+        return `${hours}h ${minutes}m ${seconds}s`;
     };
+
     const handleOverlayClick = (event) => {
         if (!event.target.closest('.modal-content')) {
             onClose();
@@ -73,9 +94,19 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
 
                 {isAutoTap && autoTapData.active ? (
                     <div className="auto-tap-info">
-                        <div className="auto-tap-timer">Time left: {formatRemainingTime(autoTapData.timeLeft)}</div>
-                        <div className="auto-tap-points">Accumulated points: {autoTapData.accumulatedPoints}</div>
-                        <button className="claim-points-button blue-style" onClick={handleClaimPoints}>Claim Points</button>
+                        <div className="auto-tap-timer">Time left: {formatRemainingTime(timeLeft)}</div>
+                        <p className="boost-description">{boost.description}</p>
+
+                        {timeLeft === 0 && (
+                            <>
+                                <div className="auto-tap-points">Accumulated
+                                    points: {autoTapData.accumulatedPoints}</div>
+                                <button className="claim-points-button blue-style"
+                                        onClick={handleClaimPoints}>
+                                    Claim Points
+                                </button>
+                            </>
+                        )}
                     </div>
                 ) : (
                     <>
