@@ -53,11 +53,8 @@
 }
 
 .boost-description{
-    position: relative;
     font-size: 6.5vw;
     margin: 10px ;
-    width: 80%;
-    left: 8% !important;
 }
 
 .boost-name{

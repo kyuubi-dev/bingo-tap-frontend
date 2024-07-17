@@ -104,7 +104,6 @@ const Boost = ({ telegramId,ws }) => {
 
 
         initializeUserData();
-        setIsLoaded(true);
         },[telegramId]);
 
 
@@ -588,7 +587,7 @@ const Boost = ({ telegramId,ws }) => {
                     text="AUTO TAP"
                     price={200000}
                     image='/boost/click.png'
-                    description="Auto Tap Bot will mining coins for you every 3 hours. Just don`t forget claim accamulated coins!"
+                    description="Auto Tap Bot will mining coins  every 3 hours."
                 />
             </div>
             {message && <CompletionMessage message={message} onClose={closeMessage} />}

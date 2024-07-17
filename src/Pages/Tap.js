@@ -388,7 +388,7 @@
 
 
     const animatePlusOne = (startX, startY, text, callback) => {
-      const coinElement = document.querySelector('.balance-display img');
+      const coinElement = document.querySelector('.balance-display');
       const coinRect = coinElement.getBoundingClientRect();
       const endX = coinRect.left + coinRect.width / 2;
       const endY = coinRect.top + coinRect.height / 2;
@@ -401,6 +401,7 @@
       document.body.appendChild(plusOne);
 
       requestAnimationFrame(() => {
+        plusOne.style.transition = 'transform 2s, opacity 2s';
         plusOne.style.transform = `translate(${endX - startX}px, ${endY - startY}px)`;
         plusOne.style.opacity = '0';
       });
@@ -410,7 +411,7 @@
         if (callback) {
           callback();
         }
-      }, 500);
+      }, 2000);
     };
 
     const energyBarWidth = (energy / maxEnergy) * 100 + '%';
