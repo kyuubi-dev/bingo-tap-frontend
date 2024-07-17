@@ -30,6 +30,8 @@
       timeLeft: 0,
       lastUpdate: null
     });
+    const energyQueue = useRef([]);
+    const tapsCount = useRef(0);
     const [showBoostModal, setShowBoostModalLocal] = useState(false);
     const [message, setMessage] = useState(null);
     const energyRef = useRef(energy);
@@ -231,9 +233,6 @@
     };
 
     useEffect(() => {
-      console.log("userBalance -" + userBalance);
-      console.log("userTapingBalance -" + tapingBalance);
-      // Збереження балансу та енергії в локальне сховище при їх зміні
       localStorage.setItem('userBalance', userBalance !== null ? userBalance : 0);
       localStorage.setItem('userTapingBalance', tapingBalance !== null ? tapingBalance : 0);
       localStorage.setItem('energy', energy !== null ? energy : 0);
@@ -305,7 +304,16 @@
         });
           if (window.Telegram.WebApp.impactOccurred)
           window.Telegram.WebApp.impactOccurred('light'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
-
+        tapsCount.current += 1;
+        // Add energy data to the queue every 10 taps
+        if (tapsCount.current >= 10) {
+          tapsCount.current = 0;
+          energyQueue.current.push({
+            telegramId,
+            energy: energyRef.current,
+          });
+          processEnergyQueue();
+        }
       } else {
         console.log('Not enough energy to tap');
       }
@@ -320,6 +328,41 @@
         handleTap(event.clientX, event.clientY);
       }
     }, [handleTap]);
+
+    const processEnergyQueue = async () => {
+      if (energyQueue.current.length === 0) {
+        return;
+      }
+
+      const energyData = energyQueue.current.shift();
+      try {
+        const response = await fetch(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ newEnergy: energyData.energy }),
+          keepalive: true,
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Network response was not ok: ${errorText}`);
+        }
+
+        console.log('Energy saved successfully');
+      } catch (error) {
+        console.error('Error saving energy:', error);
+        // Optionally, you can re-add the failed request to the queue for retry
+        energyQueue.current.push(energyData);
+      } finally {
+        // Process the next item in the queue
+        if (energyQueue.current.length > 0) {
+          processEnergyQueue();
+        }
+      }
+    };
+
 
     const animatePlusOne = (startX, startY, text, callback) => {
       const coinElement = document.querySelector('.balance-display img');
