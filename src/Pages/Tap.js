@@ -306,7 +306,7 @@
           window.Telegram.WebApp.impactOccurred('light'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
         tapsCount.current += 1;
         // Add energy data to the queue every 10 taps
-        if (tapsCount.current >= 10) {
+        if (tapsCount.current >= 25) {
           tapsCount.current = 0;
           energyQueue.current.push({
             telegramId,
@@ -335,24 +335,47 @@
       }
 
       const energyData = energyQueue.current.shift();
-      try {
-        const response = await fetch(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ newEnergy: energyData.energy }),
-          keepalive: true,
-        });
+      const tapingBalanceData = JSON.stringify({ taping_balance: tapingBalanceRef.current });
+      const totalBalanceData = JSON.stringify({ total_balance: balanceRef.current });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Network response was not ok: ${errorText}`);
+      try {
+        const responses = await Promise.all([
+          fetch(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ newEnergy: energyData.energy }),
+            keepalive: true,
+          }),
+          fetch(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: tapingBalanceData,
+            keepalive: true,
+          }),
+          fetch(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: totalBalanceData,
+            keepalive: true,
+          }),
+        ]);
+
+        for (const response of responses) {
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Network response was not ok: ${errorText}`);
+          }
         }
 
-        console.log('Energy saved successfully');
+        console.log('All data saved successfully');
       } catch (error) {
-        console.error('Error saving energy:', error);
+        console.error('Error saving data:', error);
         // Optionally, you can re-add the failed request to the queue for retry
         energyQueue.current.push(energyData);
       } finally {
