@@ -17,13 +17,13 @@ const LeagueProgress = ({ telegramId, ws }) => {
         const energy = localStorage.getItem('energy');
         console.log('Cached user balance:', cachedUserBalance);
         console.log('CachedTaping user balance:', cachedTapingUserBalance);
-        if (cachedUserBalance !== null) {
-            setUserBalance(parseInt(cachedUserBalance, 10));
+        if (cachedTapingUserBalance !== null) {
+            setUserBalance(parseInt(cachedTapingUserBalance, 10));
         } else {
             setUserBalance(0);
         }
-        if (cachedUserBalance) {
-            setUserBalance(parseInt(cachedUserBalance, 10));
+        if (cachedTapingUserBalance) {
+            setUserBalance(parseInt(cachedTapingUserBalance, 10));
         }
 
         try {
