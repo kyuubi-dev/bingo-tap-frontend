@@ -113,7 +113,6 @@ const Boost = ({ telegramId,ws }) => {
 
 
     const requestData = () => {
-        setIsLoaded(false);
 
         return new Promise((resolve, reject) => {
             ws.send(JSON.stringify({
@@ -301,7 +300,6 @@ const Boost = ({ telegramId,ws }) => {
             }));
             await axios.put(`${config.apiBaseUrl}/reset-accumulated-points/${telegramId}`);
 
-            setMessage(`Claimed ${autoTapData.accumulatedPoints} points!`);
             setSelectedBoost(null);
 
             sendAutoTapActivation();
