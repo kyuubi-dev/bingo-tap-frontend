@@ -16,6 +16,11 @@ function Team({ userId, botName }) {
             // Отримання даних користувача, які зберігаються локально
             const cachedUserBalance = localStorage.getItem('userBalance');
             const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
+            const energy = localStorage.getItem('energy');
+            await axios.put(`${config.apiBaseUrl}/save-energy/${userId}`, {
+                newEnergy: parseInt(energy, 10)
+            });
+
             await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${userId}`, {
                 taping_balance: cachedTapingUserBalance
             });

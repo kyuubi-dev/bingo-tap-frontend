@@ -15,7 +15,10 @@ const Stat = ({telegramId}) => {
         const initializeUserData = async () => {
             const cachedUserBalance = localStorage.getItem('userBalance');
             const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
-
+            const energy = localStorage.getItem('energy');
+            await axios.put(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
+                newEnergy: parseInt(energy, 10)
+            });
             await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
                 taping_balance: cachedTapingUserBalance
             });

@@ -2,13 +2,50 @@ import React, { useEffect, useState } from 'react';
 import leagues from './leaguaData';
 import './RequiredLeagues.css';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import config from "../config";
 const LeagueProgress = ({ telegramId, ws }) => {
     const [userData, setUserData] = useState({});
     const [currentLeagueIndex, setCurrentLeagueIndex] = useState(0);
     const [userLeague, setUserLeague] = useState(null);
     const [userBalance, setUserBalance] = useState(null);
     const navigate = useNavigate();
+
+    const initializeUserData = async () => {
+        const cachedUserBalance = localStorage.getItem('userBalance');
+        const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
+        const energy = localStorage.getItem('energy');
+        console.log('Cached user balance:', cachedUserBalance);
+        console.log('CachedTaping user balance:', cachedTapingUserBalance);
+        if (cachedUserBalance !== null) {
+            setUserBalance(parseInt(cachedUserBalance, 10));
+        } else {
+            setUserBalance(0);
+        }
+        if (cachedUserBalance) {
+            setUserBalance(parseInt(cachedUserBalance, 10));
+        }
+
+        try {
+            await axios.put(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
+                newEnergy: parseInt(energy, 10)
+            });
+            await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
+                taping_balance: parseInt(cachedTapingUserBalance, 10)
+            });
+            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+                total_balance: parseInt(cachedUserBalance, 10)
+            });
+
+            // Після збереження даних відкриваємо WebSocket
+        } catch (error) {
+            console.error("Error saving balance:", error);
+        }
+    };
+
+
     useEffect(() => {
+        initializeUserData();
         ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
 
         ws.onmessage = (event) => {
@@ -17,10 +54,6 @@ const LeagueProgress = ({ telegramId, ws }) => {
 
             if (data.type === 'userData') {
                 setUserData(data);
-                if (data.userTotalBalance != null) {
-                    setUserBalance(data.userTapingBalance);
-                    console.log('Setting user balance:', data.userTotalBalance);
-                }
                 if (data.league != null) setUserLeague(data.league);
             }
         };

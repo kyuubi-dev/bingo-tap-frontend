@@ -65,6 +65,8 @@ const Task = ({ telegramId, ws }) => {
             // Отримання даних користувача, які зберігаються локально
             const cachedUserBalance = localStorage.getItem('userBalance');
             const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
+            const energy = localStorage.getItem('energy');
+
             if (cachedUserBalance !== null) {
                 setUserBalance(Number(cachedUserBalance));
             } else {
@@ -75,6 +77,9 @@ const Task = ({ telegramId, ws }) => {
             }
             console.log(cachedTapingUserBalance)
             setTapingBalance(cachedTapingUserBalance);
+            await axios.put(`${config.apiBaseUrl}/save-energy/${telegramId}`, {
+                newEnergy: parseInt(energy, 10)
+            });
             await axios.put(`${config.apiBaseUrl}/save-tapingBalance/${telegramId}`, {
                 taping_balance: cachedTapingUserBalance !== null ? Number(cachedTapingUserBalance) : 0
             });
@@ -110,7 +115,7 @@ const Task = ({ telegramId, ws }) => {
     };
 
     const handleGoldButtonClick = () => {
-        setSelectedTab('leagues');
+            navigate('/league-progress');
     };
 
     const handleTaskCompletion = async (taskId, reward) => {
