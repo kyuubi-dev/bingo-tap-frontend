@@ -39,7 +39,7 @@
     const tapingGuruActiveRef = useRef(tapingGuruActive);
     const [tapingBalance, setTapingBalance] = useState(0);
     const tapingBalanceRef = useRef(0);
-    window.Telegram.WebApp.disableVerticalSwipes()
+    window.Telegram.WebApp.isVerticalSwipesEnabled = false;
     useEffect(() => {
       energyRef.current = energy;
     }, [energy]);
@@ -53,17 +53,7 @@
     useEffect(() => {
       tapingBalanceRef.current = tapingBalance;
     }, [tapingBalance]);
-  useEffect(()=>{
-    if (window.Telegram && window.Telegram.WebApp) {
-      const tg = window.Telegram.WebApp;
-      disableVerticalSwipes(tg);
-    }
-  },[]);
-    const disableVerticalSwipes = (tg) => {
-      if (tg.isVerticalSwipesEnabled !== undefined) {
-        tg.isVerticalSwipesEnabled = false; // Вимикає вертикальні свайпи
-      }
-    };
+
     useEffect(() => {
         ws.send(JSON.stringify({
           type: 'requestUserData',
@@ -302,11 +292,11 @@
             updateBalance(newBalance);
           }
         });
-          if (window.Telegram.WebApp.HapticFeedback.impactOccurred)
-          window.Telegram.WebApp.HapticFeedback.impactOccurred('hard'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
+          if (window.Telegram.WebApp)
+          window.Telegram.WebApp.HapticFeedback.impactOccurred('medium'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
         tapsCount.current += 1;
         // Add energy data to the queue every 10 taps
-        if (tapsCount.current >= 25) {
+        if (tapsCount.current >= 50) {
           tapsCount.current = 0;
           energyQueue.current.push({
             telegramId,
@@ -411,7 +401,7 @@
         if (callback) {
           callback();
         }
-      }, 2000);
+      }, 1000);
     };
 
     const energyBarWidth = (energy / maxEnergy) * 100 + '%';
