@@ -302,8 +302,8 @@
             updateBalance(newBalance);
           }
         });
-          if (window.Telegram.WebApp.impactOccurred)
-          window.Telegram.WebApp.impactOccurred('light'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
+          if (window.Telegram.WebApp.HapticFeedback.impactOccurred)
+          window.Telegram.WebApp.HapticFeedback.impactOccurred('hard'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
         tapsCount.current += 1;
         // Add energy data to the queue every 10 taps
         if (tapsCount.current >= 25) {
