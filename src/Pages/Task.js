@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
 import leagues from './leaguaData';
 import tasksData from './tasksData.js'; // Import the tasks array
+
 const Task = ({ telegramId, ws }) => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -252,9 +253,25 @@ const Task = ({ telegramId, ws }) => {
                         <InviteFriendItem text="INVITE 25 FRIENDS" reward="500 000" navigate={navigate} image='./tasks/people3.png'   referralCount={referralCount}      requiredReferrals={25}
                                           onClaim={() => handleReferralTaskCompletion('invite25', 500000)}
                                           xisCompleted={referralTasksCompleted['invite25'] || false}/>
-                        <InviteFriendItem text="INVITE 100 FRIENDS" reward="1 000 000" navigate={navigate} image='./tasks/people3.png'    referralCount={referralCount}  requiredReferrals={100}
+                        <InviteFriendItem text="INVITE 100 FRIENDS" reward="1 M" navigate={navigate} image='./tasks/people3.png'    referralCount={referralCount}  requiredReferrals={100}
                                           onClaim={() => handleReferralTaskCompletion('invite100', 1000000)}
                                           xisCompleted={referralTasksCompleted['invite100'] || false}/>
+                        <InviteFriendItem text="INVITE 250 FRIENDS" reward="2.5 M" navigate={navigate} image='./tasks/people3.png'    referralCount={referralCount}  requiredReferrals={250}
+                                          onClaim={() => handleReferralTaskCompletion('invite250', 2500000)}
+                                          xisCompleted={referralTasksCompleted['invite250'] || false}/>
+                        <InviteFriendItem text="INVITE 500 FRIENDS" reward="5 M" navigate={navigate} image='./tasks/people3.png'    referralCount={referralCount}  requiredReferrals={500}
+                                          onClaim={() => handleReferralTaskCompletion('invite500', 5000000)}
+                                          xisCompleted={referralTasksCompleted['invite500'] || false}/>
+                        <InviteFriendItem text="INVITE 1000 FRIENDS" reward="10 M" navigate={navigate} image='./tasks/people3.png'    referralCount={referralCount}  requiredReferrals={1000}
+                                          onClaim={() => handleReferralTaskCompletion('invite1000', 10000000)}
+                                          xisCompleted={referralTasksCompleted['invite1000'] || false}/>
+                        <InviteFriendItem text="INVITE 10 000 FRIENDS" reward="100 M" navigate={navigate} image='./tasks/people3.png'    referralCount={referralCount}  requiredReferrals={10000}
+                                          onClaim={() => handleReferralTaskCompletion('invite10000', 100000000)}
+                                          xisCompleted={referralTasksCompleted['invite10000'] || false}/>
+                        <InviteFriendItem text="INVITE 100 000 FRIENDS" reward="1 B" navigate={navigate} image='./tasks/people3.png'    referralCount={referralCount}  requiredReferrals={100000}
+                                          onClaim={() => handleReferralTaskCompletion('invite100000', 1000000000)}
+                                          xisCompleted={referralTasksCompleted['invite100000'] || false}/>
+
                     </div>
                 );
             default:
@@ -361,7 +378,15 @@ const TaskItem = React.memo(({ task, onCompletion,xisCompleted, url })=> {
     </a>
 });
 
-
+const formatBalance = (balance) => {
+    if (balance >= 1_000_000_000) {
+        return (balance / 1_000_000_000).toFixed(1) + ' B';
+    } else if (balance >= 1_000_000) {
+        return (balance / 1_000_000).toFixed(1) + ' M';
+    } else {
+        return balance.toLocaleString(); // To add commas for thousands
+    }
+};
 
 const LeagueItem = ({ league, completed, onClaim,leagueProgress }) => {
     if (!leagueProgress || !Array.isArray(leagueProgress)) {
@@ -380,7 +405,7 @@ const LeagueItem = ({ league, completed, onClaim,leagueProgress }) => {
             </div>
             <div className="task-reward leagua">
                 <img src='./coin.png' alt="coin" className="reward-icon"/>
-                <span className='gold-style'>{league.reward}</span>
+                <span className='gold-style'>{formatBalance(league.reward)}</span>
             </div>
             <button
                 className="claim-button blue-style"

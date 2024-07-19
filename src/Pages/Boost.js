@@ -29,7 +29,7 @@ const Boost = ({ telegramId,ws }) => {
     });
     const [energy, setEnergy] = useState(0);
     const [boosts, setBoosts] = useState(boostsData);  // Set initial boost list from file
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(true);
     const [tapingGuruActive, setTapingGuruActive] = useState(false);
     const [selectedBoost, setSelectedBoost] = useState(null);
     const checkAutoTapStatus = () => {
@@ -71,7 +71,8 @@ const Boost = ({ telegramId,ws }) => {
             }
         }
     }
-    useEffect(() => {
+    useEffect(() => { setIsLoaded(false);
+
         const initializeUserData = async () => {
             const cachedUserBalance = localStorage.getItem('userBalance');
             const cachedTapingUserBalance = localStorage.getItem('userTapingBalance');
@@ -125,7 +126,7 @@ const Boost = ({ telegramId,ws }) => {
                 console.log('Received message:', data);
 
                 if (data.type === 'userData') {
-                    setIsLoaded(false);
+
                     if (data.userTotalBalance != null) {
                         console.log('Setting user balance:', data.userTotalBalance);
                         setUserBalance(data.userTotalBalance);
@@ -512,7 +513,7 @@ const Boost = ({ telegramId,ws }) => {
                 {dailyBoosts[text].charges === 0 ? (
                     <div className="boost-timer">{formatRemainingTime(dailyBoosts[text].remainingTime)}</div>
                 ) : (<div className="daily-boost-h">
-                    <span className="gold-style">{dailyBoosts[text]?.charges ?? 0}/{reward}</span>
+                    <span className="gold-style boost-price">{dailyBoosts[text]?.charges ?? 0}/{reward}</span>
                 </div>)}
 
             </div>
@@ -541,7 +542,7 @@ const Boost = ({ telegramId,ws }) => {
                         <div className="boost-price">
                             <img src="/coin.png" alt="Price-Coin" className="price-icon"/>
                             <span
-                                className="gold-style">{isTapBot ? price : nextLevelData?.price || 'MAX LVL'}</span>
+                                className="gold-style boost-price">{isTapBot ? formatBalance(price) : formatBalance(nextLevelData?.price) || 'MAX LVL'}</span>
                         </div>
                         {!isTapBot && <div className="boost-level blue-style">Level {level}</div>}
 

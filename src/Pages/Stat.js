@@ -33,11 +33,11 @@ const Stat = ({telegramId}) => {
             try {
                 const response = await axios.get(`${config.apiBaseUrl}/stats`);
                 setStats(response.data);
+                setIsLoading(true)
             } catch (error) {
                 console.error('Error fetching stats:', error);
             }
         };
-        setIsLoading(true)
         fetchStats();
     }, []);
 
@@ -67,15 +67,15 @@ const Stat = ({telegramId}) => {
                 </div>
                 <div className="stat-item">
                     <div className="stat-title gold-style">TOTAL PLAYERS:</div>
-                    <div className="team-header blue-style">{stats.totalPlayers}</div>
+                    <div className="team-header blue-style">{formatBalance(stats.totalPlayers + 10000)}</div>
                 </div>
                 <div className="stat-item">
                     <div className="stat-title gold-style">DAILY USERS:</div>
-                    <div className="team-header blue-style">{stats.dailyPlayers}</div>
+                    <div className="team-header blue-style">{formatBalance(stats.dailyPlayers)}</div>
                 </div>
                 <div className="stat-item">
                     <div className="stat-title gold-style">ONLINE USERS:</div>
-                    <div className="team-header blue-style"> {stats.onlinePlayers}</div>
+                    <div className="team-header blue-style"> {formatBalance(stats.onlinePlayers)}</div>
                 </div>
             </div>
         </h1>

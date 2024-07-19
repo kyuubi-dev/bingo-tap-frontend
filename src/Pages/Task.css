@@ -200,15 +200,16 @@ body {
 }
 
 .tab {
-  font-size: 6vw;
+  font-size: 4vw;
 }
 
 .task-text {
-  font-size: 6vw;
+  font-size: 5vw;
 }
 
 .task-reward span {
-  font-size: 6vw;
+  font-size: 5vw;
+
 }
 
 .task-item.leagua {

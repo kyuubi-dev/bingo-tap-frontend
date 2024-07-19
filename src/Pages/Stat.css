@@ -37,6 +37,7 @@ body {
     display: flex;
     align-items: center;
     text-align: center;
+    justify-content: center
   }
   .stat-title {
     font-size: 8vw;
@@ -53,6 +54,7 @@ body {
     height: auto;
   }
   .team-header{
+    margin-top:5%;
     font-size: 8vw;
   }
   .team-header.stat{

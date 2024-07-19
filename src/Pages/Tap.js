@@ -1,11 +1,10 @@
-  import React, { useState, useEffect,useCallback, useRef } from 'react';
+  import React, { useState, useEffect,useCallback, useRef,useContext } from 'react';
   import './Tap.css';
   import config from "../config";
   import { useNavigate, useLocation } from 'react-router-dom';
   import LoadingScreen from './LoadingScreen';
   import leagues from "./leaguaData";
   import axios from 'axios';
-  import useSwipe from './useSwipe'; // Импортируем хук
   import BoostModal from './boostModal.js';
   import CompletionMessage from "./ModelMessage"; // Импортируем BoostModal
   function Tap({ telegramId , ws,setShowBoostModal  }) {
@@ -14,7 +13,6 @@
     const [userBalance, setUserBalance] = useState(0);
     const [userLeague, setUserLeague] = useState('');
     const [multitapLevel, setMultitapLevel] = useState(1);
-    const [isLoaded, setIsLoaded] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const [tapingGuruActive, setTapingGuruActive] = useState(location.state?.tapingGuruActive || false); // додано для Taping Guru
@@ -30,6 +28,7 @@
       timeLeft: 0,
       lastUpdate: null
     });
+    const [isLoaded, setIsLoaded] = useState(false);
     const energyQueue = useRef([]);
     const tapsCount = useRef(0);
     const [showBoostModal, setShowBoostModalLocal] = useState(false);
@@ -59,10 +58,11 @@
           type: 'requestUserData',
           telegram_id: telegramId
         }));
-      setIsLoaded(true);
+
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.type === 'userData') {
+          setIsLoaded(false);
           if (data.userTotalBalance != null) {
             console.log('Setting user balance:', data.userTotalBalance); // Add logging
             setUserBalance(data.userTotalBalance);
@@ -83,10 +83,11 @@
               lastUpdate: data.autoTap.lastUpdate
             });
           };
-          if (data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0 && data.autoTap.timeLeft === 0) {
+          if (data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0) {
               setShowBoostModal(true);
               setShowBoostModalLocal(true);
           }
+          setIsLoaded(true);
         } else if (data.type === 'error') {
           console.error(data.message);
         }
@@ -139,7 +140,7 @@
 
     useEffect(() => {
       const saveDataOnRouteChange = async () => {
-        if (isLoaded &&  energy !== maxEnergy) {
+        if (  energy !== maxEnergy) {
           console.log(userBalance)
           console.log(tapingBalance)
           try {
@@ -156,7 +157,7 @@
       return () => {
         saveDataOnRouteChange();
       };
-    }, [location, isLoaded]);
+    }, [location]);
 
 
     // Save balance on route change
@@ -308,7 +309,7 @@
       }
     }, [calculatePointsEarned, multitapLevel, tapingGuruActive, userBalance, updateBalance]);
     const handleEvent = useCallback((event) => {
-      if (!isLoaded) {
+      if (isLoaded) {
         console.log('Data not loaded yet');
         return;
       }
@@ -414,10 +415,10 @@
       navigate('/league-progress');
     };
 
+
     if (!isLoaded) {
       return <LoadingScreen />;
     }
-
     const handleCloseModal = () => {
       setShowBoostModal(false);
       setShowBoostModalLocal(false)

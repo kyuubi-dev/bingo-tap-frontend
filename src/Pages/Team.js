@@ -118,7 +118,7 @@ function Team({ userId, botName }) {
             <div className="Invite-link">
                 <div className="invite-text blue-style">MY INVITE LINK:</div>
                 <a href={inviteLink} className="invite-url">{inviteLink}</a>
-                <button className="copy-button blue-style" onClick={handleCopyClick}>{copyButtonText}</button>
+                <button className=" copy-button copy-button2 blue-style" onClick={handleCopyClick}>{copyButtonText}</button>
             </div>
             <div className="Team-section">
                 <div className="team-header blue-style">MY TEAM:</div>

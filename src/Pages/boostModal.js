@@ -96,8 +96,6 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
                     <div className="auto-tap-info">
                         <div className="auto-tap-timer">Time left: {formatRemainingTime(timeLeft)}</div>
                         <p className="boost-description">{boost.description}</p>
-
-                        {timeLeft === 0 && (
                             <>
                                 <div className="auto-tap-points">Accumulated
                                     points: {autoTapData.accumulatedPoints}</div>
@@ -106,7 +104,6 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
                                     Claim Points
                                 </button>
                             </>
-                        )}
                     </div>
                 ) : (
                     <>
