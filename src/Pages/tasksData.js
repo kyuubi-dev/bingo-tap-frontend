@@ -32,7 +32,7 @@ const tasksData = [
     {
         reward: 300000,
         task_id: 11,
-        task_name: "Follow X MetaBingo",
+        task_name: "FOLLOW X METABINGO",
         url: "https://x.com/meta_bingo_club",
         _id: "6683002a32132131b5c5ef58922"
     },
