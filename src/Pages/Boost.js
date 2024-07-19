@@ -71,7 +71,7 @@ const Boost = ({ telegramId,ws }) => {
             }
         }
     }
-    useEffect(() => { setIsLoaded(false);
+    useEffect(() => {
 
         const initializeUserData = async () => {
             const cachedUserBalance = localStorage.getItem('userBalance');
@@ -156,7 +156,6 @@ const Boost = ({ telegramId,ws }) => {
                         setAutoTapData(autoTapData);
                     }
 
-                    setIsLoaded(true);
                     resolve();  // Оповіщуємо, що дані були успішно отримані
                 } else if (data.type === 'boostUpdate') {
                     setBoosts(boosts.map(boost => {
@@ -494,9 +493,6 @@ const Boost = ({ telegramId,ws }) => {
         return `${hours}:${minutes}:${seconds}`;
     };
 
-    if (!isLoaded) {
-        return <LoadingScreen />;
-    }
 
     const DailyBoostItem = ({ text,txt, reward, image, description }) => {
         const isInactive = dailyBoosts[text]?.charges === 0;
