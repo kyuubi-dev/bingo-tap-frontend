@@ -53,8 +53,11 @@
 }
 
 .boost-description{
-    font-size: 5.5vw;
-    margin: 10px ;
+    font-size: 5vw;
+    margin-top: 10px ;
+    margin-left: 20px;
+    margin-right: 25px;
+    text-wrap: auto;
 }
 
 .boost-name{

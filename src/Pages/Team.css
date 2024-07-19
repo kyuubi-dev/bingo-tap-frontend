@@ -112,11 +112,12 @@
   margin-top: 10px;
   grid-column: 1 / span 2;
   margin-left: 10px;
+  margin-right: 10px;
   z-index: 2;
 }
 
 .coin-icon {
-  width: 30% !important;
+  width: 60% !important;
   height: auto;
 }
 
@@ -126,7 +127,7 @@
   border-radius: 10px;
   font-size: 5vw !important; /* Використання vw для тексту */
   grid-row: 1 / span 2;
-  width: 70%;
+  width: auto;
   height: 50%;
   color: #BCF8FA;
   cursor: pointer;
