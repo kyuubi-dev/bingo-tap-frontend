@@ -156,7 +156,7 @@ const TeamItem = ({ name, balance, leagua, bonus , getLeagueImage }) => (
                 <span className="rank-text gold-style">{leagua}</span>
             </div>
             <div className='Point'>
-                <img src="/coin.png" alt="Coin" className="coin-icon" />
+                <img src="/coin.png" alt="Coin" className="coin-icon coin-icon-team" />
                 <span className="rank-text blue-style">{formatBalance(balance)}</span>
             </div>
         </div>

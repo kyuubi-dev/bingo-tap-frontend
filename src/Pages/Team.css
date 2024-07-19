@@ -120,9 +120,7 @@
   width: 30% ;
   height: auto;
 }
-.Point img{
-  width: 60% !important;
-}
+
 .copy-button {
   background: none;
   border: 2px solid #BCF8FA;
@@ -206,6 +204,10 @@
   grid-row: 2;
   grid-column: 2;
   z-index: 2;
+}
+
+.coin-icon-team{
+  width: 60% !important;
 }
 
 .name {
