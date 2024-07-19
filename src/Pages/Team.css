@@ -105,7 +105,7 @@
 }
 
 .invite-url {
-  font-size: 5vw; /* Використання vw для тексту */
+  font-size: 4vw; /* Використання vw для тексту */
   color: #15f7ff;
   text-decoration: none;
   grid-row: 2;
