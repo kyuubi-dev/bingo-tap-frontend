@@ -143,8 +143,8 @@ function App() {
             console.log('WebSocket connection established');
         };
 
-        ws.current.onclose = () => {
-            console.log('WebSocket connection closed');
+        ws.current.onclose = (event) => {
+            console.log(`WebSocket connection closed. Code: ${event.code}, reason: ${event.reason}, was clean: ${event.wasClean}`);
         };
 
         ws.current.onerror = (error) => {
@@ -167,7 +167,7 @@ function App() {
         };
     }, []);
 
-    if (!isLoaded || loadingImages) {
+    if (!isLoaded) {
         return <LoadingScreen />;
     }
 
