@@ -83,7 +83,7 @@
               lastUpdate: data.autoTap.lastUpdate
             });
           };
-          if (data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0) {
+          if (data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0 && !tapingGuruActive) {
               setShowBoostModal(true);
               setShowBoostModalLocal(true);
           }
@@ -268,11 +268,7 @@
       return pointsEarned;
     };
     const handleTap = useCallback((clientX, clientY) => {
-      if (energyRef.current > 0) {
-        if (multitapLevel > energyRef.current) {
-          console.log('Not enough energy to multitap');
-          return;
-        }
+      if (energyRef.current > 0 && multitapLevel < energyRef.current) {
         const pointsEarned = calculatePointsEarned();
         if (!tapingGuruActive) {
           setEnergy((prevEnergy) => {
