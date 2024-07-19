@@ -28,7 +28,21 @@ const tasksData = [
         task_name: "JOIN OUR YOUTUBE",
         url: "https://www.youtube.com",
         _id: "6683002a5dad3b5c5ef58922"
-    }
+    },
+    {
+        reward: 300000,
+        task_id: 11,
+        task_name: "Follow X MetaBingo",
+        url: "https://x.com/meta_bingo_club",
+        _id: "6683002a32132131b5c5ef58922"
+    },
+    {
+        reward: 300000,
+        task_id: 12,
+        task_name: "JOIN TO TELEGRAM METABINGO",
+        url: "https://t.me/MetaBingoClub",
+        _id: "6683002a5da32923c5ef58922"
+    },
 ];
 
 export default tasksData;

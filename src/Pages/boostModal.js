@@ -96,14 +96,12 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
                     <div className="auto-tap-info">
                         <div className="auto-tap-timer">Time left: {formatRemainingTime(timeLeft)}</div>
                         <p className="boost-description">{boost.description}</p>
-                            <>
-                                <div className="auto-tap-points">Accumulated
-                                    points: {autoTapData.accumulatedPoints}</div>
-                                <button className="claim-points-button blue-style"
-                                        onClick={handleClaimPoints}>
-                                    Claim Points
-                                </button>
-                            </>
+                        <>
+                            <div className="auto-tap-points">Accumulated points: {autoTapData.accumulatedPoints}</div>
+                            <button className="claim-points-button blue-style" onClick={handleClaimPoints}>
+                                {autoTapData.timeLeft === 0 && autoTapData.accumulatedPoints === 0 ? 'START' : `Claim Points`}
+                            </button>
+                        </>
                     </div>
                 ) : (
                     <>
@@ -116,11 +114,12 @@ const BoostModal = ({ boost, onClose, onBuy, onActivateTG, onActiveFT, autoTapDa
                 )}
 
                 <div className="modal-buttons">
-                <img src="/btns/delete.png" onClick={onClose} alt="Close" className="closeImg"/>
+                    <img src="/btns/delete.png" onClick={onClose} alt="Close" className="closeImg"/>
                 </div>
             </div>
         </div>
     );
+
 
 };
 

@@ -211,7 +211,7 @@ const Boost = ({ telegramId,ws }) => {
                 const newBoosts = { ...prevBoosts };
                 for (let boostName in newBoosts) {
                     const elapsedTime = now - new Date(newBoosts[boostName].lastUpdate).getTime();
-                    const remainingTime = Math.max(8 * 60 * 60 * 1000 - elapsedTime);
+                    const remainingTime = Math.max(24 * 60 * 60 * 1000 - elapsedTime);
                     newBoosts[boostName].remainingTime = remainingTime;
                 }
                 return newBoosts;
