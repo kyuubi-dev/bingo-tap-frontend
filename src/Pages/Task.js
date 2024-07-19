@@ -144,7 +144,9 @@ const Task = ({ telegramId, ws }) => {
         }
         ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
 
-        setCompletionMessage(`YOU SUCCESSFULLY ENDED TASK! REWARD: ${reward}`);
+        setTimeout(() => {
+            setCompletionMessage(`YOU SUCCESSFULLY ENDED TASK! REWARD: ${reward}`);
+        }, 15000); // Затримка 10 секунд (10000 мілісекунд)
     };
 
     const handleCompletionMessageClose = () => {
