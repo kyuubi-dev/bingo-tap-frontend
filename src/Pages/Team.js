@@ -57,7 +57,7 @@ function Team({ userId, botName }) {
     }, [userId]);
 
     const handleCopyClick = () => {
-        const inviteLink = `https://t.me/${botName}?start=ref_${userId}`;
+        const inviteLink = `https://t.me/${botName}?start=ref_${userId}\n👈 Join us, follow and get 1.5M Mcoins🎁`;
         navigator.clipboard.writeText(inviteLink)
             .then(() => {
                 setCopyButtonText('COPIED');
