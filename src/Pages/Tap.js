@@ -309,10 +309,6 @@
       }
     }, [calculatePointsEarned, multitapLevel, tapingGuruActive, userBalance, updateBalance]);
     const handleEvent = useCallback((event) => {
-      if (isLoaded) {
-        console.log('Data not loaded yet');
-        return;
-      }
 
       if (event.type === 'pointerdown') {
         handleTap(event.clientX, event.clientY);
