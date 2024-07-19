@@ -117,10 +117,12 @@
 }
 
 .coin-icon {
-  width: 30% !important;
+  width: 30% ;
   height: auto;
 }
-
+.Point img{
+  width: 60% !important;
+}
 .copy-button {
   background: none;
   border: 2px solid #BCF8FA;
