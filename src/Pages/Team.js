@@ -138,7 +138,15 @@ function Team({ userId, botName }) {
         </div>
     );
 }
-
+const formatBalance = (balance) => {
+    if (balance >= 1_000_000_000) {
+        return (balance / 1_000_000_000).toFixed(1) + ' B';
+    } else if (balance >= 1_000_000) {
+        return (balance / 1_000_000).toFixed(1) + ' M';
+    } else {
+        return balance.toLocaleString(); // To add commas for thousands
+    }
+};
 const TeamItem = ({ name, balance, leagua, bonus , getLeagueImage }) => (
     <div className="team-member">
         <span className="name default-style">{name}</span>
@@ -149,7 +157,7 @@ const TeamItem = ({ name, balance, leagua, bonus , getLeagueImage }) => (
             </div>
             <div className='Point'>
                 <img src="/coin.png" alt="Coin" className="coin-icon" />
-                <span className="points blue-style">{balance}</span>
+                <span className="rank-text blue-style">{formatBalance(balance)}</span>
             </div>
         </div>
         <span className="bonus gold-style">+{bonus}</span>
