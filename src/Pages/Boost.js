@@ -542,7 +542,7 @@ const Boost = ({ telegramId,ws }) => {
                         <div className="boost-price">
                             <img src="/coin.png" alt="Price-Coin" className="price-icon"/>
                             <span
-                                className="gold-style boost-price">{isTapBot ? formatBalance(price) : formatBalance(nextLevelData?.price) || 'MAX LVL'}</span>
+                                className="gold-style boost-price">{isTapBot ? price : nextLevelData?.price || 'MAX LVL'}</span>
                         </div>
                         {!isTapBot && <div className="boost-level blue-style">Level {level}</div>}
 
@@ -553,12 +553,16 @@ const Boost = ({ telegramId,ws }) => {
     };
 
     const formatBalance = (balance) => {
+        if (balance === undefined || balance === null) {
+            return '0';
+        }
+
         if (balance >= 1_000_000_000) {
             return (balance / 1_000_000_000).toFixed(3) + ' B';
         } else if (balance >= 1_000_000) {
             return (balance / 1_000_000).toFixed(3) + ' M';
         } else {
-            return balance.toLocaleString(); // To add commas for thousands
+            return balance.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
         }
     };
     return (
