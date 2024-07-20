@@ -71,9 +71,14 @@ function Team({ userId, botName }) {
     };
 
     const getLeagueImage = (league) => {
+        if (!league || typeof league !== 'string') {
+            return './ranks/wood.png'; // Default image if league is undefined or not a string
+        }
+
         const leagueData = leagues.find(l => l.name.toUpperCase() === league.toUpperCase());
         return leagueData ? leagueData.img : './ranks/wood.png';
     };
+
     const handleClaimClick = async () => {
         try {
             // Get current user balance
@@ -156,7 +161,7 @@ const TeamItem = ({ name, balance, leagua, bonus , getLeagueImage }) => (
                 <span className="rank-text gold-style">{leagua}</span>
             </div>
             <div className='Point'>
-                <img src="/coin.png" alt="Coin" className=" coin-icon-team" />
+                <img src="/coin.png" alt="Coin" className="coin-icon-team" />
                 <span className="rank-text blue-style">{formatBalance(balance)}</span>
             </div>
         </div>

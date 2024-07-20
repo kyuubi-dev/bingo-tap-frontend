@@ -193,8 +193,8 @@
   align-items: center;
   grid-column: 1;
   grid-row: 2;
-  margin-left: 10px;
-  margin-right: -50%;
+  margin-left: 0;
+  margin-right: -20%;
   z-index: 2;
 }
 
@@ -207,7 +207,8 @@
 }
 
 .coin-icon-team{
-  width: 50% !important;
+  width: 50%; /* Використання відсотків для розміру зображень */
+  height: auto;
 }
 
 .name {
