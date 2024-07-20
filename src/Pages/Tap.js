@@ -254,15 +254,8 @@
         timeout = setTimeout(() => func(...args), wait);
       };
     };
-    const updateBalance = debounce((newBalance) => {
-      ws.send(JSON.stringify({
-        type: 'updateBalance',
-        telegram_id: telegramId,
-        newBalance: newBalance,
-        newEnergy: energyRef.current
-      }));
-      updateUserLeague(telegramId);
-    }, 500);
+
+
     const calculatePointsEarned = () => {
       const pointsEarned = tapingGuruActiveRef.current ? multitapLevel * 5 : multitapLevel;
       return pointsEarned;
@@ -285,8 +278,8 @@
           console.log(balanceRef.current)
           setUserBalance(newBalance);
           setTapingBalance(newTapingBalance);
-          if (newBalance - userBalance >= 100) {
-            updateBalance(newBalance);
+          if (newBalance - userBalance >= 1000) {
+            updateUserLeague(telegramId);
           }
         });
           window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy'); // Or other styles like 'light', 'heavy', 'rigid', 'soft'
@@ -303,7 +296,7 @@
       } else {
         console.log('Not enough energy to tap');
       }
-    }, [calculatePointsEarned, multitapLevel, tapingGuruActive, userBalance, updateBalance]);
+    }, [calculatePointsEarned, multitapLevel, tapingGuruActive, userBalance]);
     const handleEvent = useCallback((event) => {
 
       if (event.type === 'pointerdown') {
