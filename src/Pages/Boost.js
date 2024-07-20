@@ -206,13 +206,27 @@ const Boost = ({ telegramId,ws }) => {
 
     useEffect(() => {
         const timer = setInterval(() => {
-            const now = Date.now();
+            const now = new Date();
+            const kyivOffset = 3 * 60 * 60 * 1000; // Київський час = UTC + 3 години
+            const resetHour = 1; // Час для оновлення зарядок
+
             setDailyBoosts(prevBoosts => {
                 const newBoosts = { ...prevBoosts };
                 for (let boostName in newBoosts) {
-                    const elapsedTime = now - new Date(newBoosts[boostName].lastUpdate).getTime();
-                    const remainingTime = Math.max(24 * 60 * 60 * 1000 - elapsedTime);
-                    newBoosts[boostName].remainingTime = remainingTime;
+                    const lastUpdate = new Date(newBoosts[boostName].lastUpdate);
+                    const kyivLastUpdate = new Date(lastUpdate.getTime() + kyivOffset);
+
+                    const nextReset = new Date(kyivLastUpdate);
+                    nextReset.setHours(resetHour, 0, 0, 0);
+
+                    if (kyivLastUpdate.getHours() < resetHour) {
+                        nextReset.setDate(nextReset.getDate() - 1);
+                    } else {
+                        nextReset.setDate(nextReset.getDate() + 1);
+                    }
+
+                    const remainingTime = nextReset.getTime() - now.getTime();
+                    newBoosts[boostName].remainingTime = Math.max(remainingTime, 0);
                 }
                 return newBoosts;
             });
@@ -220,7 +234,6 @@ const Boost = ({ telegramId,ws }) => {
 
         return () => clearInterval(timer);
     }, []);
-
     const handleActivateAutoTap = async () => {
         const autoTapPrice = 200000;
 
