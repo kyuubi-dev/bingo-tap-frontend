@@ -207,7 +207,7 @@
 }
 
 .coin-icon-team{
-  width: 60% !important;
+  width: 50% !important;
 }
 
 .name {
@@ -221,12 +221,14 @@
 }
 
 .rank-text {
-  font-size: 6vw; /* Використання vw для тексту */
+  font-size: 6vw !important; /* Використання vw для тексту */
   align-items: center;
-  grid-column: 2;
-  grid-row: 2;
+  grid-column: 2/span 3;
+  grid-row: 2 !important;
   z-index: 2;
+  text-wrap: nowrap;
 }
+
 
 .Point {
   font-size: 6vw; /* Використання vw для тексту */

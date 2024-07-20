@@ -450,9 +450,9 @@
     };
     const formatBalance = (balance) => {
       if (balance >= 1_000_000_000) {
-        return (balance / 1_000_000_000).toFixed(1) + ' B';
+        return (balance / 1_000_000_000).toFixed(3) + ' B';
       } else if (balance >= 1_000_000) {
-        return (balance / 1_000_000).toFixed(1) + ' M';
+        return (balance / 1_000_000).toFixed(3) + ' M';
       } else {
         return balance.toLocaleString(); // To add commas for thousands
       }

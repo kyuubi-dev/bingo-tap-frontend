@@ -535,7 +535,7 @@ const Boost = ({ telegramId,ws }) => {
             <div className="boost-item" onClick={() => handleBoostClick(boost)}>
                 <img src={image} alt="icon" className="boost-icon" />
                 {isTapBot && autoTapData.active ? (
-                    <div className="boost-text red-style">{text}</div>
+                    <div className={`boost-text ${autoTapData.timeLeft === 0 && autoTapData.accumulatedPoints === 0 ? 'gold-style' : 'red-style'}`}>{text}</div>
                 ) : (
                     <>
                         <div className="boost-text blue-style">{text}</div>
@@ -554,9 +554,9 @@ const Boost = ({ telegramId,ws }) => {
 
     const formatBalance = (balance) => {
         if (balance >= 1_000_000_000) {
-            return (balance / 1_000_000_000).toFixed(1) + ' B';
+            return (balance / 1_000_000_000).toFixed(3) + ' B';
         } else if (balance >= 1_000_000) {
-            return (balance / 1_000_000).toFixed(1) + ' M';
+            return (balance / 1_000_000).toFixed(3) + ' M';
         } else {
             return balance.toLocaleString(); // To add commas for thousands
         }
