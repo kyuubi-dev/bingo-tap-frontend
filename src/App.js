@@ -141,10 +141,12 @@ function App() {
 
         ws.current.onopen = () => {
             console.log('WebSocket connection established');
+            localStorage.setItem('isFirstVisit', 'true');
         };
 
-        ws.current.onclose = (event) => {
-            console.log(`WebSocket connection closed. Code: ${event.code}, reason: ${event.reason}, was clean: ${event.wasClean}`);
+        ws.current.onclose = () => {
+            console.log('WebSocket connection closed');
+            localStorage.setItem('isFirstVisit', 'true');
         };
 
         ws.current.onerror = (error) => {
