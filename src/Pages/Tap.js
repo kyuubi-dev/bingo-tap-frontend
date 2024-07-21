@@ -83,9 +83,13 @@
               lastUpdate: data.autoTap.lastUpdate
             });
           };
-          if (data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0 && !tapingGuruActive) {
-              setShowBoostModal(true);
-              setShowBoostModalLocal(true);
+
+          const isFirstVisit = localStorage.getItem('isFirstVisit') !== 'false';
+
+          if (isFirstVisit && data.autoTap && data.autoTap.active && data.autoTap.accumulatedPoints > 0 && !tapingGuruActive) {
+            setShowBoostModal(true);
+            setShowBoostModalLocal(true);
+            localStorage.setItem('isFirstVisit', 'false');
           }
           setIsLoaded(true);
         } else if (data.type === 'error') {

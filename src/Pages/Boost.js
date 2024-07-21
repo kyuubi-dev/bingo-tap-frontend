@@ -226,6 +226,9 @@ const Boost = ({ telegramId,ws }) => {
                     }
 
                     const remainingTime = nextReset.getTime() - now.getTime();
+                    if (remainingTime <= 0) {
+                       requestData();
+                    }
                     newBoosts[boostName].remainingTime = Math.max(remainingTime, 0);
                 }
                 return newBoosts;
