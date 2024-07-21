@@ -212,28 +212,44 @@ const Boost = ({ telegramId,ws }) => {
 
             setDailyBoosts(prevBoosts => {
                 const newBoosts = { ...prevBoosts };
+
                 for (let boostName in newBoosts) {
                     const lastUpdate = new Date(newBoosts[boostName].lastUpdate);
                     const kyivLastUpdate = new Date(lastUpdate.getTime() + kyivOffset);
 
+                    // Обчислення наступного часу скидання
                     const nextReset = new Date(kyivLastUpdate);
                     nextReset.setHours(resetHour, 0, 0, 0);
 
-                    if (kyivLastUpdate.getHours() < resetHour) {
-                        nextReset.setDate(nextReset.getDate() - 1);
-                    } else {
+                    // Перевірка, чи потрібно перенести скидання на наступний день
+                    if (kyivLastUpdate.getHours() >= resetHour) {
                         nextReset.setDate(nextReset.getDate() + 1);
                     }
 
+                    // Логування для перевірки
+                    console.log("Current Time:", now.toISOString());
+                    console.log("Kyiv Last Update:", kyivLastUpdate.toISOString());
+                    console.log("Next Reset Time:", nextReset.toISOString());
+
+                    // Розрахунок залишкового часу
                     const remainingTime = nextReset.getTime() - now.getTime();
+
+                    // Логування залишкового часу
+                    console.log("Remaining Time:", remainingTime);
+
+                    // Оновлення стану з залишковим часом
                     newBoosts[boostName].remainingTime = Math.max(remainingTime, 0);
                 }
+
                 return newBoosts;
+
             });
-        }, 1000);  // Update every second
+
+        }, 1000);  // Оновлення кожну секунду
 
         return () => clearInterval(timer);
     }, []);
+
     const handleActivateAutoTap = async () => {
         const autoTapPrice = 200000;
 
