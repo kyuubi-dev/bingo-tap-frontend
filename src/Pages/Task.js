@@ -119,34 +119,77 @@ const Task = ({ telegramId, ws }) => {
             navigate('/league-progress');
     };
 
-    const handleTaskCompletion = async (taskId, reward) => {
-        const updatedTasks = tasks.map(task => {
-            if (task.task_id === taskId) {
-                return { ...task, isCompleted: true };
-            }
-            return task;
-        });
-        setTasks(updatedTasks);
-        const newBalance = userBalance + reward;
-        setUserBalance(newBalance);
-        localStorage.setItem('userBalance', newBalance);
-        // Зберігання інформації про завершення у localStorage (необов'язково, залежить від вашої логіки)
-        const updatedTasksCompleted = { ...tasksCompleted, [taskId]: true };
-        setTasksCompleted(updatedTasksCompleted);
-        localStorage.setItem('tasksCompleted', JSON.stringify(updatedTasksCompleted));
-        // Update balance on server
-        try {
-            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
-                total_balance: newBalance
-            });
-        } catch (error) {
-            console.error('Ошибка при обновлении баланса на сервере:', error);
-        }
-        ws.send(JSON.stringify({ type: 'requestUserData', telegram_id: telegramId }));
+    const handleTaskCompletion = async (taskId, reward,url) => {
+        setTimeout(async () => {
+            if (url.includes('t.me')) { // Check if the task involves Telegram
+                try {
+                    const response = await axios.get(`${config.apiBaseUrl}/check-subscribes`, {
+                        params: { telegram_id: telegramId }
+                    });
 
-        setTimeout(() => {
-            setCompletionMessage(`YOU SUCCESSFULLY ENDED TASK! REWARD: ${reward}`);
-        }, 15000); // Затримка 10 секунд (10000 мілісекунд)
+                    const { userExists, userSubscribes } = response.data;
+
+                    if (userExists && userSubscribes) {
+                        let isSubscribed = false;
+
+                        // Check subscription based on the task URL
+                        if (url.includes('mantis_official') && userSubscribes.telegram_channel) {
+                            isSubscribed = true;
+                        } else if (url.includes('+lo0oLC5eywUxNTRk') && userSubscribes.telegram_group) {
+                            isSubscribed = true;
+                        } else if (url.includes('MetaBingoClub') && userSubscribes.telegram_metaBingo) {
+                            isSubscribed = true;
+                        }
+
+                        if (isSubscribed) {
+                            // Update completed tasks state
+                            const updatedTasksCompleted = { ...tasksCompleted, [taskId]: true };
+                            setTasksCompleted(updatedTasksCompleted);
+                            localStorage.setItem('tasksCompleted', JSON.stringify(updatedTasksCompleted));
+
+                            // Update user balance
+                            const newBalance = userBalance + reward;
+                            setUserBalance(newBalance);
+                            localStorage.setItem('userBalance', newBalance);
+                            setCompletionMessage(`Task completed, reward - ${reward}`);
+
+                            // Update balance on the server
+                            await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+                                total_balance: newBalance
+                            });
+                            setCompletionMessage(`You ended task. Reward ${reward}`);
+
+                            console.log('Balance updated successfully');
+                        } else {
+                            setCompletionMessage('You must subscribe to complete this task.');
+                        }
+                    } else {
+                        setCompletionMessage('User not found or not subscribed.');
+                    }
+                } catch (error) {
+                    console.error('Error checking subscription:', error);
+                    setCompletionMessage('Error checking subscription.');
+                }
+            } else {
+                // For tasks that are not related to Telegram, directly mark as completed
+                const updatedTasksCompleted = { ...tasksCompleted, [taskId]: true };
+                setTasksCompleted(updatedTasksCompleted);
+                localStorage.setItem('tasksCompleted', JSON.stringify(updatedTasksCompleted));
+
+                // Update user balance
+                const newBalance = userBalance + reward;
+                setUserBalance(newBalance);
+                localStorage.setItem('userBalance', newBalance);
+                setCompletionMessage(`Task completed, reward - ${reward}`);
+
+                // Update balance on the server
+                await axios.put(`${config.apiBaseUrl}/save-totalBalance/${telegramId}`, {
+                    total_balance: newBalance
+                });
+
+                console.log('Balance updated successfully');
+            }
+        }, 10000); // 10 seconds delay
     };
 
     const handleCompletionMessageClose = () => {
@@ -219,7 +262,7 @@ const Task = ({ telegramId, ws }) => {
                             <TaskItem
                                 key={task.task_id}
                                 task={task}
-                                onCompletion={() => handleTaskCompletion(task.task_id, task.reward)}
+                                onCompletion={() => handleTaskCompletion(task.task_id, task.reward, task.url)}
                                 xisCompleted={tasksCompleted[task.task_id] || false}
                                 url={task.url} // Pass the URL to TaskItem
                             />
